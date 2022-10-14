@@ -26,7 +26,7 @@ const Home: NextPage = () => {
   return (
     <div>
       <div>
-        <p>Owner Address:{ ownerAddress}</p>
+        <p>Owner Address:  { ownerAddress}</p>
         <button onClick={setOwner}>Set owner  by metamask</button>
       </div>
       <div>
