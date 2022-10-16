@@ -12,13 +12,13 @@ const Home: NextPage = () => {
   const [operatorAddress, setOperatorAddress] = useState('');
 
   const setOwner = async () => {
-    signer = getSigner();
+    signer = await getSigner();
     const address = await signer.getAddress();
     setOwnerAddress(address);
   }
   const Submit = async () => {
     if (!signer) {
-      signer = getSigner();
+      signer = await getSigner();
     }
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
     await contract.joinValidator(operatorAddress);
