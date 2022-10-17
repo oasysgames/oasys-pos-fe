@@ -36,7 +36,7 @@ const Home: NextPage = () => {
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
 
     try {
-      // await contract.joinValidator(input);
+      await contract.joinValidator(input);
       setOperatorAddress(input);
       setInput('');
       setOwnerAddressError('');
