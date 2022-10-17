@@ -11,6 +11,8 @@ const Home: NextPage = () => {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [operatorAddressError, setOperatorAddressError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
+  const [input, setInput] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const setOwner = async () => {
     const signer = await getSigner();
@@ -34,7 +36,10 @@ const Home: NextPage = () => {
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
 
     try {
-      await contract.joinValidator(operatorAddress);
+      await contract.joinValidator(input);
+      setOperatorAddress(input);
+      setInput('');
+      setSuccessMsg('validator setting is successful');
     } catch (err) {
       if (err instanceof Error) {
         setOperatorAddressError(err.message);
@@ -54,12 +59,20 @@ const Home: NextPage = () => {
         {operatorAddressError && (
           <p>{ operatorAddressError }</p>
         )}
-        <p>Operator address</p>
+        <p>Operator address: { operatorAddress }</p>
         <input
-          value={operatorAddress}
-          onChange={e => setOperatorAddress(e.target.value)}
+          placeholder='set operator address'
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          disabled={!!operatorAddress}
           type="text" />
-        <button onClick={Submit}>Submit</button>
+        <button
+          onClick={Submit}
+          disabled={!!operatorAddress}
+        >
+          Submit
+        </button>
+        <p>{ successMsg }</p>
       </div>
     </div>
   )
