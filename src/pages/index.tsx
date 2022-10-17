@@ -9,6 +9,7 @@ import { getSigner } from '../features';
 const Home: NextPage = () => {
   let signer: ethers.providers.JsonRpcSigner
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [operatorAddressError, setOperatorAddressError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
 
   const setOwner = async () => {
@@ -21,7 +22,13 @@ const Home: NextPage = () => {
       signer = await getSigner();
     }
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
-    await contract.joinValidator(operatorAddress);
+    try {
+      await contract.joinValidator(operatorAddress);
+    } catch (err) {
+      if (err instanceof Error) {
+        setOperatorAddressError(err.message);
+      }
+    }
   }
   return (
     <div>
@@ -30,6 +37,9 @@ const Home: NextPage = () => {
         <button onClick={setOwner}>Set owner  by metamask</button>
       </div>
       <div>
+        {operatorAddressError && (
+          <p>{ operatorAddressError }</p>
+        )}
         <p>Operator address</p>
         <input
           value={operatorAddress}
