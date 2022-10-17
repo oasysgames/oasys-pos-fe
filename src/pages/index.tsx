@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import styles from '../styles/Home.module.css';
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
