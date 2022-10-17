@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import { contractAddress } from '../config';
 import { getSigner } from '../features';
+import { Button, Input, ErrorMsg, SuccessMsg } from '../components';
 
 const Home: NextPage = () => {
   const [ownerAddressError, setOwnerAddressError] = useState('');
@@ -50,30 +51,34 @@ const Home: NextPage = () => {
     <div>
       <div>
         {ownerAddressError && (
-          <p>{ ownerAddressError }</p>
+          <ErrorMsg text={ ownerAddressError } />
         )}
         <p>Owner Address:  { ownerAddress}</p>
-        <button onClick={setOwner}>Set owner  by metamask</button>
+        <Button
+          handleClick={setOwner}
+        >
+          Set owner  by metamask
+        </Button>
       </div>
       <div>
         {operatorAddressError && (
-          <p>{ operatorAddressError }</p>
+          <ErrorMsg text={ operatorAddressError } />
         )}
         <p>Operator address: { operatorAddress }</p>
-        <input
+        <Input
           placeholder='set operator address'
           value={input}
-          onChange={e => setInput(e.target.value)}
           disabled={!!operatorAddress}
-          type="text" />
-        <button
-          onClick={Submit}
+          handleClick={e => setInput(e.target.value)}
+        />
+        <Button
+          handleClick={Submit}
           disabled={!!operatorAddress}
         >
           Submit
-        </button>
-        <p>{ successMsg }</p>
+        </Button>
       </div>
+      <SuccessMsg text={ successMsg } />
     </div>
   )
 }
