@@ -9,7 +9,7 @@ export const SuccessMsg = (props: Props) =>  {
 
   return (
     <div>
-      <p>{ text }</p>
+      <p className="text-green-600">{ text }</p>
     </div>
   );
 };

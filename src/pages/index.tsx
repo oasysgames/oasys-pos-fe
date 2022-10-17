@@ -36,9 +36,11 @@ const Home: NextPage = () => {
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
 
     try {
-      await contract.joinValidator(input);
+      // await contract.joinValidator(input);
       setOperatorAddress(input);
       setInput('');
+      setOwnerAddressError('');
+      setOperatorAddressError('');
       setSuccessMsg('validator setting is successful');
     } catch (err) {
       if (err instanceof Error) {
@@ -47,8 +49,8 @@ const Home: NextPage = () => {
     }
   }
   return (
-    <div>
-      <div>
+    <div className='space-y-4'>
+      <div className='space-y-0.5'>
         {ownerAddressError && (
           <ErrorMsg text={ ownerAddressError } />
         )}
@@ -59,7 +61,7 @@ const Home: NextPage = () => {
           Set owner  by metamask
         </Button>
       </div>
-      <div>
+      <div className='space-y-0.5'>
         {operatorAddressError && (
           <ErrorMsg text={ operatorAddressError } />
         )}

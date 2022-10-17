@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import clsx from 'clsx';
 
 type Props = {
   disabled?: boolean;
@@ -18,6 +19,13 @@ export const Button = (props: Props) =>  {
       <button
         onClick={handleClick}
         disabled={disabled}
+        className={clsx(
+          'bg-blue-500',
+          'hover:bg-blue-700',
+          'text-white',
+          'rounded',
+          disabled && 'opacity-50 cursor-not-allowed'
+        )}
       >
         { children }
       </button>

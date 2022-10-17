@@ -1,4 +1,5 @@
-import { ChangeEvent} from "react";
+import { ChangeEvent } from "react";
+import clsx from 'clsx';
 
 type Props = {
   value: string;
@@ -21,7 +22,10 @@ export const Input = (props: Props) =>  {
       placeholder={placeholder}
       value={value}
       onChange={handleClick}
-      disabled={disabled}
+        disabled={disabled}
+        className={clsx(
+          'border',
+        )}
       type="text" />
     </div>
   );

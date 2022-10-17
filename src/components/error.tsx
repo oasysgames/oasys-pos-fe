@@ -9,7 +9,7 @@ export const ErrorMsg = (props: Props) =>  {
 
   return (
     <div>
-      <p>{ text }</p>
+      <p className="text-red-600">{ text }</p>
     </div>
   );
 };
