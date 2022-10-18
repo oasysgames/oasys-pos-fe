@@ -49,37 +49,40 @@ const Home: NextPage = () => {
     }
   }
   return (
-    <div className='space-y-4'>
-      <div className='space-y-0.5'>
-        {ownerAddressError && (
-          <ErrorMsg text={ ownerAddressError } />
-        )}
-        <p>Owner Address:  { ownerAddress}</p>
-        <Button
-          handleClick={setOwner}
-        >
-          Set owner  by metamask
-        </Button>
+    <div className='px-2 py-2'>
+      <div className='space-y-4'>
+        <div className='space-y-0.5'>
+          {ownerAddressError && (
+            <ErrorMsg text={ ownerAddressError } />
+          )}
+          <p>Owner Address:  { ownerAddress}</p>
+          <Button
+            handleClick={setOwner}
+          >
+            Connect
+          </Button>
+        </div>
+        <div className='space-y-0.5'>
+          {operatorAddressError && (
+            <ErrorMsg text={ operatorAddressError } />
+          )}
+          <p>Operator address: { operatorAddress }</p>
+          <Input
+            placeholder='set operator address'
+            value={input}
+            disabled={!!operatorAddress}
+            handleClick={e => setInput(e.target.value)}
+          />
+          <Button
+            handleClick={Submit}
+            disabled={!!operatorAddress}
+          >
+            Submit
+          </Button>
+        </div>
+        <SuccessMsg text={ successMsg } />
       </div>
-      <div className='space-y-0.5'>
-        {operatorAddressError && (
-          <ErrorMsg text={ operatorAddressError } />
-        )}
-        <p>Operator address: { operatorAddress }</p>
-        <Input
-          placeholder='set operator address'
-          value={input}
-          disabled={!!operatorAddress}
-          handleClick={e => setInput(e.target.value)}
-        />
-        <Button
-          handleClick={Submit}
-          disabled={!!operatorAddress}
-        >
-          Submit
-        </Button>
-      </div>
-      <SuccessMsg text={ successMsg } />
+
     </div>
   )
 }
