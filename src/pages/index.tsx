@@ -11,7 +11,7 @@ const Home: NextPage = () => {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [operatorAddressError, setOperatorAddressError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
-  const [input, setInput] = useState('');
+  const [newOperator, setNewOperator] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
   const setOwner = async () => {
@@ -31,17 +31,34 @@ const Home: NextPage = () => {
       }
     }
   }
-  const Submit = async () => {
+  const registerOperator = async () => {
     const signer = await getSigner();
     const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
 
     try {
-      await contract.joinValidator(input);
-      setOperatorAddress(input);
-      setInput('');
+      // await contract.joinValidator(newOperator);
+      setOperatorAddress(newOperator);
+      setNewOperator('');
       setOwnerAddressError('');
       setOperatorAddressError('');
-      setSuccessMsg('validator setting is successful');
+      setSuccessMsg('operator register is successful');
+    } catch (err) {
+      if (err instanceof Error) {
+        setOperatorAddressError(err.message);
+      }
+    }
+  }
+  const updateOperator = async () => {
+    const signer = await getSigner();
+    const contract = new ethers.Contract(contractAddress, StakeManager.abi, signer);
+
+    try {
+      // await contract.updateOperator(newOperator);
+      setOperatorAddress(newOperator);
+      setNewOperator('');
+      setOwnerAddressError('');
+      setOperatorAddressError('');
+      setSuccessMsg('operator update is successful');
     } catch (err) {
       if (err instanceof Error) {
         setOperatorAddressError(err.message);
@@ -62,23 +79,30 @@ const Home: NextPage = () => {
             Connect
           </Button>
         </div>
-        <div className='space-y-0.5'>
+        <div className='space-y-0.5 col-span-6'>
           {operatorAddressError && (
             <ErrorMsg text={ operatorAddressError } />
           )}
           <p>Operator address: { operatorAddress }</p>
           <Input
             placeholder='set operator address'
-            value={input}
-            disabled={!!operatorAddress}
-            handleClick={e => setInput(e.target.value)}
+            value={newOperator}
+            handleClick={e => setNewOperator(e.target.value)}
           />
-          <Button
-            handleClick={Submit}
-            disabled={!!operatorAddress}
-          >
-            Submit
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              handleClick={registerOperator}
+              disabled={!!operatorAddress}
+            >
+              Register
+            </Button>
+            <Button
+              handleClick={updateOperator}
+              disabled={!operatorAddress}
+            >
+              Update
+            </Button>
+          </div>
         </div>
         <SuccessMsg text={ successMsg } />
       </div>
