@@ -6,6 +6,7 @@ import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
 import { getSigner } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components';
+import { isNotAllowedMessage } from '../const';
 
 const Home: NextPage = () => {
   const [ownerAddressError, setOwnerAddressError] = useState('');
@@ -30,7 +31,7 @@ const Home: NextPage = () => {
     try {
       const iaAllow = await allowListContract.containsAddress(address);
       if (!iaAllow) {
-        throw new Error('owner is not allowed to be validator');
+        throw new Error(isNotAllowedMessage);
       }
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== '0x0000000000000000000000000000000000000000') {
@@ -51,7 +52,7 @@ const Home: NextPage = () => {
     try {
       const iaAllow = await allowListContract.containsAddress(ownerAddress);
       if (!iaAllow) {
-        throw new Error('owner is not allowed to be validator');
+        throw new Error(isNotAllowedMessage);
       }
       await stakeManagerContract.joinValidator(newOperator);
       setOperatorAddress(newOperator);
@@ -74,7 +75,7 @@ const Home: NextPage = () => {
     try {
       const iaAllow = await allowListContract.containsAddress(ownerAddress);
       if (!iaAllow) {
-        throw new Error('owner is not allowed to be validator');
+        throw new Error(isNotAllowedMessage);
       }
       await stakeManagerContract.updateOperator(newOperator);
       setOperatorAddress(newOperator);
