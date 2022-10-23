@@ -22,7 +22,7 @@ const Home: NextPage = () => {
     setOwnerAddress(address);
     try {
       const result = await contract.getValidatorInfo(address, 0);
-      if (result.operator !== '0x0000000000000000000000000000000000000000' && result.candidate) {
+      if (result.operator !== '0x0000000000000000000000000000000000000000') {
         setOperatorAddress(result.operator);
       }
     } catch (err) {
