@@ -4,9 +4,8 @@ import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
-import { getSigner } from '../features';
+import { getSigner, isAllowedAddress } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components';
-import { isNotAllowedMessage } from '../const';
 
 const Home: NextPage = () => {
   const [ownerAddressError, setOwnerAddressError] = useState('');
@@ -29,10 +28,7 @@ const Home: NextPage = () => {
 
     setOwnerAddress(address);
     try {
-      const iaAllow = await allowListContract.containsAddress(address);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== '0x0000000000000000000000000000000000000000') {
         setOperatorAddress(result.operator);
@@ -50,10 +46,7 @@ const Home: NextPage = () => {
     const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
 
     try {
-      const iaAllow = await allowListContract.containsAddress(ownerAddress);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, ownerAddress);
       await stakeManagerContract.joinValidator(newOperator);
       setOperatorAddress(newOperator);
       setNewOperator('');
@@ -73,10 +66,7 @@ const Home: NextPage = () => {
     const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
 
     try {
-      const iaAllow = await allowListContract.containsAddress(ownerAddress);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, ownerAddress);
       await stakeManagerContract.updateOperator(newOperator);
       setOperatorAddress(newOperator);
       setNewOperator('');
