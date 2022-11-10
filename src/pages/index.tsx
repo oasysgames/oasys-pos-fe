@@ -5,9 +5,10 @@ import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
 import { getSigner, isAllowedAddress } from '../features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '../components';
+import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components';
 
 const Home: NextPage = () => {
+  const pageTitle = 'Validator.join';
   const [ownerAddressError, setOwnerAddressError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [operatorAddressError, setOperatorAddressError] = useState('');
@@ -81,9 +82,10 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className='px-2 py-2'>
-      <div className='space-y-4'>
-        <div className='space-y-0.5'>
+    <div className='px-2 py-2 space-y-10'>
+      <PageTitle text={pageTitle} />
+      <div className='space-y-10 grid grid-cols-8'>
+        <div className='space-y-0.5 col-span-2 col-start-3'>
           {ownerAddressError && (
             <ErrorMsg text={ ownerAddressError } />
           )}
@@ -94,7 +96,7 @@ const Home: NextPage = () => {
             Connect
           </Button>
         </div>
-        <div className='space-y-0.5 col-span-6'>
+        <div className='space-y-0.5 col-span-4 col-start-3'>
           {operatorAddressError && (
             <ErrorMsg text={ operatorAddressError } />
           )}
@@ -103,6 +105,7 @@ const Home: NextPage = () => {
             placeholder='set operator address'
             value={newOperator}
             handleClick={e => setNewOperator(e.target.value)}
+            className='w-full'
           />
           <div className="flex items-center space-x-2">
             <Button
@@ -118,8 +121,14 @@ const Home: NextPage = () => {
               Update
             </Button>
           </div>
+          <div>
+            {
+              successMsg && (
+                <SuccessMsg text={successMsg} />
+              )
+            }
+          </div>
         </div>
-        <SuccessMsg text={ successMsg } />
       </div>
 
     </div>
