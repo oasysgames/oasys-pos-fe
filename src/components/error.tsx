@@ -1,15 +1,20 @@
+import clsx from 'clsx';
+
 type Props = {
   text: string;
+  className?: string;
 };
 
 export const ErrorMsg = (props: Props) =>  {
   const {
-    text
+    text,
+    className,
   } = props;
 
   return (
-    <div>
-      <p className="text-red-600">{ text }</p>
-    </div>
+    <p className={clsx(
+      className,
+      'text-red-600'
+    )}>{ text }</p>
   );
 };
