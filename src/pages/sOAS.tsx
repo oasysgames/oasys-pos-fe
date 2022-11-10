@@ -67,8 +67,8 @@ const SOASPage: NextPage = () => {
   }, []);
 
   return (
-    <div  className='px-2 py-2 space-y-10'>
-      <PageTitle text={pageTitle} />
+    <div  className='px-2 py-2 space-y-60 pb-96'>
+      <PageTitle text={pageTitle}/>
       <div>
         {errorMsg && (
           <ErrorMsg className='text-center' text={ errorMsg } />

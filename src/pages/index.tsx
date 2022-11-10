@@ -82,7 +82,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className='px-2 py-2 space-y-10'>
+    <div className='px-2 py-2 space-y-60 pb-96'>
       <PageTitle text={pageTitle} />
       <div className='space-y-10 grid grid-cols-8'>
         <div className='space-y-0.5 col-span-2 col-start-3'>

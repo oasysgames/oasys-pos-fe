@@ -22,8 +22,8 @@ export const Button = (props: Props) =>  {
       disabled={disabled}
       className={clsx(
         className,
-        'bg-blue-500',
-        'hover:bg-blue-700',
+        'bg-green-500',
+        'hover:bg-green-700',
         'text-white',
         'rounded',
         disabled && 'opacity-50 cursor-not-allowed'
