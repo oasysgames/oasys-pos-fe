@@ -1,17 +1,24 @@
 import type { NextPage } from 'next';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ethers } from 'ethers';
 import SOAS from '../contracts/SOAS.json';
 import { getSigner, formattedDate } from '../features';
 import { sOASAddress } from '../config';
 import { PageTitle, Button, ErrorMsg, SuccessMsg } from '../components';
-import { ClaimInfo } from '../types/sOAS';
+import { useSOASClaimInfo } from '../hooks';
 
 const SOASPage: NextPage = () => {
   const pageTitle = 'Claim sOAS';
-  const [claimInfo, setClaimInfo] = useState<ClaimInfo>();
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const { claimInfo, isClaimInfoLoading, claimInfoError} = useSOASClaimInfo();
+  
+  if (isClaimInfoLoading) {
+    return <div>Loading...</div>;
+  }
+  if (claimInfoError) {
+    setErrorMsg(claimInfoError.message);
+  }
 
   const isMinted = typeof claimInfo?.amount === 'number' && claimInfo.amount > 0;
   const isClaimable = typeof claimInfo?.claimable === 'number' && claimInfo.claimable > 0;
@@ -34,37 +41,6 @@ const SOASPage: NextPage = () => {
       }
     }
   };
-
-  const getClaimInfo = async () => {
-    const signer = await getSigner();
-    const ownerAddress = await signer.getAddress();
-    const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
-
-    try {
-      const res = await sOASContract.claimInfo(ownerAddress);
-      const claimable = await sOASContract.getClaimableOAS(ownerAddress);
-      const data: ClaimInfo = {
-        amount: res.amount.toNumber(),
-        claimed: res.claimed.toNumber(),
-        claimable: claimable.toNumber(),
-        since: new Date(res.since.toNumber()),
-        until: new Date(res.until.toNumber()),
-        from: res.from,
-      };
-      setClaimInfo(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await getClaimInfo();
-    };
-    fetchData();
-  }, []);
 
   return (
     <div  className='px-2 py-2 space-y-60 pb-96'>
