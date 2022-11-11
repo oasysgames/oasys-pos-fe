@@ -16,9 +16,6 @@ const SOASPage: NextPage = () => {
   if (isClaimInfoLoading) {
     return <div>Loading...</div>;
   }
-  if (claimInfoError) {
-    throw claimInfoError;
-  }
 
   const isMinted = typeof claimInfo?.amount === 'number' && claimInfo.amount > 0;
   const isClaimable = typeof claimInfo?.claimable === 'number' && claimInfo.claimable > 0;
@@ -43,16 +40,8 @@ const SOASPage: NextPage = () => {
   };
 
   return (
-    <div  className='px-2 py-2 space-y-60 pb-96'>
-      <PageTitle text={pageTitle}/>
-      <div>
-        {errorMsg && (
-          <ErrorMsg className='text-center' text={ errorMsg } />
-        )}
-        {successMsg && (
-          <SuccessMsg className='text-center' text={ successMsg } />
-        )}
-      </div>
+    <div  className='px-2 py-2 space-y-10 pb-96'>
+      <PageTitle text={pageTitle} className='pb-32'/>
       <div>
         <p className='text-center pb-10'>
           Vesting Period: { isMinted && claimInfo?.since && claimInfo?.until ? `${formattedDate(claimInfo.since)} ~ ${formattedDate(claimInfo.until)}`: ''}
@@ -80,6 +69,17 @@ const SOASPage: NextPage = () => {
             claim
           </Button>
         </div>
+      </div>
+      <div>
+        {claimInfoError instanceof Error && (
+          <ErrorMsg className='text-center' text={ claimInfoError.message } />
+        )}
+        {errorMsg && (
+          <ErrorMsg className='text-center' text={ errorMsg } />
+        )}
+        {successMsg && (
+          <SuccessMsg className='text-center' text={ successMsg } />
+        )}
       </div>
     </div>
   )
