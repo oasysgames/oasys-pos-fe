@@ -9,16 +9,17 @@ import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components';
 
 const Home: NextPage = () => {
   const pageTitle = 'Validator.join';
-  const [ownerAddressError, setOwnerAddressError] = useState('');
+  const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const [operatorAddressError, setOperatorAddressError] = useState('');
+  const [ownerSuccessMsg, setOwnerSuccessMsg] = useState('');
+  const [operatorError, setOperatorError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
   const [newOperator, setNewOperator] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const [operatorSuccessMsg, setOperatorSuccessMsg] = useState('');
 
   const refreshError = () => {
-    setOwnerAddressError('');
-    setOperatorAddressError('');
+    setOwnerError('');
+    setOperatorError('');
   };
 
   const setOwner = async () => {
@@ -36,7 +37,7 @@ const Home: NextPage = () => {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setOwnerAddressError(err.message);
+        setOwnerError(err.message);
       }
     }
   }
@@ -52,11 +53,11 @@ const Home: NextPage = () => {
       setOperatorAddress(newOperator);
       setNewOperator('');
       refreshError();
-      setSuccessMsg('operator register is successful');
+      setOperatorSuccessMsg('operator register is successful');
     } catch (err) {
       if (err instanceof Error) {
-        setOperatorAddressError(err.message);
-        setSuccessMsg('');
+        setOperatorError(err.message);
+        setOperatorSuccessMsg('');
       }
     }
   }
@@ -72,33 +73,66 @@ const Home: NextPage = () => {
       setOperatorAddress(newOperator);
       setNewOperator('');
       refreshError();
-      setSuccessMsg('operator update is successful');
+      setOperatorSuccessMsg('operator update is successful');
     } catch (err) {
       if (err instanceof Error) {
-        setOperatorAddressError(err.message);
-        setSuccessMsg('');
+        setOperatorError(err.message);
+        setOperatorSuccessMsg('');
       }
     }
   }
+
+  const claimCommissions = async () => {
+    const signer = await getSigner();
+    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
+    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+
+    try {
+      await isAllowedAddress(allowListContract, ownerAddress);
+      await stakeManagerContract.claimCommissions(ownerAddress, 0);
+      refreshError();
+      setOwnerSuccessMsg('claim commissions is successful');
+    } catch (err) {
+      if (err instanceof Error) {
+        setOwnerError(err.message);
+        setOwnerSuccessMsg('');
+      }
+    }
+  };
 
   return (
     <div className='px-2 py-2 space-y-10 pb-96'>
       <PageTitle text={pageTitle} className='pb-32' />
       <div className='space-y-10 grid grid-cols-8'>
         <div className='space-y-0.5 col-span-4 col-start-3'>
-          {ownerAddressError && (
-            <ErrorMsg text={ ownerAddressError } className='w-full' />
+          {ownerError && (
+            <ErrorMsg text={ ownerError } className='w-full' />
           )}
-          <p>Owner Address:  { ownerAddress}</p>
-          <Button
-            handleClick={setOwner}
-          >
-            Connect
-          </Button>
+          <p>Owner Address:  {ownerAddress}</p>
+          <div className="flex items-center space-x-2">
+            <Button
+              handleClick={setOwner}
+            >
+              Connect
+            </Button>
+            <Button
+              handleClick={claimCommissions}
+              disabled={!ownerAddress}
+            >
+              Claim Commissions
+            </Button>
+          </div>
+          <div>
+            {
+              ownerSuccessMsg && (
+                <SuccessMsg text={ownerSuccessMsg} />
+              )
+            }
+          </div>
         </div>
         <div className='space-y-0.5 col-span-4 col-start-3'>
-          {operatorAddressError && (
-            <ErrorMsg text={ operatorAddressError } />
+          {operatorError && (
+            <ErrorMsg text={ operatorError } />
           )}
           <p>Operator address: { operatorAddress }</p>
           <Input
@@ -123,8 +157,8 @@ const Home: NextPage = () => {
           </div>
           <div>
             {
-              successMsg && (
-                <SuccessMsg text={successMsg} />
+              operatorSuccessMsg && (
+                <SuccessMsg text={operatorSuccessMsg} />
               )
             }
           </div>
