@@ -17,7 +17,7 @@ const SOASPage: NextPage = () => {
     return <div>Loading...</div>;
   }
   if (claimInfoError) {
-    setErrorMsg(claimInfoError.message);
+    throw claimInfoError;
   }
 
   const isMinted = typeof claimInfo?.amount === 'number' && claimInfo.amount > 0;
