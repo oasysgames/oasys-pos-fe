@@ -128,9 +128,7 @@ const Home: NextPage = () => {
             </Button>
             <Button
               handleClick={claimCommissions}
-              disabled={true}
-              // todo: After it's enable to claimCommissions, enable following code.
-              // disabled={!ownerAddress}
+              disabled={!ownerAddress}
             >
               Claim Commissions
             </Button>
