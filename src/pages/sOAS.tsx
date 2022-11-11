@@ -41,7 +41,7 @@ const SOASPage: NextPage = () => {
 
   return (
     <div  className='px-2 py-2 space-y-10 pb-96'>
-      <PageTitle text={pageTitle} className='pb-32'/>
+      <PageTitle text={pageTitle} className='pb-48'/>
       <div>
         <p className='text-center pb-10'>
           Vesting Period: { isMinted && claimInfo?.since && claimInfo?.until ? `${formattedDate(claimInfo.since)} ~ ${formattedDate(claimInfo.until)}`: ''}
