@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import SOAS from '../contracts/SOAS.json';
 import { getSigner, formattedDate } from '../features';
 import { sOASAddress } from '../config';
-import { PageTitle, Button, ErrorMsg, SuccessMsg } from '../components';
+import { PageTitle, Button, ErrorMsg, SuccessMsg } from '../components/atoms';
 import { useSOASClaimInfo } from '../hooks';
 
 const SOASPage: NextPage = () => {

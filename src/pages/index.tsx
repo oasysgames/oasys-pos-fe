@@ -5,7 +5,7 @@ import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
 import { getSigner, isAllowedAddress } from '../features';
-import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components';
+import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 
 const Home: NextPage = () => {
   const pageTitle = 'Validator.join';
