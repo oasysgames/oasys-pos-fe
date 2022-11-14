@@ -17,7 +17,7 @@ const Links = [
   },
   {
     text: 'Join validator',
-    url: '/',
+    url: '/validator',
   }
 ];
 
