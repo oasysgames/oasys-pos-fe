@@ -5,10 +5,9 @@ import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
 import { getSigner, isAllowedAddress } from '../features';
-import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
+import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 
 const Home: NextPage = () => {
-  const pageTitle = 'Validator.join';
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [ownerSuccessMsg, setOwnerSuccessMsg] = useState('');
@@ -101,67 +100,64 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className='px-2 py-2 space-y-10 pb-96'>
-      <PageTitle text={pageTitle} className='pb-48' />
-      <div className='space-y-10 grid grid-cols-8'>
-        <div className='space-y-0.5 col-span-4 col-start-3'>
-          {ownerError && (
-            <ErrorMsg text={ ownerError } className='w-full' />
-          )}
-          <p>Owner Address:  {ownerAddress}</p>
-          <div className="flex items-center space-x-2">
-            <Button
-              handleClick={setOwner}
-            >
-              Connect
-            </Button>
-            <Button
-              handleClick={claimCommissions}
-              disabled={!ownerAddress}
-            >
-              Claim Commissions
-            </Button>
-          </div>
-          <div>
-            {
-              ownerSuccessMsg && (
-                <SuccessMsg text={ownerSuccessMsg} />
-              )
-            }
-          </div>
+    <div className='space-y-10 grid grid-cols-8'>
+      <div className='space-y-0.5 col-span-4 col-start-3'>
+        {ownerError && (
+          <ErrorMsg text={ ownerError } className='w-full' />
+        )}
+        <p>Owner Address:  {ownerAddress}</p>
+        <div className="flex items-center space-x-2">
+          <Button
+            handleClick={setOwner}
+          >
+            Connect
+          </Button>
+          <Button
+            handleClick={claimCommissions}
+            disabled={!ownerAddress}
+          >
+            Claim Commissions
+          </Button>
         </div>
-        <div className='space-y-0.5 col-span-4 col-start-3'>
-          {operatorError && (
-            <ErrorMsg text={ operatorError } />
-          )}
-          <p>Operator address: { operatorAddress }</p>
-          <Input
-            placeholder='set operator address'
-            value={newOperator}
-            handleClick={e => setNewOperator(e.target.value)}
-            className='w-full'
-          />
-          <div className="flex items-center space-x-2">
-            <Button
-              handleClick={registerOperator}
-              disabled={!!operatorAddress}
-            >
-              Register
-            </Button>
-            <Button
-              handleClick={updateOperator}
-              disabled={!operatorAddress}
-            >
-              Update
-            </Button>
-          </div>
-          <div>
-            {
-              operatorSuccessMsg && (
-                <SuccessMsg text={operatorSuccessMsg} />
-              )
-            }
-          </div>
+        <div>
+          {
+            ownerSuccessMsg && (
+              <SuccessMsg text={ownerSuccessMsg} />
+            )
+          }
+        </div>
+      </div>
+      <div className='space-y-0.5 col-span-4 col-start-3'>
+        {operatorError && (
+          <ErrorMsg text={ operatorError } />
+        )}
+        <p>Operator address: { operatorAddress }</p>
+        <Input
+          placeholder='set operator address'
+          value={newOperator}
+          handleClick={e => setNewOperator(e.target.value)}
+          className='w-full'
+        />
+        <div className="flex items-center space-x-2">
+          <Button
+            handleClick={registerOperator}
+            disabled={!!operatorAddress}
+          >
+            Register
+          </Button>
+          <Button
+            handleClick={updateOperator}
+            disabled={!operatorAddress}
+          >
+            Update
+          </Button>
+        </div>
+        <div>
+          {
+            operatorSuccessMsg && (
+              <SuccessMsg text={operatorSuccessMsg} />
+            )
+          }
         </div>
       </div>
     </div>

@@ -4,11 +4,10 @@ import { ethers } from 'ethers';
 import SOAS from '../contracts/SOAS.json';
 import { getSigner, formattedDate } from '../features';
 import { sOASAddress } from '../config';
-import { PageTitle, Button, ErrorMsg, SuccessMsg } from '../components/atoms';
+import { Button, ErrorMsg, SuccessMsg } from '../components/atoms';
 import { useSOASClaimInfo } from '../hooks';
 
 const SOASPage: NextPage = () => {
-  const pageTitle = 'Claim sOAS';
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError} = useSOASClaimInfo();
@@ -40,13 +39,12 @@ const SOASPage: NextPage = () => {
   };
 
   return (
-    <div  className='px-2 py-2 space-y-10 pb-96'>
-      <PageTitle text={pageTitle} className='pb-48'/>
+    <div  className='space-y-10'>
       <div>
-        <p className='text-center pb-10'>
+        <p className='text-center mb-10'>
           Vesting Period: { isMinted && claimInfo?.since && claimInfo?.until ? `${formattedDate(claimInfo.since)} ~ ${formattedDate(claimInfo.until)}`: ''}
         </p>
-        <div className='grid grid-cols-8 pb-5'>
+        <div className='grid grid-cols-8 mb-5'>
           <div className='col-start-2 col-span-2 text-center space-y-2'>
             <p>Total</p>
             <p>{ typeof claimInfo?.amount === 'number' ? `${ethers.utils.formatEther(claimInfo.amount)} $sOAS`: ''}</p>
