@@ -1,16 +1,16 @@
 import type { NextPage } from 'next';
 import { useState, useCallback } from 'react';
 import { ethers } from 'ethers';
-import SOAS from '../contracts/SOAS.json';
+import LOAS from '../contracts/LOAS.json';
 import { getSigner } from '../features';
-import { sOASAddress } from '../config';
+import { lOASAddress } from '../config';
 import { Claim } from '../components/templates';
-import { useSOASClaimInfo } from '../hooks';
+import { useLOASClaimInfo } from '../hooks';
 
-const SOASPage: NextPage = () => {
+const LOASPage: NextPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const { claimInfo, isClaimInfoLoading, claimInfoError} = useSOASClaimInfo();
+  const { claimInfo, isClaimInfoLoading, claimInfoError} = useLOASClaimInfo();
 
   const isMinted = typeof claimInfo?.amount === 'number' && claimInfo.amount > 0;
   const isClaimable = typeof claimInfo?.claimable === 'number' && claimInfo.claimable > 0;
@@ -18,14 +18,14 @@ const SOASPage: NextPage = () => {
   const claim = useCallback(async () => {
     const signer = await getSigner();
     const ownerAddress = await signer.getAddress();
-    const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
+    const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
     try {
       if (!isClaimable) throw new Error('You do not have claimable aOAS');
 
-      await sOASContract.claim(claimInfo.claimable);
-      const filter = sOASContract.filters.Claim(ownerAddress, null);
-      sOASContract.once(filter, (address, amount) => {
-        setSuccessMsg(`Success to convert ${amount}SOAS to ${amount}OAS`);
+      await lOASContract.claim(claimInfo.claimable);
+      const filter = lOASContract.filters.Claim(ownerAddress, null);
+      lOASContract.once(filter, (address, amount) => {
+        setSuccessMsg(`Success to convert ${amount}LOAS to ${amount}OAS`);
       })
     } catch (err) {
       if (err instanceof Error) {
@@ -44,9 +44,9 @@ const SOASPage: NextPage = () => {
       successMsg={successMsg}
       isMinted={isMinted}
       isClaimable={isClaimable}
-      tokenUnit='sOAS'
+      tokenUnit='lOAS'
     ></Claim>
   )
 }
 
-export default SOASPage;
+export default LOASPage;
