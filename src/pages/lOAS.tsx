@@ -52,7 +52,6 @@ const LOASPage: NextPage = () => {
 
   const claim = useCallback(async () => {
     const signer = await getSigner();
-    const ownerAddress = await signer.getAddress();
     const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
     try {
       if (!isClaimable) throw new Error('You do not have claimable aOAS');
@@ -67,7 +66,7 @@ const LOASPage: NextPage = () => {
         setErrorMsg(err.message);
       }
     }
-  }, [isClaimable, claimInfo]);
+  }, [isClaimable, claimInfo, ownerAddress]);
 
   useEffect(() => {
     handleAccountsChanged();

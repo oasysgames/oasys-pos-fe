@@ -43,6 +43,7 @@ const SOASPage: NextPage = () => {
 
       setOwnerAddress(address);
       isAllowedChain(chainId);
+      setOwnerError('');
     } catch (err) {
       if (err instanceof Error) {
         setOwnerError(err.message);
