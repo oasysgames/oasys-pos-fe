@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
-import { getSigner, isAllowedAddress } from '../features';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 
 const Home: NextPage = () => {
@@ -21,14 +21,31 @@ const Home: NextPage = () => {
     setOperatorError('');
   };
 
-  const setOwner = async () => {
-    const signer = await getSigner();
-    const address = await signer.getAddress();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+  const handleAccountsChanged = async () => {
+    const provider = await getProvider();
+    const accounts = await provider.send('eth_accounts', []);
+    if (accounts.length === 0) {
+      setOwnerAddress('');
+      setOwnerError('You have to connect metamask');
+      return;
+    };
+    setOwner();
+  };
 
-    setOwnerAddress(address);
+  const setOwner = async () => {
     try {
+      const signer = await getSigner();
+      const address = await signer.getAddress();
+      const chainId = await signer.getChainId();
+
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+      const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
+      const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+
+      setOwnerAddress(address);
+      isAllowedChain(chainId);
       await isAllowedAddress(allowListContract, address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== '0x0000000000000000000000000000000000000000') {
@@ -98,6 +115,10 @@ const Home: NextPage = () => {
       }
     }
   };
+
+  useEffect(() => {
+    handleAccountsChanged();
+  });
 
   return (
     <div className='space-y-10 grid grid-cols-8'>
