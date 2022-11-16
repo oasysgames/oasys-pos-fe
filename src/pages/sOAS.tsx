@@ -12,6 +12,7 @@ import { isNotConnectedMsg } from '../const';
 const SOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [chainId, setChainId] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
@@ -32,6 +33,20 @@ const SOASPage: NextPage = () => {
     setOwner();
   };
 
+  const handleChainChanged = async () => {
+    const signer = await getSigner();
+    const chainId = await signer.getChainId();
+    try {
+      setChainId(chainId);
+      isAllowedChain(chainId);
+      setOwner();
+    } catch (err) {
+      if (err instanceof Error) {
+        setOwnerError(err.message);
+      }
+    }
+  };
+
   const setOwner = async () => {
     try {
       const signer = await getSigner();
@@ -40,8 +55,11 @@ const SOASPage: NextPage = () => {
 
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.removeListener('chainChanged', handleChainChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       setOwnerAddress(address);
+      setChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -76,6 +94,10 @@ const SOASPage: NextPage = () => {
   useEffect(() => {
     refreshSOASClaimInfo();
   }, [ownerAddress, refreshSOASClaimInfo]);
+
+  useEffect(() => {
+    refreshSOASClaimInfo();
+  }, [chainId, refreshSOASClaimInfo]);
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>

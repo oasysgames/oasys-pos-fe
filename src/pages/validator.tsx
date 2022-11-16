@@ -33,6 +33,19 @@ const Home: NextPage = () => {
     setOwner();
   };
 
+  const handleChainChanged = async () => {
+    const signer = await getSigner();
+    const chainId = await signer.getChainId();
+    try {
+      isAllowedChain(chainId);
+      setOwner();
+    } catch (err) {
+      if (err instanceof Error) {
+        setOwnerError(err.message);
+      }
+    }
+  };
+
   const setOwner = async () => {
     try {
       const signer = await getSigner();
@@ -41,6 +54,8 @@ const Home: NextPage = () => {
 
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.removeListener('chainChanged', handleChainChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
       const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
@@ -52,6 +67,7 @@ const Home: NextPage = () => {
       if (result.operator !== '0x0000000000000000000000000000000000000000') {
         setOperatorAddress(result.operator);
       }
+      setOwnerError('');
     } catch (err) {
       if (err instanceof Error) {
         setOwnerError(err.message);
