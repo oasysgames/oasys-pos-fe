@@ -6,6 +6,7 @@ import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
 import { getProvider, getSigner, isAllowedAddress, isAllowedChain } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
+import { isNotConnectedMsg } from '../const';
 
 const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
     const accounts = await provider.send('eth_accounts', []);
     if (accounts.length === 0) {
       setOwnerAddress('');
-      setOwnerError('You have to connect metamask');
+      setOwnerError(isNotConnectedMsg);
       return;
     };
     setOwner();
@@ -121,7 +122,7 @@ const Home: NextPage = () => {
   });
 
   return (
-    <div className='space-y-10 grid grid-cols-8'>
+    <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {ownerError && (
           <ErrorMsg text={ ownerError } className='w-full' />
