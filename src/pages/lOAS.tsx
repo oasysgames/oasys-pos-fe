@@ -12,7 +12,6 @@ import { isNotConnectedMsg } from '../const';
 const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const [chainId, setChainId] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
@@ -36,9 +35,9 @@ const LOASPage: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
-      setChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
+      refreshLOASClaimInfo();
     } catch (err) {
       if (err instanceof Error) {
         setOwnerError(err.message);
@@ -58,7 +57,6 @@ const LOASPage: NextPage = () => {
       window.ethereum.on('chainChanged', handleChainChanged);
 
       setOwnerAddress(address);
-      setChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -93,10 +91,6 @@ const LOASPage: NextPage = () => {
   useEffect(() => {
     refreshLOASClaimInfo();
   }, [ownerAddress, refreshLOASClaimInfo]);
-
-  useEffect(() => {
-    refreshLOASClaimInfo();
-  }, [chainId, refreshLOASClaimInfo]);
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
