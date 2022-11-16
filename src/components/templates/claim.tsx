@@ -2,8 +2,11 @@ import { ethers } from 'ethers';
 import { formattedDate } from '../../features';
 import { Button, ErrorMsg, SuccessMsg } from '../atoms';
 import { ClaimInfo } from '../../types/sOAS';
+import clsx from 'clsx';
 
 type Props = {
+  className?: string;
+  ownerAddress: string;
   claimInfo?: ClaimInfo;
   isClaimInfoLoading: boolean;
   claimInfoError: any;
@@ -17,6 +20,8 @@ type Props = {
 
 export const Claim = (props: Props) => {
   const {
+    className,
+    ownerAddress,
     claimInfo,
     isClaimInfoLoading,
     claimInfoError,
@@ -27,13 +32,14 @@ export const Claim = (props: Props) => {
     isClaimable,
     tokenUnit,
   } = props;
-  
-  if (isClaimInfoLoading) {
-    return <div>Loading...</div>;
-  }
+
+  if (ownerAddress && isClaimInfoLoading) return <div className='text-center'>Loading...</div>;
 
   return (
-    <div className='space-y-10'>
+    <div className={clsx(
+      className,
+      'space-y-10',
+    )}>
       <div>
         <p className='text-center mb-10'>
           Vesting Period: {isMinted && claimInfo?.since && claimInfo?.until ? `${formattedDate(claimInfo.since)} ~ ${formattedDate(claimInfo.until)}` : ''}

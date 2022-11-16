@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
-import { getSigner } from '../features';
+import { getProvider, getSigner } from '../features';
 import LOAS from '../contracts/LOAS.json';
 import { lOASAddress } from '../config';
 import { ClaimInfo } from '../types/lOAS';
@@ -9,6 +9,10 @@ import { ClaimInfo } from '../types/lOAS';
 const SWR_KEY = 'LOASClaimInfo';
 
 const getLOASClaimInfo = async () => {
+  const provider = await getProvider();
+  const accounts = await provider.send('eth_accounts', []);
+  if (accounts.length === 0) return undefined;
+
   const signer = await getSigner();
   const ownerAddress = await signer.getAddress();
   const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
