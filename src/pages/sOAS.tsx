@@ -6,7 +6,7 @@ import { sOASAddress } from '../config';
 import { Button, ErrorMsg } from '../components/atoms';
 import { Claim } from '../components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '../hooks';
-import { getProvider, getSigner, isAllowedChain } from '../features';
+import { getProvider, getSigner, isAllowedChain, handleError } from '../features';
 import { isNotConnectedMsg } from '../const';
 
 const SOASPage: NextPage = () => {
@@ -16,6 +16,7 @@ const SOASPage: NextPage = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
+  const tokenUnit='sOAS'
 
   
   const isMinted = typeof claimInfo?.amount === 'string' && BigInt(claimInfo.amount) > BigInt('0');
@@ -40,9 +41,7 @@ const SOASPage: NextPage = () => {
       setOwner();
       refreshSOASClaimInfo();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -61,9 +60,7 @@ const SOASPage: NextPage = () => {
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -71,17 +68,15 @@ const SOASPage: NextPage = () => {
     const signer = await getSigner();
     const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
     try {
-      if (!isClaimable) throw new Error('You do not have claimable aOAS');
+      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
       await sOASContract.claim(claimInfo.claimable);
       const filter = sOASContract.filters.Claim(ownerAddress, null);
       sOASContract.once(filter, (address, amount) => {
-        setSuccessMsg(`Success to convert ${amount}SOAS to ${amount}OAS`);
+        setSuccessMsg(`Success to convert ${amount}${tokenUnit} to ${amount}OAS`);
       })
     } catch (err) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      }
+      handleError(err, setErrorMsg);
     }
   }, [isClaimable, claimInfo, ownerAddress]);
 
@@ -117,7 +112,7 @@ const SOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit='sOAS'
+        tokenUnit={tokenUnit}
       />
     </div>
   )

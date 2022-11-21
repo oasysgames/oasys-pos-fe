@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import LOAS from '../contracts/LOAS.json';
 import { lOASAddress } from '../config';
 import { Button, ErrorMsg } from '../components/atoms';
-import { getProvider, getSigner, isAllowedChain } from '../features';
+import { getProvider, getSigner, isAllowedChain, handleError } from '../features';
 import { Claim } from '../components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '../hooks';
 import { isNotConnectedMsg } from '../const';
@@ -16,6 +16,7 @@ const LOASPage: NextPage = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
+  const tokenUnit='lOAS'
 
   const isMinted = typeof claimInfo?.amount === 'string' && BigInt(claimInfo.amount) > BigInt('0');
   const isClaimable = typeof claimInfo?.claimable === 'string' && BigInt(claimInfo.claimable) > BigInt('0');
@@ -39,9 +40,7 @@ const LOASPage: NextPage = () => {
       setOwner();
       refreshLOASClaimInfo();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -60,9 +59,7 @@ const LOASPage: NextPage = () => {
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -70,17 +67,15 @@ const LOASPage: NextPage = () => {
     const signer = await getSigner();
     const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
     try {
-      if (!isClaimable) throw new Error('You do not have claimable aOAS');
+      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
       await lOASContract.claim(claimInfo.claimable);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address, amount) => {
-        setSuccessMsg(`Success to convert ${amount}LOAS to ${amount}OAS`);
+        setSuccessMsg(`Success to convert ${amount}${tokenUnit} to ${amount}OAS`);
       })
     } catch (err) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      }
+      handleError(err, setErrorMsg);
     }
   }, [isClaimable, claimInfo, ownerAddress]);
 
@@ -116,7 +111,7 @@ const LOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit='lOAS'
+        tokenUnit={tokenUnit}
       />
     </div>
   )

@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain } from '../features';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 import { isNotConnectedMsg } from '../const';
 
@@ -40,9 +40,7 @@ const Home: NextPage = () => {
       isAllowedChain(chainId);
       setOwner();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -69,9 +67,7 @@ const Home: NextPage = () => {
       }
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   }
 
@@ -88,10 +84,8 @@ const Home: NextPage = () => {
       refreshError();
       setOperatorSuccessMsg('operator register is successful');
     } catch (err) {
-      if (err instanceof Error) {
-        setOperatorError(err.message);
-        setOperatorSuccessMsg('');
-      }
+      setOperatorSuccessMsg('');
+      handleError(err, setOperatorError);
     }
   }
 
@@ -108,10 +102,8 @@ const Home: NextPage = () => {
       refreshError();
       setOperatorSuccessMsg('operator update is successful');
     } catch (err) {
-      if (err instanceof Error) {
-        setOperatorError(err.message);
-        setOperatorSuccessMsg('');
-      }
+      setOperatorSuccessMsg('');
+      handleError(err, setOperatorError);
     }
   }
 
@@ -126,10 +118,8 @@ const Home: NextPage = () => {
       refreshError();
       setOwnerSuccessMsg('claim commissions is successful');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-        setOwnerSuccessMsg('');
-      }
+      setOwnerSuccessMsg('');
+      handleError(err, setOwnerError);
     }
   };
 
