@@ -18,6 +18,10 @@ const Links = [
   {
     text: 'Join validator',
     url: '/validator',
+  },
+  {
+    text: 'Build verse',
+    url: '/verse',
   }
 ];
 
