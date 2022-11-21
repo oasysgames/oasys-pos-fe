@@ -1,7 +1,7 @@
 export interface ClaimInfo {
-  amount: number;
-  claimed: number;
-  claimable: number;
+  amount: string;
+  claimed: string;
+  claimable: string;
   since: Date;
   until: Date;
   from: string;

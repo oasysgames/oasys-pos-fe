@@ -18,10 +18,14 @@ const getSOASClaimInfo = async () => {
   const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
   const res = await sOASContract.claimInfo(ownerAddress);
   const claimable = await sOASContract.getClaimableOAS(ownerAddress);
+
+  // We actually have to toString since and until because since and until are uint64 at solidity.
+  // But when mint, since and until are set by javascript.
+  // That's why It is ok that res.since.toNumber() and res.until.toNumber().
   const data: ClaimInfo = {
-    amount: res.amount.toNumber(),
-    claimed: res.claimed.toNumber(),
-    claimable: claimable.toNumber(),
+    amount: res.amount.toString(),
+    claimed: res.claimed.toString(),
+    claimable: claimable.toString(),
     since: new Date(res.since.toNumber()),
     until: new Date(res.until.toNumber()),
     from: res.from,

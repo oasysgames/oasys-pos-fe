@@ -47,15 +47,15 @@ export const Claim = (props: Props) => {
         <div className='grid grid-cols-8 mb-5'>
           <div className='col-start-2 col-span-2 text-center space-y-2'>
             <p>Total</p>
-            <p>{typeof claimInfo?.amount === 'number' ? `${ethers.utils.formatEther(claimInfo.amount)} $${tokenUnit}` : ''}</p>
+            <p>{typeof claimInfo?.amount === 'string' ? `${ethers.utils.formatEther(claimInfo.amount)} $${tokenUnit}` : ''}</p>
           </div>
           <div className='col-span-2 text-center space-y-2'>
             <p>Claimable</p>
-            <p>{typeof claimInfo?.claimable === 'number' ? `${ethers.utils.formatEther(claimInfo.claimable)} $${tokenUnit}` : ''}</p>
+            <p>{typeof claimInfo?.claimable === 'string' ? `${ethers.utils.formatEther(claimInfo.claimable)} $${tokenUnit}` : ''}</p>
           </div>
           <div className='col-span-2 text-center space-y-2'>
             <p>Claimed</p>
-            <p>{typeof claimInfo?.claimed === 'number' ? `${ethers.utils.formatEther(claimInfo.claimed)} $${tokenUnit}` : ''}</p>
+            <p>{typeof claimInfo?.claimed === 'string' ? `${ethers.utils.formatEther(claimInfo.claimed)} $${tokenUnit}` : ''}</p>
           </div>
         </div>
         <div className='grid grid-cols-6'>
