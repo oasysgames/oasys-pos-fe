@@ -23,9 +23,9 @@ const getLOASClaimInfo = async () => {
   // But when mint, since and until are set by javascript.
   // That's why It is ok that res.since.toNumber() and res.until.toNumber().
   const data: ClaimInfo = {
-    amount: res.amount.toString(),
-    claimed: res.claimed.toString(),
-    claimable: claimable.toString(),
+    amount: res.amount,
+    claimed: res.claimed,
+    claimable: claimable,
     since: new Date(res.since.toNumber()),
     until: new Date(res.until.toNumber()),
     from: res.from,

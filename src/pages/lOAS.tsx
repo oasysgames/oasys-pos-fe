@@ -18,8 +18,8 @@ const LOASPage: NextPage = () => {
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
   const tokenUnit='lOAS'
 
-  const isMinted = typeof claimInfo?.amount === 'string' && BigInt(claimInfo.amount) > BigInt('0');
-  const isClaimable = typeof claimInfo?.claimable === 'string' && BigInt(claimInfo.claimable) > BigInt('0');
+  const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
+  const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
 
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
