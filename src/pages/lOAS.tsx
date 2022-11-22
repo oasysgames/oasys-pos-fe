@@ -14,6 +14,7 @@ const LOASPage: NextPage = () => {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
   const tokenUnit='lOAS'
@@ -69,16 +70,20 @@ const LOASPage: NextPage = () => {
     try {
       if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
+      setIsClaiming(true);
       await lOASContract.claim(claimInfo.claimable);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        refreshLOASClaimInfo();
+        setIsClaiming(false);
       })
     } catch (err) {
+      setIsClaiming(false);
       handleError(err, setErrorMsg);
     }
-  }, [isClaimable, claimInfo, ownerAddress]);
+  }, [isClaimable, claimInfo, ownerAddress, refreshLOASClaimInfo]);
 
   useEffect(() => {
     handleAccountsChanged();
@@ -108,6 +113,7 @@ const LOASPage: NextPage = () => {
         isClaimInfoLoading={isClaimInfoLoading}
         claimInfoError={claimInfoError}
         claim={claim}
+        isClaiming={isClaiming}
         errorMsg={errorMsg}
         successMsg={successMsg}
         isMinted={isMinted}

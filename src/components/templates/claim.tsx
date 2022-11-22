@@ -12,6 +12,7 @@ type Props = {
   isClaimInfoLoading: boolean;
   claimInfoError: any;
   claim: () => Promise<void>;
+  isClaiming: boolean;
   errorMsg: string;
   successMsg: string;
   isMinted: boolean;
@@ -27,6 +28,7 @@ export const Claim = (props: Props) => {
     isClaimInfoLoading,
     claimInfoError,
     claim,
+    isClaiming,
     errorMsg,
     successMsg,
     isMinted,
@@ -63,7 +65,7 @@ export const Claim = (props: Props) => {
           <Button
             handleClick={claim}
             className='col-start-2 col-span-4 h-10'
-            disabled={!isClaimable}
+            disabled={!isClaimable || isClaiming}
           >
             claim
           </Button>
