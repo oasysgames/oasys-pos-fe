@@ -71,9 +71,11 @@ const SOASPage: NextPage = () => {
       if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
       await sOASContract.claim(claimInfo.claimable);
+
       const filter = sOASContract.filters.Claim(ownerAddress, null);
-      sOASContract.once(filter, (address, amount) => {
-        setSuccessMsg(`Success to convert ${amount}${tokenUnit} to ${amount}OAS`);
+      sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
+        const oasAmount = ethers.utils.formatEther(amount.toString());
+        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
       })
     } catch (err) {
       handleError(err, setErrorMsg);
