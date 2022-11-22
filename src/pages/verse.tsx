@@ -74,6 +74,24 @@ const Verse: NextPage = () => {
       const value = ethers.utils.parseEther(amount);
       const options = { value: value };
       await L1BuildDepositContract.deposit(ownerAddress, options);
+      refreshL1BuildDeposit();
+      setAmount('');
+    } catch (err) {
+      if (err instanceof Error) {
+        setDepositError(err.message);
+      }
+    }
+  };
+
+  const withdraw = async () => {
+    const signer = await getSigner();
+    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
+
+    try {
+      const value = ethers.utils.parseEther(amount);
+      await L1BuildDepositContract.withdraw(ownerAddress, value);
+      refreshL1BuildDeposit();
+      setAmount('');
     } catch (err) {
       if (err instanceof Error) {
         setDepositError(err.message);
@@ -132,12 +150,20 @@ const Verse: NextPage = () => {
           handleClick={e => setAmount(e.target.value)}
           className='w-full'
         />
-        <Button
-          handleClick={deposit}
-          disabled={!amount}
-        >
-          Deposit
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button
+            handleClick={deposit}
+            disabled={!amount}
+          >
+            Deposit
+          </Button>
+          <Button
+            handleClick={withdraw}
+            disabled={!amount}
+          >
+            Withdraw
+          </Button>
+        </div>
       </div>
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {buildError && (
