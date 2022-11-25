@@ -5,30 +5,31 @@ type Props = {
   disabled?: boolean;
   children: ReactNode
   handleClick: () => void;
+  className?: string;
 };
 
 export const Button = (props: Props) =>  {
   const {
     disabled,
     children,
-    handleClick
+    handleClick,
+    className,
   } = props;
 
   return (
-    <div>
-      <button
-        onClick={handleClick}
-        disabled={disabled}
-        className={clsx(
-          'bg-blue-500',
-          'hover:bg-blue-700',
-          'text-white',
-          'rounded',
-          disabled && 'opacity-50 cursor-not-allowed'
-        )}
-      >
-        { children }
-      </button>
-    </div>
+    <button
+      onClick={handleClick}
+      disabled={disabled}
+      className={clsx(
+        className,
+        'bg-green-500',
+        'hover:bg-green-700',
+        'text-white',
+        'rounded',
+        disabled && 'opacity-50 cursor-not-allowed'
+      )}
+    >
+      { children }
+    </button>
   );
 };

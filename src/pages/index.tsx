@@ -4,11 +4,11 @@ import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
-import { getSigner } from '../features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '../components';
-import { isNotAllowedMessage } from '../const';
+import { getSigner, isAllowedAddress } from '../features';
+import { PageTitle, Button, Input, ErrorMsg, SuccessMsg } from '../components';
 
 const Home: NextPage = () => {
+  const pageTitle = 'Validator.join';
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [ownerSuccessMsg, setOwnerSuccessMsg] = useState('');
@@ -30,10 +30,7 @@ const Home: NextPage = () => {
 
     setOwnerAddress(address);
     try {
-      const iaAllow = await allowListContract.containsAddress(address);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== '0x0000000000000000000000000000000000000000') {
         setOperatorAddress(result.operator);
@@ -51,10 +48,7 @@ const Home: NextPage = () => {
     const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
 
     try {
-      const iaAllow = await allowListContract.containsAddress(ownerAddress);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, ownerAddress);
       await stakeManagerContract.joinValidator(newOperator);
       setOperatorAddress(newOperator);
       setNewOperator('');
@@ -74,10 +68,7 @@ const Home: NextPage = () => {
     const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
 
     try {
-      const iaAllow = await allowListContract.containsAddress(ownerAddress);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, ownerAddress);
       await stakeManagerContract.updateOperator(newOperator);
       setOperatorAddress(newOperator);
       setNewOperator('');
@@ -97,10 +88,7 @@ const Home: NextPage = () => {
     const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
 
     try {
-      const iaAllow = await allowListContract.containsAddress(ownerAddress);
-      if (!iaAllow) {
-        throw new Error(isNotAllowedMessage);
-      }
+      await isAllowedAddress(allowListContract, ownerAddress);
       await stakeManagerContract.claimCommissions(ownerAddress, 0);
       refreshError();
       setOwnerSuccessMsg('claim commissions is successful');
@@ -113,11 +101,12 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className='px-2 py-2'>
-      <div className='space-y-4'>
-        <div className='space-y-0.5'>
+    <div className='px-2 py-2 space-y-10 pb-96'>
+      <PageTitle text={pageTitle} className='pb-48' />
+      <div className='space-y-10 grid grid-cols-8'>
+        <div className='space-y-0.5 col-span-4 col-start-3'>
           {ownerError && (
-            <ErrorMsg text={ ownerError } />
+            <ErrorMsg text={ ownerError } className='w-full' />
           )}
           <p>Owner Address:  {ownerAddress}</p>
           <div className="flex items-center space-x-2">
@@ -133,9 +122,15 @@ const Home: NextPage = () => {
               Claim Commissions
             </Button>
           </div>
-          <SuccessMsg text={ ownerSuccessMsg } />
+          <div>
+            {
+              ownerSuccessMsg && (
+                <SuccessMsg text={ownerSuccessMsg} />
+              )
+            }
+          </div>
         </div>
-        <div className='space-y-0.5 col-span-6'>
+        <div className='space-y-0.5 col-span-4 col-start-3'>
           {operatorError && (
             <ErrorMsg text={ operatorError } />
           )}
@@ -144,6 +139,7 @@ const Home: NextPage = () => {
             placeholder='set operator address'
             value={newOperator}
             handleClick={e => setNewOperator(e.target.value)}
+            className='w-full'
           />
           <div className="flex items-center space-x-2">
             <Button
@@ -159,10 +155,15 @@ const Home: NextPage = () => {
               Update
             </Button>
           </div>
-          <SuccessMsg text={ operatorSuccessMsg } />
+          <div>
+            {
+              operatorSuccessMsg && (
+                <SuccessMsg text={operatorSuccessMsg} />
+              )
+            }
+          </div>
         </div>
       </div>
-
     </div>
   )
 }

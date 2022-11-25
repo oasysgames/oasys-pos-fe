@@ -6,6 +6,7 @@ type Props = {
   placeholder: string;
   disabled?: boolean;
   handleClick: (e: ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
 };
 
 export const Input = (props: Props) =>  {
@@ -14,19 +15,20 @@ export const Input = (props: Props) =>  {
     placeholder,
     disabled,
     handleClick,
+    className,
   } = props;
 
   return (
-    <div>
-      <input
+    <input
       placeholder={placeholder}
       value={value}
       onChange={handleClick}
-        disabled={disabled}
-        className={clsx(
-          'border',
-        )}
-      type="text" />
-    </div>
+      disabled={disabled}
+      className={clsx(
+        className,
+        'border',
+      )}
+      type="text"
+    />
   );
 };

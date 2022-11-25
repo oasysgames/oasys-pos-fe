@@ -1,1 +1,1 @@
-export const isNotAllowedMessage = 'owner is not allowed to be validator';
+export const isNotAllowedAddressMsg = 'owner is not allowed to be validator';
