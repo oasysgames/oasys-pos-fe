@@ -1,12 +1,18 @@
 import '../styles/globals.css';
+import Head from 'next/head';
 import type { AppProps } from 'next/app';
-import { Layout } from '../components';
+import { Layout } from '../components/templates';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <>
+      <Head>
+        <title>Oasys Web Page</title>
+      </Head>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </>
   );
 }
 

@@ -1,28 +1,27 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import SOAS from '../contracts/SOAS.json';
-import { sOASAddress } from '../config';
+import LOAS from '../contracts/LOAS.json';
+import { lOASAddress } from '../config';
 import { Button, ErrorMsg } from '../components/atoms';
-import { Claim } from '../components/templates';
-import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '../hooks';
 import { getProvider, getSigner, isAllowedChain, handleError } from '../features';
+import { Claim } from '../components/templates';
+import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '../hooks';
 import { isNotConnectedMsg } from '../const';
 
-const SOASPage: NextPage = () => {
+const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
-  const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
-  const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
-  const tokenUnit='sOAS'
+  const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
+  const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
+  const tokenUnit='lOAS'
 
-  
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
   const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
-  
+
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
     const accounts = await provider.send('eth_accounts', []);
@@ -40,7 +39,7 @@ const SOASPage: NextPage = () => {
     try {
       isAllowedChain(chainId);
       setOwner();
-      refreshSOASClaimInfo();
+      refreshLOASClaimInfo();
     } catch (err) {
       handleError(err, setOwnerError);
     }
@@ -67,33 +66,32 @@ const SOASPage: NextPage = () => {
 
   const claim = useCallback(async () => {
     const signer = await getSigner();
-    const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
+    const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
     try {
       if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
       setIsClaiming(true);
-      await sOASContract.claim(claimInfo.claimable);
-
-      const filter = sOASContract.filters.Claim(ownerAddress, null);
-      sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
+      await lOASContract.claim(claimInfo.claimable);
+      const filter = lOASContract.filters.Claim(ownerAddress, null);
+      lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
-        refreshSOASClaimInfo();
+        refreshLOASClaimInfo();
         setIsClaiming(false);
       })
     } catch (err) {
       setIsClaiming(false);
       handleError(err, setErrorMsg);
     }
-  }, [isClaimable, claimInfo, ownerAddress, refreshSOASClaimInfo]);
+  }, [isClaimable, claimInfo, ownerAddress, refreshLOASClaimInfo]);
 
   useEffect(() => {
     handleAccountsChanged();
   });
 
   useEffect(() => {
-    refreshSOASClaimInfo();
-  }, [ownerAddress, refreshSOASClaimInfo]);
+    refreshLOASClaimInfo();
+  }, [ownerAddress, refreshLOASClaimInfo]);
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
@@ -126,4 +124,4 @@ const SOASPage: NextPage = () => {
   )
 }
 
-export default SOASPage;
+export default LOASPage;
