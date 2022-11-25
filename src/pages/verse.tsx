@@ -5,19 +5,23 @@ import { isNotConnectedMsg } from '../const';
 import L1BuildAgent from '../contracts/L1BuildAgent.json';
 import L1BuildDeposit from '../contracts/L1BuildDeposit.json';
 import { L1BuildDepositAddress, L1BuildAgentAddress } from '../config';
-import { getProvider, getSigner, isAllowedChain } from '../features';
+import { getProvider, getSigner, handleError, isAllowedChain } from '../features';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '../hooks';
-import { Button, Input, ErrorMsg } from '../components/atoms';
+import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 
 const Verse: NextPage = () => {
+  const { data, error: depositLoadError } = useL1BuildDeposit();
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [depositSuccess, setDepositSuccess] = useState('');
+  const [idDepositLoading, setIsDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState('');
   const [amount, setAmount] = useState('');
+  const [buildSuccess, setBuildSuccess] = useState('');
+  const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState('');
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
-  const { data, error: depositLoadError } = useL1BuildDeposit();
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
 
   const handleAccountsChanged = async () => {
@@ -39,9 +43,7 @@ const Verse: NextPage = () => {
       setOwner();
       refreshL1BuildDeposit();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -60,9 +62,7 @@ const Verse: NextPage = () => {
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -73,13 +73,20 @@ const Verse: NextPage = () => {
     try {
       const value = ethers.utils.parseEther(amount);
       const options = { value: value };
+      setIsDepositLoading(true);
       await L1BuildDepositContract.deposit(ownerAddress, options);
-      refreshL1BuildDeposit();
-      setAmount('');
+
+      const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
+      L1BuildDepositContract.once(filter, (builder: string, depositer: string, amount: ethers.BigNumber) => {
+        const oasAmount = ethers.utils.formatEther(amount.toString());
+        setDepositSuccess(`${oasAmount}OAS deposit is successful`);
+        setAmount('');
+        setIsDepositLoading(false);
+        refreshL1BuildDeposit();
+      });
     } catch (err) {
-      if (err instanceof Error) {
-        setDepositError(err.message);
-      }
+      setIsDepositLoading(false);
+      handleError(err, setDepositError);
     }
   };
 
@@ -89,27 +96,41 @@ const Verse: NextPage = () => {
 
     try {
       const value = ethers.utils.parseEther(amount);
+      setIsDepositLoading(true);
       await L1BuildDepositContract.withdraw(ownerAddress, value);
-      refreshL1BuildDeposit();
-      setAmount('');
+
+      const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
+      L1BuildDepositContract.once(filter, (builder: string, depositer: string, amount: ethers.BigNumber) => {
+        const oasAmount = ethers.utils.formatEther(amount.toString());
+        setDepositSuccess(`${oasAmount}OAS withdraw is successful`);
+        setAmount('');
+        setIsDepositLoading(false);
+        refreshL1BuildDeposit();
+      });
     } catch (err) {
-      if (err instanceof Error) {
-        setDepositError(err.message);
-      }
+      setIsDepositLoading(false);
+      handleError(err, setDepositError);
     }
   };
 
   const build = async () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
+    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
     const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
 
     try {
-      await L1BuildAgentContract.build(chainId, sequencerAddress, proposerAddress);
-    } catch (err) {
-      if (err instanceof Error) {
-        setBuildError(err.message);
+      setIsBuilding(true);
+      const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(chainId, sequencerAddress, proposerAddress);
+      const receipt = await tx.wait();
+      if (receipt.status === 1) {
+        setBuildSuccess(`verse build is successful`);
+        setIsBuilding(false);
+        refreshL1BuildDeposit();
       }
+    } catch (err) {
+      setIsBuilding(false);
+      handleError(err, setBuildError);
     }
   };
 
@@ -137,13 +158,16 @@ const Verse: NextPage = () => {
         </div>
       </div>
       <div className='space-y-0.5 col-span-4 col-start-3'>
+        {depositSuccess && (
+          <SuccessMsg className='text-center' text={depositSuccess} />
+        )}
         {depositLoadError instanceof Error && (
           <ErrorMsg className='text-center' text={depositLoadError.message} />
         )}
         {depositError && (
           <ErrorMsg className='text-center' text={ depositError } />
         )}
-        <p>Deposit amount: {data?.amount ? `${data.amount}$OAS`: ''}</p>
+        <p>Deposit amount: {data?.amount ? `${ethers.utils.formatEther(data.amount)}$OAS`: ''}</p>
         <Input
           placeholder='set amount($OAS)'
           value={amount}
@@ -153,19 +177,22 @@ const Verse: NextPage = () => {
         <div className="flex items-center space-x-2">
           <Button
             handleClick={deposit}
-            disabled={!amount}
+            disabled={!amount || idDepositLoading}
           >
             Deposit
           </Button>
           <Button
             handleClick={withdraw}
-            disabled={!amount}
+            disabled={!amount || idDepositLoading}
           >
             Withdraw
           </Button>
         </div>
       </div>
       <div className='space-y-0.5 col-span-4 col-start-3'>
+        {buildSuccess && (
+          <SuccessMsg className='text-center' text={buildSuccess} />
+        )}
         {buildError && (
           <ErrorMsg className='text-center' text={ buildError } />
         )}
@@ -184,7 +211,7 @@ const Verse: NextPage = () => {
         />
         <Button
           handleClick={build}
-          disabled={!sequencerAddress || !proposerAddress}
+          disabled={!sequencerAddress || !proposerAddress || isBuilding}
         >
           Build
         </Button>
