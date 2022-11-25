@@ -1,7 +1,9 @@
+import { ethers } from "ethers";
+
 export interface ClaimInfo {
-  amount: number;
-  claimed: number;
-  claimable: number;
+  amount: ethers.BigNumber;
+  claimed: ethers.BigNumber;
+  claimable: ethers.BigNumber;
   since: Date;
   until: Date;
   from: string;

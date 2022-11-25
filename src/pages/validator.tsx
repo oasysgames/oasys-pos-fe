@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import StakeManager from '../contracts/StakeManager.json';
 import AllowList from '../contracts/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '../config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain } from '../features';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '../features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 import { isNotConnectedMsg } from '../const';
 
@@ -12,6 +12,8 @@ const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [ownerSuccessMsg, setOwnerSuccessMsg] = useState('');
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [isOperatorUpdating, setIsOperatorUpdating] = useState(false);
   const [operatorError, setOperatorError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
   const [newOperator, setNewOperator] = useState('');
@@ -40,9 +42,7 @@ const Home: NextPage = () => {
       isAllowedChain(chainId);
       setOwner();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -69,9 +69,7 @@ const Home: NextPage = () => {
       }
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   }
 
@@ -82,16 +80,25 @@ const Home: NextPage = () => {
 
     try {
       await isAllowedAddress(allowListContract, ownerAddress);
-      await stakeManagerContract.joinValidator(newOperator);
-      setOperatorAddress(newOperator);
-      setNewOperator('');
       refreshError();
-      setOperatorSuccessMsg('operator register is successful');
+      setIsOperatorUpdating(true);
+      await stakeManagerContract.joinValidator(newOperator);
+
+      const filter = stakeManagerContract.filters.ValidatorJoined(null);
+      const callback = (owner: string) => {
+        if (owner === ownerAddress) {
+          setOperatorAddress(newOperator);
+          setNewOperator('');
+          setOperatorSuccessMsg(`operator register is successful`);
+          setIsOperatorUpdating(false);
+          stakeManagerContract.off(filter, callback);
+        }
+      };
+      stakeManagerContract.on(filter, callback);
     } catch (err) {
-      if (err instanceof Error) {
-        setOperatorError(err.message);
-        setOperatorSuccessMsg('');
-      }
+      setOperatorSuccessMsg('');
+      setIsOperatorUpdating(false);
+      handleError(err, setOperatorError);
     }
   }
 
@@ -102,16 +109,21 @@ const Home: NextPage = () => {
 
     try {
       await isAllowedAddress(allowListContract, ownerAddress);
-      await stakeManagerContract.updateOperator(newOperator);
-      setOperatorAddress(newOperator);
-      setNewOperator('');
       refreshError();
-      setOperatorSuccessMsg('operator update is successful');
-    } catch (err) {
-      if (err instanceof Error) {
-        setOperatorError(err.message);
-        setOperatorSuccessMsg('');
+      setIsOperatorUpdating(true);
+      await stakeManagerContract.updateOperator(newOperator);
+      const filter = stakeManagerContract.filters.OperatorUpdated(ownerAddress, null, null);
+      const callback = (owner: string, oldOperator: string, operator: string) => {
+        setOperatorAddress(newOperator);
+        setNewOperator('');
+        setOperatorSuccessMsg(`update is successful. (${oldOperator} => ${operator})`);
+        setIsOperatorUpdating(false);
       }
+      stakeManagerContract.once(filter, callback);
+    } catch (err) {
+      setOperatorSuccessMsg('');
+      setIsOperatorUpdating(false);
+      handleError(err, setOperatorError);
     }
   }
 
@@ -122,14 +134,19 @@ const Home: NextPage = () => {
 
     try {
       await isAllowedAddress(allowListContract, ownerAddress);
-      await stakeManagerContract.claimCommissions(ownerAddress, 0);
       refreshError();
-      setOwnerSuccessMsg('claim commissions is successful');
+      setIsClaiming(true);
+      await stakeManagerContract.claimCommissions(ownerAddress, 0);
+      const filter = stakeManagerContract.filters.ClaimedCommissions(ownerAddress, null);
+      stakeManagerContract.once(filter, (owner: string, amount: ethers.BigNumber) => {
+        const oasAmount = ethers.utils.formatEther(amount.toString());
+        setOwnerSuccessMsg(`claim commissions is successful(${oasAmount}OAS)`);
+        setIsClaiming(false);
+      });
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-        setOwnerSuccessMsg('');
-      }
+      setOwnerSuccessMsg('');
+      setIsClaiming(false);
+      handleError(err, setOwnerError);
     }
   };
 
@@ -152,7 +169,7 @@ const Home: NextPage = () => {
           </Button>
           <Button
             handleClick={claimCommissions}
-            disabled={!ownerAddress}
+            disabled={!ownerAddress || isClaiming}
           >
             Claim Commissions
           </Button>
@@ -179,13 +196,13 @@ const Home: NextPage = () => {
         <div className="flex items-center space-x-2">
           <Button
             handleClick={registerOperator}
-            disabled={!!operatorAddress}
+            disabled={!!operatorAddress || isOperatorUpdating}
           >
             Register
           </Button>
           <Button
             handleClick={updateOperator}
-            disabled={!operatorAddress}
+            disabled={!operatorAddress || isOperatorUpdating}
           >
             Update
           </Button>

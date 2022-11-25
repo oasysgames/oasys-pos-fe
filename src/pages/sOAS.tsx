@@ -6,7 +6,7 @@ import { sOASAddress } from '../config';
 import { Button, ErrorMsg } from '../components/atoms';
 import { Claim } from '../components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '../hooks';
-import { getProvider, getSigner, isAllowedChain } from '../features';
+import { getProvider, getSigner, isAllowedChain, handleError } from '../features';
 import { isNotConnectedMsg } from '../const';
 
 const SOASPage: NextPage = () => {
@@ -14,12 +14,14 @@ const SOASPage: NextPage = () => {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
+  const tokenUnit='sOAS'
 
   
-  const isMinted = typeof claimInfo?.amount === 'number' && claimInfo.amount > 0;
-  const isClaimable = typeof claimInfo?.claimable === 'number' && claimInfo.claimable > 0;
+  const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
+  const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
   
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
@@ -40,9 +42,7 @@ const SOASPage: NextPage = () => {
       setOwner();
       refreshSOASClaimInfo();
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -61,9 +61,7 @@ const SOASPage: NextPage = () => {
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
-      if (err instanceof Error) {
-        setOwnerError(err.message);
-      }
+      handleError(err, setOwnerError);
     }
   };
 
@@ -71,19 +69,23 @@ const SOASPage: NextPage = () => {
     const signer = await getSigner();
     const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
     try {
-      if (!isClaimable) throw new Error('You do not have claimable aOAS');
+      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
 
+      setIsClaiming(true);
       await sOASContract.claim(claimInfo.claimable);
+
       const filter = sOASContract.filters.Claim(ownerAddress, null);
-      sOASContract.once(filter, (address, amount) => {
-        setSuccessMsg(`Success to convert ${amount}SOAS to ${amount}OAS`);
+      sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
+        const oasAmount = ethers.utils.formatEther(amount.toString());
+        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        refreshSOASClaimInfo();
+        setIsClaiming(false);
       })
     } catch (err) {
-      if (err instanceof Error) {
-        setErrorMsg(err.message);
-      }
+      setIsClaiming(false);
+      handleError(err, setErrorMsg);
     }
-  }, [isClaimable, claimInfo, ownerAddress]);
+  }, [isClaimable, claimInfo, ownerAddress, refreshSOASClaimInfo]);
 
   useEffect(() => {
     handleAccountsChanged();
@@ -113,11 +115,12 @@ const SOASPage: NextPage = () => {
         isClaimInfoLoading={isClaimInfoLoading}
         claimInfoError={claimInfoError}
         claim={claim}
+        isClaiming={isClaiming}
         errorMsg={errorMsg}
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit='sOAS'
+        tokenUnit={tokenUnit}
       />
     </div>
   )
