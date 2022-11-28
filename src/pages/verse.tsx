@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { isNotConnectedMsg } from '../const';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '../const';
 import L1BuildAgent from '../contracts/L1BuildAgent.json';
 import L1BuildDeposit from '../contracts/L1BuildDeposit.json';
 import { L1BuildDepositAddress, L1BuildAgentAddress } from '../config';
@@ -121,6 +121,9 @@ const Verse: NextPage = () => {
     try {
       setIsBuilding(true);
       const verseChainId = ethers.BigNumber.from(chainId);
+      const addressManager = await L1BuildAgentContract.getAddressManager(verseChainId);
+      if (addressManager !== ZERO_ADDRESS) throw new Error(`Chain_id ${chainId.toString()} is already used`);
+
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
