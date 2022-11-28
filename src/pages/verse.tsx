@@ -78,7 +78,7 @@ const Verse: NextPage = () => {
       await L1BuildDepositContract.deposit(ownerAddress, options);
 
       const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter, (builder: string, depositer: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter, (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}OAS deposit is successful`);
         setAmount('');
@@ -101,7 +101,7 @@ const Verse: NextPage = () => {
       await L1BuildDepositContract.withdraw(ownerAddress, value);
 
       const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter, (builder: string, depositer: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter,  (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}OAS withdraw is successful`);
         setAmount('');
