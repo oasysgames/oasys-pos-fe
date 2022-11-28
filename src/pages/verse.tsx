@@ -20,6 +20,7 @@ const Verse: NextPage = () => {
   const [buildSuccess, setBuildSuccess] = useState('');
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState('');
+  const [chainId, setChainId] = useState('');
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
@@ -115,13 +116,12 @@ const Verse: NextPage = () => {
 
   const build = async () => {
     const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
     const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
 
     try {
       setIsBuilding(true);
-      const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(chainId, sequencerAddress, proposerAddress);
+      const verseChainId = ethers.BigNumber.from(chainId);
+      const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
         setBuildSuccess(`verse build is successful`);
@@ -197,6 +197,12 @@ const Verse: NextPage = () => {
           <ErrorMsg className='text-center' text={ buildError } />
         )}
         <p>Build verse</p>
+        <Input
+          placeholder='set verse chain_id'
+          value={chainId}
+          handleClick={e => setChainId(e.target.value)}
+          className='w-full'
+        />
         <Input
           placeholder='set sequencer address'
           value={sequencerAddress}
