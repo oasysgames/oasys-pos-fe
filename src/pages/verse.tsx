@@ -5,8 +5,8 @@ import { isNotConnectedMsg, ZERO_ADDRESS } from '../const';
 import L1BuildAgent from '../contracts/L1BuildAgent.json';
 import L1BuildDeposit from '../contracts/L1BuildDeposit.json';
 import { L1BuildDepositAddress, L1BuildAgentAddress } from '../config';
-import { getProvider, getSigner, handleError, isAllowedChain } from '../features';
-import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '../hooks';
+import { download, getProvider, getSigner, handleError, isAllowedChain } from '../features';
+import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '../hooks';
 import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
 
 const Verse: NextPage = () => {
@@ -20,10 +20,13 @@ const Verse: NextPage = () => {
   const [buildSuccess, setBuildSuccess] = useState('');
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState('');
-  const [chainId, setChainId] = useState('');
+  const [newChainId, setNewChainId] = useState('');
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
+  const [downloadError, setDownloadError] = useState('');
+  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
+  const refreshVerseInfo = useRefreshVerseInfo();
 
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
@@ -43,6 +46,7 @@ const Verse: NextPage = () => {
       isAllowedChain(chainId);
       setOwner();
       refreshL1BuildDeposit();
+      refreshVerseInfo();
     } catch (err) {
       handleError(err, setOwnerError);
     }
@@ -120,9 +124,9 @@ const Verse: NextPage = () => {
 
     try {
       setIsBuilding(true);
-      const verseChainId = ethers.BigNumber.from(chainId);
+      const verseChainId = ethers.BigNumber.from(newChainId);
       const addressManager = await L1BuildAgentContract.getAddressManager(verseChainId);
-      if (addressManager !== ZERO_ADDRESS) throw new Error(`Chain_id ${chainId.toString()} is already used`);
+      if (addressManager !== ZERO_ADDRESS) throw new Error(`Chain_id ${verseChainId.toString()} is already used`);
 
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
@@ -130,10 +134,28 @@ const Verse: NextPage = () => {
         setBuildSuccess(`verse build is successful`);
         setIsBuilding(false);
         refreshL1BuildDeposit();
+        refreshVerseInfo();
       }
     } catch (err) {
       setIsBuilding(false);
       handleError(err, setBuildError);
+    }
+  };
+
+  const downloadAddresses = async () => {
+    try {
+      if (!verseInfo?.addresses) throw new Error('You have to build verse');
+      download(verseInfo.addresses, 'addresses.json');
+    } catch (err) {
+      handleError(err, setDownloadError);
+    }
+  };
+
+  const downloadGenesis = async () => {
+    try {
+
+    } catch (err) {
+      handleError(err, setDownloadError);
     }
   };
 
@@ -144,6 +166,10 @@ const Verse: NextPage = () => {
   useEffect(() => {
     refreshL1BuildDeposit();
   }, [ownerAddress, refreshL1BuildDeposit]);
+
+  useEffect(() => {
+    refreshVerseInfo();
+  }, [ownerAddress, refreshVerseInfo]);
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
@@ -202,8 +228,8 @@ const Verse: NextPage = () => {
         <p>Build verse</p>
         <Input
           placeholder='set verse chain_id'
-          value={chainId}
-          handleClick={e => setChainId(e.target.value)}
+          value={newChainId}
+          handleClick={e => setNewChainId(e.target.value)}
           className='w-full'
         />
         <Input
@@ -224,6 +250,26 @@ const Verse: NextPage = () => {
         >
           Build
         </Button>
+      </div>
+      <div className='space-y-0.5 col-span-4 col-start-3'>
+        {downloadError && (
+          <ErrorMsg text={ downloadError } className='w-full' />
+        )}
+        <p>Download verse config</p>
+        <div className="flex items-center space-x-2">
+          <Button
+            handleClick={downloadAddresses}
+            disabled={ !verseInfo?.addresses }
+          >
+            Download Address.json
+          </Button>
+          <Button
+            handleClick={downloadGenesis}
+            disabled={false} // todo set
+          >
+            Download genesis.json
+          </Button>
+        </div>
       </div>
     </div>
   );
