@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import LOAS from '../contracts/LOAS.json';
-import { lOASAddress } from '../config';
-import { Button, ErrorMsg } from '../components/atoms';
-import { getProvider, getSigner, isAllowedChain, handleError } from '../features';
-import { Claim } from '../components/templates';
-import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '../hooks';
-import { isNotConnectedMsg } from '../const';
+import LOAS from '@/contracts/LOAS.json';
+import { lOASAddress } from '@/config';
+import { Button, ErrorMsg } from '@/components/atoms';
+import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
+import { Claim } from '@/components/templates';
+import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
+import { isNotConnectedMsg } from '@/const';
 
 const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');

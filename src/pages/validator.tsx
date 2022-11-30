@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import StakeManager from '../contracts/StakeManager.json';
-import AllowList from '../contracts/AllowList.json';
-import { stakeManagerAddress, allowListAddress } from '../config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '../features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '../const';
+import StakeManager from '@/contracts/StakeManager.json';
+import AllowList from '@/contracts/AllowList.json';
+import { stakeManagerAddress, allowListAddress } from '@/config';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
+import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 
 const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');

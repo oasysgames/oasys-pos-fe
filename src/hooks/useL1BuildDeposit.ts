@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
-import { getProvider, getSigner } from '../features';
-import L1BuildDeposit from '../contracts/L1BuildDeposit.json';
-import { L1BuildDepositAddress } from '../config';
-import { L1BuildDeposit as depositType } from '../types/verseBuild';
+import { getProvider, getSigner } from '@/features';
+import L1BuildDeposit from '@/contracts/L1BuildDeposit.json';
+import { L1BuildDepositAddress } from '@/config';
+import { L1BuildDeposit as depositType } from '@/types/verseBuild';
 
 const SWR_KEY = 'L1BuildDeposit';
 

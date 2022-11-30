@@ -1,13 +1,13 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '../const';
-import L1BuildAgent from '../contracts/L1BuildAgent.json';
-import L1BuildDeposit from '../contracts/L1BuildDeposit.json';
-import { L1BuildDepositAddress, L1BuildAgentAddress } from '../config';
-import { download, getProvider, getSigner, handleError, isAllowedChain } from '../features';
-import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '../hooks';
-import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
+import L1BuildAgent from '@/contracts/L1BuildAgent.json';
+import L1BuildDeposit from '@/contracts/L1BuildDeposit.json';
+import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
+import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
+import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
 
 const Verse: NextPage = () => {
   const { data, error: depositLoadError } = useL1BuildDeposit();

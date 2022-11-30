@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Sidebar } from '../organisms';
+import { Sidebar } from '@/components/organisms';
 
 type Props = {
   children: ReactNode

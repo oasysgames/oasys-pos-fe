@@ -1,8 +1,8 @@
 import { ethers, BigNumber } from "ethers";
-import { getSigner } from "../common/wallet";
-import { L1BuildAgentAddress } from '../../config';
-import L1BuildAgent from '../../contracts/L1BuildAgent.json';
-import { NamedAddresses } from "../../types/verseBuild";
+import { getSigner } from "@/features/common/wallet";
+import { L1BuildAgentAddress } from '@/config';
+import L1BuildAgent from '@/contracts/L1BuildAgent.json';
+import { NamedAddresses } from "@/types/verseBuild";
 
 export const getNamedAddresses = async (chainId: BigNumber) => {
   const signer = await getSigner();
