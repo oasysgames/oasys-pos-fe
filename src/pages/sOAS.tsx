@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import SOAS from '@/contracts/SOAS.json';
+import SOAS from '@/contracts/oasysHub/SOAS.json';
 import { sOASAddress } from '@/config';
 import { Button, ErrorMsg } from '@/components/atoms';
 import { Claim } from '@/components/templates';

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
 import { getProvider, getSigner } from '@/features';
-import SOAS from '@/contracts/SOAS.json';
+import SOAS from '@/contracts/oasysHub/SOAS.json';
 import { sOASAddress } from '@/config';
 import { ClaimInfo } from '@/types/sOAS';
 

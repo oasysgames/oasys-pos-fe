@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import LOAS from '@/contracts/LOAS.json';
+import LOAS from '@/contracts/oasysHub/LOAS.json';
 import { lOASAddress } from '@/config';
 import { Button, ErrorMsg } from '@/components/atoms';
 import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';

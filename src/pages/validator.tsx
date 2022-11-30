@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import StakeManager from '@/contracts/StakeManager.json';
-import AllowList from '@/contracts/AllowList.json';
+import StakeManager from '@/contracts/oasysHub/StakeManager.json';
+import AllowList from '@/contracts/oasysHub/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '@/config';
 import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
 import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';

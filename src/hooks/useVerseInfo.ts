@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
 import { getChainId, getNamedAddresses, getSigner } from '@/features';
-import L1BuildAgent from '@/contracts/L1BuildAgent.json';
+import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
 import { L1BuildAgentAddress } from '@/config';
 
 const SWR_KEY = 'VerseInfo';
