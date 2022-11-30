@@ -4,7 +4,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import { getProvider, getSigner } from '@/features';
 import SOAS from '@/contracts/oasysHub/SOAS.json';
 import { sOASAddress } from '@/config';
-import { ClaimInfo } from '@/types/sOAS';
+import { ClaimInfo } from '@/types/oasysHub/sOAS';
 
 const SWR_KEY = 'SOASClaimInfo';
 

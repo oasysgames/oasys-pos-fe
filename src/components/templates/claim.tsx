@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 import { formattedDate } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { ClaimInfo as sOASClaimInfo  } from '@/types/sOAS';
-import { ClaimInfo as lOASClaimInfo } from '@/types/lOAS';
+import { ClaimInfo as sOASClaimInfo  } from '@/types/oasysHub/sOAS';
+import { ClaimInfo as lOASClaimInfo } from '@/types/oasysHub/lOAS';
 import clsx from 'clsx';
 
 type Props = {

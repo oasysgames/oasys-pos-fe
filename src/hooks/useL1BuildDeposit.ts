@@ -4,7 +4,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import { getProvider, getSigner } from '@/features';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import { L1BuildDepositAddress } from '@/config';
-import { L1BuildDeposit as depositType } from '@/types/verseBuild';
+import { L1BuildDeposit as depositType } from '@/types/oasysHub/verseBuild';
 
 const SWR_KEY = 'L1BuildDeposit';
 
