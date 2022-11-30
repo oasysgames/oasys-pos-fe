@@ -20,20 +20,6 @@ export const getNamedAddresses = async (chainId: BigNumber) => {
   return namedAddresses as NamedAddresses;
 };
 
-export const getGenesisJson = () => {
-};
-
-export const download = (content: object, filename: string) => {
-  const blob = new Blob([JSON.stringify(content, null, 4)], {
-    type: "application/json",
-  });
-  const a = document.createElement("a");
-  a.href = window.URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  a.remove();
-};
-
 export const getBuilts = async () => {
   const signer = await getSigner();
   const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
