@@ -132,6 +132,9 @@ const Verse: NextPage = () => {
       const receipt = await tx.wait();
       if (receipt.status === 1) {
         setBuildSuccess(`verse build is successful`);
+        setNewChainId('');
+        setSequencerAddress('');
+        setProposerAddress('');
         setIsBuilding(false);
         refreshL1BuildDeposit();
         refreshVerseInfo();
