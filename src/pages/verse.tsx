@@ -255,26 +255,34 @@ const Verse: NextPage = () => {
           Build
         </Button>
       </div>
-      <div className='space-y-0.5 col-span-4 col-start-3'>
-        {downloadError && (
-          <ErrorMsg text={ downloadError } className='w-full' />
-        )}
-        <p>Download verse config</p>
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={downloadAddresses}
-            disabled={ !verseInfo?.namedAddresses }
-          >
-            Download Address.json
-          </Button>
-          <Button
-            handleClick={downloadGenesis}
-            disabled={ !verseInfo?.genesis }
-          >
-            Download genesis.json
-          </Button>
+      { verseInfo && 
+        <div className='space-y-4 col-span-4 col-start-3'>
+          {downloadError && (
+            <ErrorMsg text={ downloadError } className='w-full' />
+          )}
+          <p>Download verse config</p>
+          <div>
+            <p>Chain_id : { verseInfo.chainId.toString() }</p>
+            <p>Builder: { ownerAddress }</p>
+            <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
+            <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              handleClick={downloadAddresses}
+              disabled={ !verseInfo?.namedAddresses }
+            >
+              Download Address.json
+            </Button>
+            <Button
+              handleClick={downloadGenesis}
+              disabled={ !verseInfo?.genesis }
+            >
+              Download genesis.json
+            </Button>
+          </div>
         </div>
-      </div>
+      }
     </div>
   );
 };
