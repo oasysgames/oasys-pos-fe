@@ -1,21 +1,19 @@
 import { makeGenesisJson } from "@/features/optimism";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
 import { GenesisParams } from "@/types/optimism/genesis";
+import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/const/';
+import { ethers } from "ethers";
 
 test("makeGenesisJson()", async () => {
   const params: GenesisParams = {
-    chainId: 20197,
-    ovmWhitelistOwner: "0x0000000000000000000000000000000000000000",
+    chainId: ethers.BigNumber.from('20197'),
+    ovmWhitelistOwner: ZERO_ADDRESS,
     ovmGasPriceOracleOwner: "0x0E879598C1BC99c66048109371D385C4F54a4203",
     ovmFeeWalletAddress: "0x0E879598C1BC99c66048109371D385C4F54a4203",
     ovmBlockSignerAddress: "0xdC888092bf5f11C8c417c028A9FFCF3e4cA34fc2",
-    gasPriceOracleL2GasPrice: 1,
-    gasPriceOracleL1BaseFee: 1,
-    gasPriceOracleOverhead: 2750,
-    gasPriceOracleScalar: 1500000,
-    gasPriceOracleDecimals: 6,
-    hfBerlinBlock: 0,
-    l2BlockGasLimit: 15000000,
+    ...GenesisGasParams,
+    ...GenesisBlockParams,
+    ...GenesisCliqueParams,
   };
 
   const contracts: NamedAddresses = {

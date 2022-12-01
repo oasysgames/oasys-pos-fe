@@ -1,5 +1,7 @@
+import { ethers } from "ethers";
+
 export interface GenesisParams {
-  chainId: number;
+  chainId: ethers.BigNumber;
   ovmWhitelistOwner: string;
   ovmGasPriceOracleOwner: string;
   ovmFeeWalletAddress: string;
@@ -9,6 +11,17 @@ export interface GenesisParams {
   gasPriceOracleOverhead: number;
   gasPriceOracleScalar: number;
   gasPriceOracleDecimals: number;
-  hfBerlinBlock: number;
   l2BlockGasLimit: number;
+  homesteadBlock: number;
+  eip150Block: number;
+  eip155Block: number;
+  eip158Block: number;
+  byzantiumBlock: number;
+  constantinopleBlock: number;
+  petersburgBlock: number;
+  istanbulBlock: number;
+  muirGlacierBlock: number;
+  berlinBlock: number;
+  period: number;
+  epoch: number;
 }

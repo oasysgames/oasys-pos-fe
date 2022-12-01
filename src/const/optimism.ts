@@ -12,6 +12,33 @@ export const L2ContractAddresses: { [name: string]: string } = {
   WETH9: "0x4200000000000000000000000000000000000006",
 } as const;
 
+export const GenesisGasParams = {
+  gasPriceOracleL2GasPrice: 1,
+  gasPriceOracleL1BaseFee: 1,
+  gasPriceOracleOverhead: 2750,
+  gasPriceOracleScalar: 1500000,
+  gasPriceOracleDecimals: 6,
+  l2BlockGasLimit: 15000000,
+};
+
+export const GenesisBlockParams = {
+  homesteadBlock: 0,
+  eip150Block: 0,
+  eip155Block: 0,
+  eip158Block: 0,
+  byzantiumBlock: 0,
+  constantinopleBlock: 0,
+  petersburgBlock: 0,
+  istanbulBlock: 0,
+  muirGlacierBlock: 0,
+  berlinBlock: 0,
+};
+
+export const GenesisCliqueParams = {
+  period: 0,
+  epoch: 30000,
+};
+
 export const L2ContractStorageLayouts: { [name: string]: any } = {
   OVM_DeployerWhitelist: {
     storage: [

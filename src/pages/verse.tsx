@@ -24,7 +24,7 @@ const Verse: NextPage = () => {
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
   const [downloadError, setDownloadError] = useState('');
-  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
+  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress, sequencerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
 
@@ -144,8 +144,8 @@ const Verse: NextPage = () => {
 
   const downloadAddresses = async () => {
     try {
-      if (!verseInfo?.addresses) throw new Error('You have to build verse');
-      download(verseInfo.addresses, 'addresses.json');
+      if (!verseInfo?.namedAddresses) throw new Error('You have to build verse');
+      download(verseInfo.namedAddresses, 'addresses.json');
     } catch (err) {
       handleError(err, setDownloadError);
     }
@@ -153,7 +153,8 @@ const Verse: NextPage = () => {
 
   const downloadGenesis = async () => {
     try {
-
+      if (!verseInfo?.genesis) throw new Error('You have to build verse');
+      download(verseInfo.genesis, 'genesis.json');
     } catch (err) {
       handleError(err, setDownloadError);
     }
@@ -222,6 +223,9 @@ const Verse: NextPage = () => {
         {buildSuccess && (
           <SuccessMsg className='text-center' text={buildSuccess} />
         )}
+        {verseInfoError instanceof Error && (
+          <ErrorMsg className='text-center' text={verseInfoError.message} />
+        )}
         {buildError && (
           <ErrorMsg className='text-center' text={ buildError } />
         )}
@@ -259,13 +263,13 @@ const Verse: NextPage = () => {
         <div className="flex items-center space-x-2">
           <Button
             handleClick={downloadAddresses}
-            disabled={ !verseInfo?.addresses }
+            disabled={ !verseInfo?.namedAddresses }
           >
             Download Address.json
           </Button>
           <Button
             handleClick={downloadGenesis}
-            disabled={false} // todo set
+            disabled={ !verseInfo?.genesis }
           >
             Download genesis.json
           </Button>
