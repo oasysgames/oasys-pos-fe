@@ -3,8 +3,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 import LOAS from '@/contracts/oasysHub/LOAS.json';
 import { lOASAddress } from '@/config';
-import { Button, ErrorMsg } from '@/components/atoms';
 import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
+import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
 import { isNotConnectedMsg } from '@/const';
@@ -95,17 +95,12 @@ const LOASPage: NextPage = () => {
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <div className='space-y-0.5 col-span-6 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address: { ownerAddress }</p>
-        <Button
-          handleClick={setOwner}
-        >
-          Connect
-        </Button>
-      </div>
+      <WalletConnect
+        className='space-y-0.5 col-span-6 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        setOwner={setOwner}
+      />
       <Claim
         className='col-span-8 col-start-2'
         ownerAddress={ownerAddress}

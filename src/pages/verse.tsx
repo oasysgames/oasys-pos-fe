@@ -8,6 +8,7 @@ import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
 import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { WalletConnect } from '@/components/organisms';
 
 const Verse: NextPage = () => {
   const { data, error: depositLoadError } = useL1BuildDeposit();
@@ -177,19 +178,12 @@ const Verse: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <div className='space-y-0.5 col-span-4 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address:  {ownerAddress}</p>
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={setOwner}
-          >
-            Connect
-          </Button>
-        </div>
-      </div>
+      <WalletConnect
+        className='space-y-0.5 col-span-4 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        setOwner={setOwner}
+      />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {depositSuccess && (
           <SuccessMsg className='text-center' text={depositSuccess} />
