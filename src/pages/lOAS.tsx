@@ -7,7 +7,7 @@ import { getProvider, getSigner, isAllowedChain, handleError } from '@/features'
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
-import { isNotConnectedMsg } from '@/const';
+import { isNotConnectedMsg, lOASTokenUnit } from '@/const';
 
 const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -17,7 +17,6 @@ const LOASPage: NextPage = () => {
   const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
-  const tokenUnit='lOAS'
 
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
   const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
@@ -68,14 +67,14 @@ const LOASPage: NextPage = () => {
     const signer = await getSigner();
     const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
     try {
-      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
+      if (!isClaimable) throw new Error(`You do not have claimable ${lOASTokenUnit}`);
 
       setIsClaiming(true);
       await lOASContract.claim(claimInfo.claimable);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
-        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        setSuccessMsg(`Success to convert ${oasAmount}${lOASTokenUnit} to ${oasAmount}OAS`);
         refreshLOASClaimInfo();
         setIsClaiming(false);
       })
@@ -113,7 +112,7 @@ const LOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit={tokenUnit}
+        tokenUnit={lOASTokenUnit}
       />
     </div>
   )

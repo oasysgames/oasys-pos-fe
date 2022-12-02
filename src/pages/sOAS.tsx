@@ -7,7 +7,7 @@ import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
 import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
-import { isNotConnectedMsg } from '@/const';
+import { isNotConnectedMsg, sOASTokenUnit } from '@/const';
 
 const SOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -17,7 +17,6 @@ const SOASPage: NextPage = () => {
   const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
-  const tokenUnit='sOAS'
 
   
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
@@ -69,7 +68,7 @@ const SOASPage: NextPage = () => {
     const signer = await getSigner();
     const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
     try {
-      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
+      if (!isClaimable) throw new Error(`You do not have claimable ${sOASTokenUnit}`);
 
       setIsClaiming(true);
       await sOASContract.claim(claimInfo.claimable);
@@ -77,7 +76,7 @@ const SOASPage: NextPage = () => {
       const filter = sOASContract.filters.Claim(ownerAddress, null);
       sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
-        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        setSuccessMsg(`Success to convert ${oasAmount}${sOASTokenUnit} to ${oasAmount}OAS`);
         refreshSOASClaimInfo();
         setIsClaiming(false);
       })
@@ -115,7 +114,7 @@ const SOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit={tokenUnit}
+        tokenUnit={sOASTokenUnit}
       />
     </div>
   )
