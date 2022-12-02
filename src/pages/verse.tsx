@@ -8,7 +8,7 @@ import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
 import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { WalletConnect } from '@/components/organisms';
+import { WalletConnect, Deposit } from '@/components/organisms';
 
 const Verse: NextPage = () => {
   const { data, error: depositLoadError } = useL1BuildDeposit();
@@ -184,38 +184,18 @@ const Verse: NextPage = () => {
         ownerAddress={ownerAddress}
         setOwner={setOwner}
       />
-      <div className='space-y-0.5 col-span-4 col-start-3'>
-        {depositSuccess && (
-          <SuccessMsg className='text-center' text={depositSuccess} />
-        )}
-        {depositLoadError instanceof Error && (
-          <ErrorMsg className='text-center' text={depositLoadError.message} />
-        )}
-        {depositError && (
-          <ErrorMsg className='text-center' text={ depositError } />
-        )}
-        <p>Deposit amount: {data?.amount ? `${ethers.utils.formatEther(data.amount)}$OAS`: ''}</p>
-        <Input
-          placeholder='set amount($OAS)'
-          value={amount}
-          handleClick={e => setAmount(e.target.value)}
-          className='w-full'
-        />
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={deposit}
-            disabled={!amount || idDepositLoading}
-          >
-            Deposit
-          </Button>
-          <Button
-            handleClick={withdraw}
-            disabled={!amount || idDepositLoading}
-          >
-            Withdraw
-          </Button>
-        </div>
-      </div>
+      <Deposit
+        className='space-y-0.5 col-span-4 col-start-3'
+        depositSuccess={depositSuccess}
+        depositError={depositError}
+        depositLoadError={depositLoadError}
+        deposited={data}
+        amount={amount}
+        setAmount={setAmount}
+        deposit={deposit}
+        withdraw={withdraw}
+        idDepositLoading={idDepositLoading}
+      />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {buildSuccess && (
           <SuccessMsg className='text-center' text={buildSuccess} />
