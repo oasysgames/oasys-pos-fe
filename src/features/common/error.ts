@@ -1,4 +1,4 @@
-import { ContractError } from "../types/error";
+import { ContractError } from "@/types/error";
 
 export function isContractError(err: any): err is ContractError {
   if (typeof err.code !== 'string') return false;
