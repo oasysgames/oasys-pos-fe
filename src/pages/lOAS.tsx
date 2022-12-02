@@ -7,7 +7,7 @@ import { getProvider, getSigner, isAllowedChain, handleError } from '@/features'
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
-import { isNotConnectedMsg, lOASTokenUnit } from '@/const';
+import { isNotConnectedMsg, lOASTokenUnit } from '@/consts';
 
 const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');

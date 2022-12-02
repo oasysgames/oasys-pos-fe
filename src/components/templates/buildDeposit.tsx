@@ -3,7 +3,7 @@ import { Deposit } from '../organisms';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { getSigner, handleError } from '@/features';
-import { OASTokenUnit, sOASTokenUnit } from '@/const';
+import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import { L1BuildDepositAddress, sOASAddress } from '@/config';

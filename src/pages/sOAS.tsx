@@ -7,7 +7,7 @@ import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
 import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
-import { isNotConnectedMsg, sOASTokenUnit } from '@/const';
+import { isNotConnectedMsg, sOASTokenUnit } from '@/consts';
 
 const SOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');

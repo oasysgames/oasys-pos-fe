@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
 import { getChainId, getNamedAddresses } from '@/features';
 import { GenesisParams } from '@/types/optimism/genesis';
-import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/const';
+import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/consts';
 import { makeGenesisJson } from '@/features/optimism';
 
 

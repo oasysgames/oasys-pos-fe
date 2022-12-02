@@ -1,7 +1,7 @@
 import { makeGenesisJson } from "@/features/optimism";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
 import { GenesisParams } from "@/types/optimism/genesis";
-import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/const/';
+import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/consts';
 import { ethers } from "ethers";
 
 test("makeGenesisJson()", async () => {

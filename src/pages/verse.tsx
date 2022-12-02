@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
 import { L1BuildAgentAddress } from '@/config';
 import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';

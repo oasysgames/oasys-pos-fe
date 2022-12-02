@@ -7,7 +7,7 @@ import { stakeManagerAddress, allowListAddress } from '@/config';
 import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { Form } from '@/components/organisms';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
 
 const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
