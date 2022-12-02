@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import StakeManager from '../contracts/StakeManager.json';
-import AllowList from '../contracts/AllowList.json';
-import { stakeManagerAddress, allowListAddress } from '../config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '../features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '../components/atoms';
-import { isNotConnectedMsg } from '../const';
+import StakeManager from '@/contracts/oasysHub/StakeManager.json';
+import AllowList from '@/contracts/oasysHub/AllowList.json';
+import { stakeManagerAddress, allowListAddress } from '@/config';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
+import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 
 const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -64,7 +64,7 @@ const Home: NextPage = () => {
       isAllowedChain(chainId);
       await isAllowedAddress(allowListContract, address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
-      if (result.operator !== '0x0000000000000000000000000000000000000000') {
+      if (result.operator !== ZERO_ADDRESS) {
         setOperatorAddress(result.operator);
       }
       setOwnerError('');
