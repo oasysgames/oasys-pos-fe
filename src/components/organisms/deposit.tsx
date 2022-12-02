@@ -1,40 +1,34 @@
 import clsx from 'clsx';
 import { ethers } from 'ethers';
 import { ChangeEvent, SetStateAction } from 'react';
-import { ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { Form } from '@/components/organisms';
-import { L1BuildDeposit } from '@/types/oasysHub/verseBuild';
 
 type Props = {
   className?: string;
-  depositSuccess: string;
-  depositError: string;
-  depositLoadError?: any;
-  deposited?: L1BuildDeposit;
+  depositedAmount?: ethers.BigNumber;
   amount: string;
   setAmount: (value: SetStateAction<string>) => void;
   deposit: () => Promise<void>;
   withdraw: () => Promise<void>;
   idDepositLoading: boolean;
+  tokenUnit: string;
 };
 
 export const Deposit = (props: Props) => {
   const {
     className,
-    depositSuccess,
-    depositError,
-    depositLoadError,
-    deposited,
+    depositedAmount,
     amount,
     setAmount,
     deposit,
     withdraw,
     idDepositLoading,
+    tokenUnit,
   } = props;
 
   const depositInputs = [
     {
-      placeholder: 'set amount($OAS)',
+      placeholder: `set amount(${tokenUnit})`,
       value: amount,
       handleClick: (e: ChangeEvent<HTMLInputElement>) => {setAmount(e.target.value)},
     },
@@ -57,16 +51,7 @@ export const Deposit = (props: Props) => {
     <div className={clsx(
       className,
     )}>
-      {depositSuccess && (
-        <SuccessMsg className='text-center' text={depositSuccess} />
-      )}
-      {depositLoadError instanceof Error && (
-        <ErrorMsg className='text-center' text={depositLoadError.message} />
-      )}
-      {depositError && (
-        <ErrorMsg className='text-center' text={ depositError } />
-      )}
-      <p>Deposit amount: {deposited?.amount ? `${ethers.utils.formatEther(deposited.amount)}$OAS`: ''}</p>
+      <p>Deposit amount{ `(${tokenUnit})`}: {depositedAmount ? `${ethers.utils.formatEther(depositedAmount.toString())}`: ''}</p>
       <Form
         inputs={depositInputs}
         buttons={depositButtons}

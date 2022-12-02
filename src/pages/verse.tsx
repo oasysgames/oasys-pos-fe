@@ -3,21 +3,16 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
-import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
-import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
+import { L1BuildAgentAddress } from '@/config';
 import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
-import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
+import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { WalletConnect, Deposit, Form } from '@/components/organisms';
+import { WalletConnect, Form } from '@/components/organisms';
+import { BuildDeposit } from '@/components/templates';
 
 const Verse: NextPage = () => {
-  const { data, error: depositLoadError } = useL1BuildDeposit();
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const [depositSuccess, setDepositSuccess] = useState('');
-  const [idDepositLoading, setIsDepositLoading] = useState(false);
-  const [depositError, setDepositError] = useState('');
-  const [amount, setAmount] = useState('');
   const [buildSuccess, setBuildSuccess] = useState('');
   const [isBuilding, setIsBuilding] = useState(false);
   const [buildError, setBuildError] = useState('');
@@ -69,53 +64,6 @@ const Verse: NextPage = () => {
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);
-    }
-  };
-
-  const deposit = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
-    try {
-      const value = ethers.utils.parseEther(amount);
-      const options = { value: value };
-      setIsDepositLoading(true);
-      await L1BuildDepositContract.deposit(ownerAddress, options);
-
-      const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter, (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
-        const oasAmount = ethers.utils.formatEther(amount.toString());
-        setDepositSuccess(`${oasAmount}OAS deposit is successful`);
-        setAmount('');
-        setIsDepositLoading(false);
-        refreshL1BuildDeposit();
-      });
-    } catch (err) {
-      setIsDepositLoading(false);
-      handleError(err, setDepositError);
-    }
-  };
-
-  const withdraw = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
-    try {
-      const value = ethers.utils.parseEther(amount);
-      setIsDepositLoading(true);
-      await L1BuildDepositContract.withdraw(ownerAddress, value);
-
-      const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter,  (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
-        const oasAmount = ethers.utils.formatEther(amount.toString());
-        setDepositSuccess(`${oasAmount}OAS withdraw is successful`);
-        setAmount('');
-        setIsDepositLoading(false);
-        refreshL1BuildDeposit();
-      });
-    } catch (err) {
-      setIsDepositLoading(false);
-      handleError(err, setDepositError);
     }
   };
 
@@ -210,17 +158,9 @@ const Verse: NextPage = () => {
         ownerAddress={ownerAddress}
         setOwner={setOwner}
       />
-      <Deposit
-        className='space-y-0.5 col-span-4 col-start-3'
-        depositSuccess={depositSuccess}
-        depositError={depositError}
-        depositLoadError={depositLoadError}
-        deposited={data}
-        amount={amount}
-        setAmount={setAmount}
-        deposit={deposit}
-        withdraw={withdraw}
-        idDepositLoading={idDepositLoading}
+      <BuildDeposit
+        className='space-y-4 col-span-4 col-start-3'
+        ownerAddress={ownerAddress}
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {buildSuccess && (

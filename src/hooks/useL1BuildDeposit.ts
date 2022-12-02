@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
 import { getProvider, getSigner } from '@/features';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
-import { L1BuildDepositAddress } from '@/config';
+import { L1BuildDepositAddress, sOASAddress } from '@/config';
 import { L1BuildDeposit as depositType } from '@/types/oasysHub/verseBuild';
 
 const SWR_KEY = 'L1BuildDeposit';
@@ -16,10 +16,14 @@ const getL1BuildDeposit = async () => {
   const signer = await getSigner();
   const ownerAddress = await signer.getAddress();
   const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-  const res = await L1BuildDepositContract.getDepositTotal(ownerAddress);
+  const depositTotal: ethers.BigNumber = await L1BuildDepositContract.getDepositTotal(ownerAddress);
+  const depositOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositAmount(ownerAddress, ownerAddress);
+  const depositSOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositERC20Amount(ownerAddress, ownerAddress, sOASAddress);
 
   const data: depositType = {
-    amount: res.toString(),
+    depositTotal,
+    depositOAS,
+    depositSOAS,
   };
   return data;
 };

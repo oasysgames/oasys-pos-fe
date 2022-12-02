@@ -1,5 +1,9 @@
+import { ethers } from "ethers";
+
 export interface L1BuildDeposit {
-  amount: string;
+  depositTotal: ethers.BigNumber;
+  depositOAS: ethers.BigNumber;
+  depositSOAS: ethers.BigNumber;
 }
 
 export type NamedAddresses = {
