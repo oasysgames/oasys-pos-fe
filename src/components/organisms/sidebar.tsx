@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
-import { LinkTab } from '../atoms';
+import { LinkTab } from '@/components/atoms';
 
 type Props = {
   className?: string;
@@ -18,6 +18,10 @@ const Links = [
   {
     text: 'Join validator',
     url: '/validator',
+  },
+  {
+    text: 'Build verse',
+    url: '/verse',
   }
 ];
 
