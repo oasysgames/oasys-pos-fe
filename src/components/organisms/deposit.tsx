@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import { ethers } from 'ethers';
-import { SetStateAction } from 'react';
-import { Button, ErrorMsg, SuccessMsg, Input } from '@/components/atoms';
+import { ChangeEvent, SetStateAction } from 'react';
+import { ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { Form } from '@/components/organisms';
 import { L1BuildDeposit } from '@/types/oasysHub/verseBuild';
 
 type Props = {
@@ -31,6 +32,27 @@ export const Deposit = (props: Props) => {
     idDepositLoading,
   } = props;
 
+  const depositInputs = [
+    {
+      placeholder: 'set amount($OAS)',
+      value: amount,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setAmount(e.target.value)},
+    },
+  ];
+
+  const depositButtons = [
+    {
+      handleClick: deposit,
+      disabled: !amount || idDepositLoading,
+      value: 'Deposit',
+    },
+    {
+      handleClick: withdraw,
+      disabled: !amount || idDepositLoading,
+      value: 'Withdraw',
+    },
+  ];
+
   return (
     <div className={clsx(
       className,
@@ -45,26 +67,10 @@ export const Deposit = (props: Props) => {
         <ErrorMsg className='text-center' text={ depositError } />
       )}
       <p>Deposit amount: {deposited?.amount ? `${ethers.utils.formatEther(deposited.amount)}$OAS`: ''}</p>
-      <Input
-        placeholder='set amount($OAS)'
-        value={amount}
-        handleClick={e => setAmount(e.target.value)}
-        className='w-full'
+      <Form
+        inputs={depositInputs}
+        buttons={depositButtons}
       />
-      <div className="flex items-center space-x-2">
-        <Button
-          handleClick={deposit}
-          disabled={!amount || idDepositLoading}
-        >
-          Deposit
-        </Button>
-        <Button
-          handleClick={withdraw}
-          disabled={!amount || idDepositLoading}
-        >
-          Withdraw
-        </Button>
-      </div>
     </div>
   );
 };

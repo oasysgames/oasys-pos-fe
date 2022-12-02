@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import StakeManager from '@/contracts/oasysHub/StakeManager.json';
 import AllowList from '@/contracts/oasysHub/AllowList.json';
 import { stakeManagerAddress, allowListAddress } from '@/config';
 import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { Form } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 
 const Home: NextPage = () => {
@@ -154,6 +155,27 @@ const Home: NextPage = () => {
     handleAccountsChanged();
   });
 
+  const operatorInputs = [
+    {
+      placeholder: 'set operator address',
+      value: newOperator,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setNewOperator(e.target.value)},
+    },
+  ];
+
+  const operatorButtons = [
+    {
+      handleClick: registerOperator,
+      disabled: !!operatorAddress || isOperatorUpdating,
+      value: 'Register',
+    },
+    {
+      handleClick: updateOperator,
+      disabled: !operatorAddress || isOperatorUpdating,
+      value: 'Update',
+    },
+  ];
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <div className='space-y-0.5 col-span-4 col-start-3'>
@@ -187,26 +209,10 @@ const Home: NextPage = () => {
           <ErrorMsg text={ operatorError } />
         )}
         <p>Operator address: { operatorAddress }</p>
-        <Input
-          placeholder='set operator address'
-          value={newOperator}
-          handleClick={e => setNewOperator(e.target.value)}
-          className='w-full'
+        <Form
+          inputs={operatorInputs}
+          buttons={operatorButtons}
         />
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={registerOperator}
-            disabled={!!operatorAddress || isOperatorUpdating}
-          >
-            Register
-          </Button>
-          <Button
-            handleClick={updateOperator}
-            disabled={!operatorAddress || isOperatorUpdating}
-          >
-            Update
-          </Button>
-        </div>
         <div>
           {
             operatorSuccessMsg && (

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
@@ -7,8 +7,8 @@ import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
 import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
-import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { WalletConnect, Deposit } from '@/components/organisms';
+import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { WalletConnect, Deposit, Form } from '@/components/organisms';
 
 const Verse: NextPage = () => {
   const { data, error: depositLoadError } = useL1BuildDeposit();
@@ -176,6 +176,32 @@ const Verse: NextPage = () => {
     refreshVerseInfo();
   }, [ownerAddress, refreshVerseInfo]);
 
+  const buildInputs = [
+    {
+      placeholder: 'set verse chain_id',
+      value: newChainId,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setNewChainId(e.target.value)},
+    },
+    {
+      placeholder: 'set sequencer address',
+      value: sequencerAddress,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setSequencerAddress(e.target.value)},
+    },
+    {
+      placeholder: 'set proposer address',
+      value: proposerAddress,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setProposerAddress(e.target.value)},
+    },
+  ];
+
+  const buildButtons = [
+    {
+      handleClick: build,
+      disabled: !sequencerAddress || !proposerAddress || isBuilding,
+      value: 'Build',
+    }
+  ];
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <WalletConnect
@@ -207,30 +233,10 @@ const Verse: NextPage = () => {
           <ErrorMsg className='text-center' text={ buildError } />
         )}
         <p>Build verse</p>
-        <Input
-          placeholder='set verse chain_id'
-          value={newChainId}
-          handleClick={e => setNewChainId(e.target.value)}
-          className='w-full'
+        <Form
+          inputs={buildInputs}
+          buttons={buildButtons}
         />
-        <Input
-          placeholder='set sequencer address'
-          value={sequencerAddress}
-          handleClick={e => setSequencerAddress(e.target.value)}
-          className='w-full'
-        />
-        <Input
-          placeholder='set proposer address'
-          value={proposerAddress}
-          handleClick={e => setProposerAddress(e.target.value)}
-          className='w-full'
-        />
-        <Button
-          handleClick={build}
-          disabled={!sequencerAddress || !proposerAddress || isBuilding}
-        >
-          Build
-        </Button>
       </div>
       { verseInfo && 
         <div className='space-y-4 col-span-4 col-start-3'>
