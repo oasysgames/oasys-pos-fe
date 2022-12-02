@@ -1,12 +1,10 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 import { getSigner } from "@/features/common/wallet";
-import { L1BuildAgentAddress } from '@/config';
-import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
+import { getL1BuildAgentContract } from '@/features/';
 
 export const getNamedAddresses = async (chainId: BigNumber) => {
-  const signer = await getSigner();
-  const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+  const L1BuildAgentContract = await getL1BuildAgentContract();
 
   const namedAddresses: { [name: string]: string } = {
     Lib_AddressManager: await L1BuildAgentContract.getAddressManager(chainId),
@@ -21,8 +19,7 @@ export const getNamedAddresses = async (chainId: BigNumber) => {
 };
 
 export const getBuilts = async () => {
-  const signer = await getSigner();
-  const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+  const L1BuildAgentContract = await getL1BuildAgentContract();
 
   let builders: string[] = [];
   let chainIds: BigNumber[] = [];

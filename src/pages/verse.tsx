@@ -2,9 +2,7 @@ import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
-import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
-import { L1BuildAgentAddress } from '@/config';
-import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { download, getL1BuildAgentContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { WalletConnect, Form } from '@/components/organisms';
@@ -68,8 +66,7 @@ const Verse: NextPage = () => {
   };
 
   const build = async () => {
-    const signer = await getSigner();
-    const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+    const L1BuildAgentContract = await getL1BuildAgentContract();
 
     try {
       setIsBuilding(true);

@@ -1,9 +1,7 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import LOAS from '@/contracts/oasysHub/LOAS.json';
-import { lOASAddress } from '@/config';
-import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
+import { getProvider, getSigner, isAllowedChain, handleError, getLOASContract } from '@/features';
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
@@ -64,8 +62,7 @@ const LOASPage: NextPage = () => {
   };
 
   const claim = useCallback(async () => {
-    const signer = await getSigner();
-    const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
+    const lOASContract = await getLOASContract();
     try {
       if (!isClaimable) throw new Error(`You do not have claimable ${lOASTokenUnit}`);
 

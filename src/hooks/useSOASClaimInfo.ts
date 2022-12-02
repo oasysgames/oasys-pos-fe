@@ -1,9 +1,7 @@
 import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
-import { getProvider, getSigner } from '@/features';
-import SOAS from '@/contracts/oasysHub/SOAS.json';
-import { sOASAddress } from '@/config';
+import { getProvider, getSigner, getSOASContract } from '@/features';
 import { ClaimInfo } from '@/types/oasysHub/sOAS';
 
 const SWR_KEY = 'SOASClaimInfo';
@@ -15,7 +13,7 @@ const getSOASClaimInfo = async () => {
 
   const signer = await getSigner();
   const ownerAddress = await signer.getAddress();
-  const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
+  const sOASContract = await getSOASContract();
   const res = await sOASContract.claimInfo(ownerAddress);
   const claimable: ethers.BigNumber = await sOASContract.getClaimableOAS(ownerAddress);
   const currentClaimable = claimable.sub(res.claimed);

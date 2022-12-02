@@ -2,11 +2,10 @@ import { ethers } from 'ethers';
 import { Deposit } from '../organisms';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { getSigner, handleError } from '@/features';
+import { getL1BuildDepositContract, handleError } from '@/features';
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
-import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
-import { L1BuildDepositAddress, sOASAddress } from '@/config';
+import { sOASAddress } from '@/config';
 import { ErrorMsg, SuccessMsg } from '../atoms';
 
 type Props = {
@@ -30,10 +29,8 @@ export const BuildDeposit = (props: Props) => {
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
 
   const depositOAS = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
     try {
+      const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(OASAmount);
       const options = { value: value };
       setIsDepositLoading(true);
@@ -54,10 +51,8 @@ export const BuildDeposit = (props: Props) => {
   };
 
   const withdrawOAS = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
     try {
+      const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(OASAmount);
       setIsDepositLoading(true);
       await L1BuildDepositContract.withdraw(ownerAddress, value);
@@ -77,10 +72,8 @@ export const BuildDeposit = (props: Props) => {
   };
 
   const depositSOAS = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
     try {
+      const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
       await L1BuildDepositContract.depositERC20(ownerAddress, sOASAddress, value);
@@ -100,10 +93,8 @@ export const BuildDeposit = (props: Props) => {
   };
 
   const withdrawSOAS = async () => {
-    const signer = await getSigner();
-    const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
-
     try {
+      const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
       await L1BuildDepositContract.withdrawERC20(ownerAddress, sOASAddress, value);

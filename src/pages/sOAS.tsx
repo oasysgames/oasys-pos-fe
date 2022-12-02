@@ -1,12 +1,10 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import SOAS from '@/contracts/oasysHub/SOAS.json';
-import { sOASAddress } from '@/config';
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
-import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
+import { getProvider, getSigner, isAllowedChain, handleError, getSOASContract } from '@/features';
 import { isNotConnectedMsg, sOASTokenUnit } from '@/consts';
 
 const SOASPage: NextPage = () => {
@@ -65,8 +63,7 @@ const SOASPage: NextPage = () => {
   };
 
   const claim = useCallback(async () => {
-    const signer = await getSigner();
-    const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
+    const sOASContract = await getSOASContract();
     try {
       if (!isClaimable) throw new Error(`You do not have claimable ${sOASTokenUnit}`);
 

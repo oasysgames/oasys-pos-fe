@@ -1,10 +1,7 @@
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import StakeManager from '@/contracts/oasysHub/StakeManager.json';
-import AllowList from '@/contracts/oasysHub/AllowList.json';
-import { stakeManagerAddress, allowListAddress } from '@/config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { Form } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
@@ -58,12 +55,11 @@ const Home: NextPage = () => {
       window.ethereum.removeListener('chainChanged', handleChainChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
-      const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-      const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+      const stakeManagerContract = await getStakeManagerContract();
 
       setOwnerAddress(address);
       isAllowedChain(chainId);
-      await isAllowedAddress(allowListContract, address);
+      await isAllowedAddress(address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== ZERO_ADDRESS) {
         setOperatorAddress(result.operator);
@@ -75,12 +71,9 @@ const Home: NextPage = () => {
   }
 
   const registerOperator = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.joinValidator(newOperator);
@@ -104,12 +97,9 @@ const Home: NextPage = () => {
   }
 
   const updateOperator = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
@@ -129,12 +119,9 @@ const Home: NextPage = () => {
   }
 
   const claimCommissions = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsClaiming(true);
       await stakeManagerContract.claimCommissions(ownerAddress, 0);
