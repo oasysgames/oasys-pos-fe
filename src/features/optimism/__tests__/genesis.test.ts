@@ -40,7 +40,7 @@ test("makeGenesisJson()", async () => {
   expect(actual).toEqual({
     commit: "20eff6890c0b64dc9e8a1e36f347c4d561a1e411",
     config: {
-      chainId: 20197,
+      chainId: "20197",
       homesteadBlock: 0,
       eip150Block: 0,
       eip155Block: 0,
