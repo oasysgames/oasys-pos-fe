@@ -2,10 +2,10 @@ import { ethers } from 'ethers';
 import { Deposit } from '../organisms';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { getL1BuildDepositContract, handleError } from '@/features';
+import { getL1BuildDepositContract, getSOASContract, handleError } from '@/features';
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
-import { sOASAddress } from '@/config';
+import { L1BuildDepositAddress, sOASAddress } from '@/config';
 import { ErrorMsg, SuccessMsg } from '../atoms';
 
 type Props = {
@@ -74,8 +74,10 @@ export const BuildDeposit = (props: Props) => {
   const depositSOAS = async () => {
     try {
       const L1BuildDepositContract = await getL1BuildDepositContract();
+      const sOASContract = await getSOASContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
+      await sOASContract.approve(L1BuildDepositAddress, value);
       await L1BuildDepositContract.depositERC20(ownerAddress, sOASAddress, value);
 
       const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
