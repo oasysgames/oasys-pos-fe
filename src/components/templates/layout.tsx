@@ -11,7 +11,7 @@ type ContainerProps = {
 
 const Container = (props: ContainerProps) => {
   return (
-    <main className='col-span-9 container mt-40 md:mt-80'>
+    <main className='col-span-9 container mt-20 md:mt-40'>
       {props.children}
     </main>
   );
