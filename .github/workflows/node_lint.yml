@@ -1,0 +1,25 @@
+name: node_lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  node_lint:
+    name: check code
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: Install dependencies
+        run: yarn
+      - name: Check lint
+        run: yarn lint
+      - name: Check format
+        run: yarn format
+      - name: Check type setting
+        run: yarn typecheck
