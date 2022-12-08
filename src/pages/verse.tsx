@@ -24,7 +24,7 @@ const Verse: NextPage = () => {
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
   const [downloadError, setDownloadError] = useState('');
-  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress, sequencerAddress);
+  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
 

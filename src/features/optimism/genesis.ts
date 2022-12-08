@@ -1,6 +1,6 @@
 /**
  * @oasysgames/oasys-optimism
- * https://github.com/oasysgames/oasys-optimism/blob/20eff6890c0b64dc9e8a1e36f347c4d561a1e411/packages/contracts/tasks/take-dump.ts
+ * https://github.com/oasysgames/oasys-optimism/blob/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts/tasks/take-dump.ts
  */
 
 import { L2ContractAddresses, L2ContractStorageLayouts, ZERO_ADDRESS } from "@/const";
@@ -9,8 +9,8 @@ import { computeStorageSlots } from "@/features/smock/storage";
 import { GenesisParams } from "@/types/optimism/genesis";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
 
-// https://github.com/oasysgames/oasys-optimism/tree/20eff6890c0b64dc9e8a1e36f347c4d561a1e411/packages/contracts
-const Commit = "20eff6890c0b64dc9e8a1e36f347c4d561a1e411";
+// https://github.com/oasysgames/oasys-optimism/tree/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts
+const Commit = "c724bfe6e326c7bcc321e20deb9c2129ec0d4112";
 
 const getContractArtifact = async (
   name: string

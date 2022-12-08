@@ -1,40 +1,41 @@
 import { useCallback } from 'react';
-import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
-import { getChainId, getNamedAddresses } from '@/features';
+import { getChainId, getNamedAddresses, getSigner } from '@/features';
 import { GenesisParams } from '@/types/optimism/genesis';
-import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS } from '@/const';
+import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS, MAINNET_CHAIN_ID, Mainnet_OvmBlockSignerAddress, Testnet_OvmBlockSignerAddress } from '@/const';
 import { makeGenesisJson } from '@/features/optimism';
 
 
 const SWR_KEY = 'VerseInfo';
 
-const getVerseInfo = async (builder: string, sequencer: string) => {
-  const chainId = await getChainId(builder);
-  if (!chainId) return undefined;
+const getVerseInfo = async (builder: string) => {
+  const signer = await getSigner();
+  const chainId = await signer.getChainId();
+  const verseChainId = await getChainId(builder);
+  if (!verseChainId) return undefined;
 
-  const namedAddresses = await getNamedAddresses(chainId);
+  const namedAddresses = await getNamedAddresses(verseChainId);
   const genesisParams: GenesisParams = {
-    chainId,
+    chainId: verseChainId,
     ovmWhitelistOwner: ZERO_ADDRESS,
     ovmGasPriceOracleOwner: builder,
     ovmFeeWalletAddress: builder,
-    ovmBlockSignerAddress: sequencer,
+    ovmBlockSignerAddress: chainId === MAINNET_CHAIN_ID ? Mainnet_OvmBlockSignerAddress: Testnet_OvmBlockSignerAddress,
     ...GenesisGasParams,
     ...GenesisBlockParams,
     ...GenesisCliqueParams,
   };
   const genesis = await makeGenesisJson(genesisParams, namedAddresses);
   return {
-    chainId,
+    chainId: verseChainId,
     namedAddresses,
     genesis,
   }
 };
 
-export const useVerseInfo = (builder: string, sequencer: string) => {
+export const useVerseInfo = (builder: string) => {
   const { data, error } = useSWR(SWR_KEY, async () => {
-    return await getVerseInfo(builder, sequencer);
+    return await getVerseInfo(builder);
   });
   return {
     verseInfo: data,
