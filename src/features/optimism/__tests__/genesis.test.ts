@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 
 test("makeGenesisJson()", async () => {
   const params: GenesisParams = {
-    chainId: ethers.BigNumber.from('999999'),
+    chainId: 999999,
     ovmWhitelistOwner: ZERO_ADDRESS,
     ovmGasPriceOracleOwner: "0xd78b03447bcc696e9a6bd0a2407c8457ff958446",
     ovmFeeWalletAddress: "0xd78b03447bcc696e9a6bd0a2407c8457ff958446",
@@ -40,7 +40,7 @@ test("makeGenesisJson()", async () => {
   expect(actual).toEqual({
     "commit": "c724bfe6e326c7bcc321e20deb9c2129ec0d4112",
     "config": {
-        "chainId": "999999",
+        "chainId": 999999,
         "homesteadBlock": 0,
         "eip150Block": 0,
         "eip155Block": 0,

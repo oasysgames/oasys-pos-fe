@@ -101,7 +101,7 @@ export const makeGenesisJson = async (
   const genesis = {
     commit: Commit,
     config: {
-      chainId: params.chainId.toString(),
+      chainId: params.chainId,
       homesteadBlock: params.homesteadBlock,
       eip150Block: params.eip150Block,
       eip155Block: params.eip155Block,
