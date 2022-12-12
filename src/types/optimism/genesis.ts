@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 export interface GenesisParams {
-  chainId: ethers.BigNumber;
+  chainId: number;
   ovmWhitelistOwner: string;
   ovmGasPriceOracleOwner: string;
   ovmFeeWalletAddress: string;
