@@ -1,20 +1,13 @@
 import clsx from 'clsx';
 import { ErrorMsg, Button } from '@/components/atoms';
-import { NamedAddresses } from '@/types/oasysHub/verseBuild';
-import { Genesis } from '@/types/optimism/genesis';
 import { useState } from 'react';
 import { download, handleError } from '@/features';
-
-type VerseInfo = {
-  chainId: number;
-  namedAddresses: NamedAddresses;
-  genesis: Genesis;
-}
+import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
 
 type Props = {
   className?: string;
   ownerAddress: string;
-  verseInfo: VerseInfo;
+  verseInfo: VerseInfoType;
 };
 
 
