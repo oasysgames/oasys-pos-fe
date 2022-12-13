@@ -5,9 +5,10 @@ import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import { L1BuildDepositAddress, L1BuildAgentAddress } from '@/config';
-import { download, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { VerseInfo } from '@/components/organisms';
 
 const Verse: NextPage = () => {
   const { data, error: depositLoadError } = useL1BuildDeposit();
@@ -23,7 +24,6 @@ const Verse: NextPage = () => {
   const [newChainId, setNewChainId] = useState('');
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
-  const [downloadError, setDownloadError] = useState('');
   const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
@@ -142,24 +142,6 @@ const Verse: NextPage = () => {
     }
   };
 
-  const downloadAddresses = async () => {
-    try {
-      if (!verseInfo?.namedAddresses) throw new Error('You have to build verse');
-      download(verseInfo.namedAddresses, 'addresses.json');
-    } catch (err) {
-      handleError(err, setDownloadError);
-    }
-  };
-
-  const downloadGenesis = async () => {
-    try {
-      if (!verseInfo?.genesis) throw new Error('You have to build verse');
-      download(verseInfo.genesis, 'genesis.json');
-    } catch (err) {
-      handleError(err, setDownloadError);
-    }
-  };
-
   useEffect(() => {
     handleAccountsChanged();
   });
@@ -256,32 +238,11 @@ const Verse: NextPage = () => {
         </Button>
       </div>
       { verseInfo && 
-        <div className='space-y-4 col-span-4 col-start-3'>
-          {downloadError && (
-            <ErrorMsg text={ downloadError } className='w-full' />
-          )}
-          <p>Download verse config</p>
-          <div>
-            <p>Chain_id : { verseInfo.chainId }</p>
-            <p>Builder: { ownerAddress }</p>
-            <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
-            <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              handleClick={downloadAddresses}
-              disabled={ !verseInfo?.namedAddresses }
-            >
-              Download Address.json
-            </Button>
-            <Button
-              handleClick={downloadGenesis}
-              disabled={ !verseInfo?.genesis }
-            >
-              Download genesis.json
-            </Button>
-          </div>
-        </div>
+        <VerseInfo 
+          className='space-y-4 col-span-4 col-start-3'
+          ownerAddress={ownerAddress}
+          verseInfo={verseInfo}
+        />
       }
     </div>
   );
