@@ -131,7 +131,7 @@ const Verse: NextPage = () => {
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setBuildSuccess(`verse build is successful`);
+        setBuildSuccess(`Verse build is successful. Please memo build_transaction (${tx.hash}) to check VerseInfo at check-verse-page by non_verse_builder`);
         setIsBuilding(false);
         refreshL1BuildDeposit();
         refreshVerseInfo();
@@ -171,13 +171,13 @@ const Verse: NextPage = () => {
       </div>
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {depositSuccess && (
-          <SuccessMsg className='text-center' text={depositSuccess} />
+          <SuccessMsg className='w-full' text={depositSuccess} />
         )}
         {depositLoadError instanceof Error && (
-          <ErrorMsg className='text-center' text={depositLoadError.message} />
+          <ErrorMsg className='w-full' text={depositLoadError.message} />
         )}
         {depositError && (
-          <ErrorMsg className='text-center' text={ depositError } />
+          <ErrorMsg className='w-full' text={ depositError } />
         )}
         <p>Deposit amount: {data?.amount ? `${ethers.utils.formatEther(data.amount)}$OAS`: ''}</p>
         <Input
@@ -203,13 +203,13 @@ const Verse: NextPage = () => {
       </div>
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {buildSuccess && (
-          <SuccessMsg className='text-center' text={buildSuccess} />
+          <SuccessMsg className='w-full' text={buildSuccess} />
         )}
         {verseInfoError instanceof Error && (
-          <ErrorMsg className='text-center' text={verseInfoError.message} />
+          <ErrorMsg className='w-full' text={verseInfoError.message} />
         )}
         {buildError && (
-          <ErrorMsg className='text-center' text={ buildError } />
+          <ErrorMsg className='w-full' text={ buildError } />
         )}
         <p>Build verse</p>
         <Input
