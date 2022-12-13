@@ -18,7 +18,7 @@ const Verse: NextPage = () => {
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
   const [downloadError, setDownloadError] = useState('');
-  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress, sequencerAddress);
+  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
 
@@ -70,9 +70,9 @@ const Verse: NextPage = () => {
 
     try {
       setIsBuilding(true);
-      const verseChainId = ethers.BigNumber.from(newChainId);
+      const verseChainId = ethers.BigNumber.from(newChainId).toNumber();
       const addressManager = await L1BuildAgentContract.getAddressManager(verseChainId);
-      if (addressManager !== ZERO_ADDRESS) throw new Error(`Chain_id ${verseChainId.toString()} is already used`);
+      if (addressManager !== ZERO_ADDRESS) throw new Error(`Chain_id ${verseChainId} is already used`);
 
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
@@ -182,7 +182,7 @@ const Verse: NextPage = () => {
           )}
           <p>Download verse config</p>
           <div>
-            <p>Chain_id : { verseInfo.chainId.toString() }</p>
+            <p>Chain_id : { verseInfo.chainId }</p>
             <p>Builder: { ownerAddress }</p>
             <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
             <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>

@@ -3,7 +3,7 @@ import { getSigner } from "@/features/common/wallet";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
 import { getL1BuildAgentContract } from '@/features/';
 
-export const getNamedAddresses = async (chainId: BigNumber) => {
+export const getNamedAddresses = async (chainId: number) => {
   const L1BuildAgentContract = await getL1BuildAgentContract();
 
   const namedAddresses: { [name: string]: string } = {
@@ -54,5 +54,5 @@ export const getChainId = async (
   )[0];
   if (!chainId) return undefined;
 
-  return chainId;
+  return chainId.toNumber();
 };
