@@ -6,7 +6,7 @@
 import { L2ContractAddresses, L2ContractStorageLayouts, ZERO_ADDRESS } from "@/consts";
 import { remove0x } from "@/features/smock/hexUtils";
 import { computeStorageSlots } from "@/features/smock/storage";
-import { GenesisParams } from "@/types/optimism/genesis";
+import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
 
 // https://github.com/oasysgames/oasys-optimism/tree/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts
@@ -22,7 +22,7 @@ const getContractArtifact = async (
 export const makeGenesisJson = async (
   params: GenesisParams,
   contracts: NamedAddresses
-) => {
+): Promise<Genesis> => {
   const variables: { [name: string]: any } = {
     OVM_DeployerWhitelist: {
       owner: params.ovmWhitelistOwner,

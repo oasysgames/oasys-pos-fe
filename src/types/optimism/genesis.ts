@@ -25,3 +25,28 @@ export interface GenesisParams {
   period: number;
   epoch: number;
 }
+
+export interface Genesis {
+    commit: string;
+    config: {
+        chainId: number;
+        homesteadBlock: number;
+        eip150Block: number;
+        eip155Block: number;
+        eip158Block: number;
+        byzantiumBlock: number;
+        constantinopleBlock: number;
+        petersburgBlock: number;
+        istanbulBlock: number;
+        muirGlacierBlock: number;
+        berlinBlock: number;
+        clique: {
+          period: number,
+          epoch: number,
+        };
+    };
+    difficulty: string;
+    gasLimit: string;
+    extradata: string;
+    alloc: any;
+}

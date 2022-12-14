@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
-import { getSigner } from "@/features/common/wallet";
+import { getProvider, getSigner } from "@/features/common/wallet";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
-import { getL1BuildAgentContract } from '@/features/';
+import { getL1BuildAgentContract, getL1BuildDepositContract } from '@/features/';
 
 export const getNamedAddresses = async (chainId: number) => {
   const L1BuildAgentContract = await getL1BuildAgentContract();
@@ -16,6 +16,25 @@ export const getNamedAddresses = async (chainId: number) => {
   });
 
   return namedAddresses as NamedAddresses;
+};
+
+export const getBuilderFromTx = async (
+  txhash: string
+): Promise<string> => {
+  const provider = await getProvider();
+   const L1BuildDepositContract = await getL1BuildDepositContract();
+
+  // Get a receipt and event for the birth build transaction from the Hub-Layer.
+  const receipt = await provider.getTransactionReceipt(txhash);
+  if (!receipt) throw Error("Transaction not found");
+
+  const events = (await L1BuildDepositContract.queryFilter("Build", receipt.blockHash)).filter(
+    (x) => x.transactionHash.toLowerCase() === txhash.toLowerCase()
+  );
+  if (events.length === 0) throw new Error("Build event is not found");
+  if (!events[0].args?.builder) throw new Error("Builder is  not found");
+
+  return events[0].args.builder;
 };
 
 export const getBuilts = async () => {
@@ -46,7 +65,6 @@ export const getBuilts = async () => {
 export const getChainId = async (
   builder: string
 ) => {
-  const signer = await getSigner();
   const { builders, chainIds } = await getBuilts();
 
   const chainId = chainIds.filter(

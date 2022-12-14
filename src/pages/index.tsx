@@ -2,10 +2,10 @@ import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
-import { download, getL1BuildAgentContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { getL1BuildAgentContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
-import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { WalletConnect, Form } from '@/components/organisms';
+import { ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { WalletConnect, Form, VerseInfo } from '@/components/organisms';
 import { BuildDeposit } from '@/components/templates';
 
 const Verse: NextPage = () => {
@@ -17,7 +17,6 @@ const Verse: NextPage = () => {
   const [newChainId, setNewChainId] = useState('');
   const [sequencerAddress, setSequencerAddress] = useState('');
   const [proposerAddress, setProposerAddress] = useState('');
-  const [downloadError, setDownloadError] = useState('');
   const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
@@ -77,7 +76,7 @@ const Verse: NextPage = () => {
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(verseChainId, sequencerAddress, proposerAddress);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setBuildSuccess(`verse build is successful`);
+        setBuildSuccess(`Verse build is successful. Please memo build_transaction (${tx.hash}) to check VerseInfo at check-verse-page by non_verse_builder`);
         setNewChainId('');
         setSequencerAddress('');
         setProposerAddress('');
@@ -88,24 +87,6 @@ const Verse: NextPage = () => {
     } catch (err) {
       setIsBuilding(false);
       handleError(err, setBuildError);
-    }
-  };
-
-  const downloadAddresses = async () => {
-    try {
-      if (!verseInfo?.namedAddresses) throw new Error('You have to build verse');
-      download(verseInfo.namedAddresses, 'addresses.json');
-    } catch (err) {
-      handleError(err, setDownloadError);
-    }
-  };
-
-  const downloadGenesis = async () => {
-    try {
-      if (!verseInfo?.genesis) throw new Error('You have to build verse');
-      download(verseInfo.genesis, 'genesis.json');
-    } catch (err) {
-      handleError(err, setDownloadError);
     }
   };
 
@@ -161,13 +142,13 @@ const Verse: NextPage = () => {
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {buildSuccess && (
-          <SuccessMsg className='text-center' text={buildSuccess} />
+          <SuccessMsg className='w-full' text={buildSuccess} />
         )}
         {verseInfoError instanceof Error && (
-          <ErrorMsg className='text-center' text={verseInfoError.message} />
+          <ErrorMsg className='w-full' text={verseInfoError.message} />
         )}
         {buildError && (
-          <ErrorMsg className='text-center' text={ buildError } />
+          <ErrorMsg className='w-full' text={ buildError } />
         )}
         <p>Build verse</p>
         <Form
@@ -176,32 +157,11 @@ const Verse: NextPage = () => {
         />
       </div>
       { verseInfo && 
-        <div className='space-y-4 col-span-4 col-start-3'>
-          {downloadError && (
-            <ErrorMsg text={ downloadError } className='w-full' />
-          )}
-          <p>Download verse config</p>
-          <div>
-            <p>Chain_id : { verseInfo.chainId }</p>
-            <p>Builder: { ownerAddress }</p>
-            <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
-            <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              handleClick={downloadAddresses}
-              disabled={ !verseInfo?.namedAddresses }
-            >
-              Download Address.json
-            </Button>
-            <Button
-              handleClick={downloadGenesis}
-              disabled={ !verseInfo?.genesis }
-            >
-              Download genesis.json
-            </Button>
-          </div>
-        </div>
+        <VerseInfo 
+          className='space-y-4 col-span-4 col-start-3'
+          ownerAddress={ownerAddress}
+          verseInfo={verseInfo}
+        />
       }
     </div>
   );

@@ -22,6 +22,10 @@ const Links = [
   {
     text: 'Build verse',
     url: '/',
+  },
+  {
+    text: 'Check verse info',
+    url: '/check-verse',
   }
 ];
 
