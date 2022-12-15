@@ -1,13 +1,10 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 import { getProvider, getSigner } from "@/features/common/wallet";
-import { L1BuildAgentAddress, L1BuildDepositAddress } from '@/config';
-import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
-import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
+import { getL1BuildAgentContract, getL1BuildDepositContract } from '@/features/';
 
 export const getNamedAddresses = async (chainId: number) => {
-  const signer = await getSigner();
-  const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+  const L1BuildAgentContract = await getL1BuildAgentContract();
 
   const namedAddresses: { [name: string]: string } = {
     Lib_AddressManager: await L1BuildAgentContract.getAddressManager(chainId),
@@ -25,7 +22,7 @@ export const getBuilderFromTx = async (
   txhash: string
 ): Promise<string> => {
   const provider = await getProvider();
-   const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, provider);
+   const L1BuildDepositContract = await getL1BuildDepositContract();
 
   // Get a receipt and event for the birth build transaction from the Hub-Layer.
   const receipt = await provider.getTransactionReceipt(txhash);
@@ -41,8 +38,7 @@ export const getBuilderFromTx = async (
 };
 
 export const getBuilts = async () => {
-  const signer = await getSigner();
-  const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+  const L1BuildAgentContract = await getL1BuildAgentContract();
 
   let builders: string[] = [];
   let chainIds: BigNumber[] = [];

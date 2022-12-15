@@ -1,6 +1,6 @@
 import { getChainId, getNamedAddresses, getSigner } from '@/features';
 import { GenesisParams } from '@/types/optimism/genesis';
-import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS, MAINNET_CHAIN_ID, Mainnet_OvmBlockSignerAddress, Testnet_OvmBlockSignerAddress } from '@/const';
+import { GenesisGasParams, GenesisBlockParams, GenesisCliqueParams, ZERO_ADDRESS, MAINNET_CHAIN_ID, Mainnet_OvmBlockSignerAddress, Testnet_OvmBlockSignerAddress } from '@/consts';
 import { makeGenesisJson } from '@/features/optimism';
 
 export const getVerseInfo = async (builder: string) => {

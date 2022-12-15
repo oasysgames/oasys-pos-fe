@@ -3,7 +3,7 @@
  * https://github.com/oasysgames/oasys-optimism/blob/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts/tasks/take-dump.ts
  */
 
-import { L2ContractAddresses, L2ContractStorageLayouts, ZERO_ADDRESS } from "@/const";
+import { L2ContractAddresses, L2ContractStorageLayouts, ZERO_ADDRESS } from "@/consts";
 import { remove0x } from "@/features/smock/hexUtils";
 import { computeStorageSlots } from "@/features/smock/storage";
 import { Genesis, GenesisParams } from "@/types/optimism/genesis";

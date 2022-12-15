@@ -1,12 +1,10 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import StakeManager from '@/contracts/oasysHub/StakeManager.json';
-import AllowList from '@/contracts/oasysHub/AllowList.json';
-import { stakeManagerAddress, allowListAddress } from '@/config';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError } from '@/features';
-import { Button, Input, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '@/const';
+import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
+import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { Form } from '@/components/organisms';
+import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
 
 const Home: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -57,12 +55,11 @@ const Home: NextPage = () => {
       window.ethereum.removeListener('chainChanged', handleChainChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
-      const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-      const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+      const stakeManagerContract = await getStakeManagerContract();
 
       setOwnerAddress(address);
       isAllowedChain(chainId);
-      await isAllowedAddress(allowListContract, address);
+      await isAllowedAddress(address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== ZERO_ADDRESS) {
         setOperatorAddress(result.operator);
@@ -74,12 +71,9 @@ const Home: NextPage = () => {
   }
 
   const registerOperator = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.joinValidator(newOperator);
@@ -103,12 +97,9 @@ const Home: NextPage = () => {
   }
 
   const updateOperator = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
@@ -128,12 +119,9 @@ const Home: NextPage = () => {
   }
 
   const claimCommissions = async () => {
-    const signer = await getSigner();
-    const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
-    const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
-
     try {
-      await isAllowedAddress(allowListContract, ownerAddress);
+      const stakeManagerContract = await getStakeManagerContract();
+      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsClaiming(true);
       await stakeManagerContract.claimCommissions(ownerAddress, 0);
@@ -153,6 +141,27 @@ const Home: NextPage = () => {
   useEffect(() => {
     handleAccountsChanged();
   });
+
+  const operatorInputs = [
+    {
+      placeholder: 'set operator address',
+      value: newOperator,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setNewOperator(e.target.value)},
+    },
+  ];
+
+  const operatorButtons = [
+    {
+      handleClick: registerOperator,
+      disabled: !!operatorAddress || isOperatorUpdating,
+      value: 'Register',
+    },
+    {
+      handleClick: updateOperator,
+      disabled: !operatorAddress || isOperatorUpdating,
+      value: 'Update',
+    },
+  ];
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
@@ -187,26 +196,10 @@ const Home: NextPage = () => {
           <ErrorMsg text={ operatorError } />
         )}
         <p>Operator address: { operatorAddress }</p>
-        <Input
-          placeholder='set operator address'
-          value={newOperator}
-          handleClick={e => setNewOperator(e.target.value)}
-          className='w-full'
+        <Form
+          inputs={operatorInputs}
+          buttons={operatorButtons}
         />
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={registerOperator}
-            disabled={!!operatorAddress || isOperatorUpdating}
-          >
-            Register
-          </Button>
-          <Button
-            handleClick={updateOperator}
-            disabled={!operatorAddress || isOperatorUpdating}
-          >
-            Update
-          </Button>
-        </div>
         <div>
           {
             operatorSuccessMsg && (

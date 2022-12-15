@@ -1,13 +1,11 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import LOAS from '@/contracts/oasysHub/LOAS.json';
-import { lOASAddress } from '@/config';
-import { Button, ErrorMsg } from '@/components/atoms';
-import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
+import { getProvider, getSigner, isAllowedChain, handleError, getLOASContract } from '@/features';
+import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
-import { isNotConnectedMsg } from '@/const';
+import { isNotConnectedMsg, lOASTokenUnit } from '@/consts';
 
 const LOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -17,7 +15,6 @@ const LOASPage: NextPage = () => {
   const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
-  const tokenUnit='lOAS'
 
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
   const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
@@ -65,17 +62,16 @@ const LOASPage: NextPage = () => {
   };
 
   const claim = useCallback(async () => {
-    const signer = await getSigner();
-    const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
+    const lOASContract = await getLOASContract();
     try {
-      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
+      if (!isClaimable) throw new Error(`You do not have claimable ${lOASTokenUnit}`);
 
       setIsClaiming(true);
       await lOASContract.claim(claimInfo.claimable);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
-        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        setSuccessMsg(`Success to convert ${oasAmount}${lOASTokenUnit} to ${oasAmount}OAS`);
         refreshLOASClaimInfo();
         setIsClaiming(false);
       })
@@ -95,17 +91,12 @@ const LOASPage: NextPage = () => {
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <div className='space-y-0.5 col-span-6 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address: { ownerAddress }</p>
-        <Button
-          handleClick={setOwner}
-        >
-          Connect
-        </Button>
-      </div>
+      <WalletConnect
+        className='space-y-0.5 col-span-6 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        setOwner={setOwner}
+      />
       <Claim
         className='col-span-8 col-start-2'
         ownerAddress={ownerAddress}
@@ -118,7 +109,7 @@ const LOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit={tokenUnit}
+        tokenUnit={lOASTokenUnit}
       />
     </div>
   )

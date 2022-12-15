@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
-import { isNotConnectedMsg } from '@/const';
+import { isNotConnectedMsg } from '@/consts';
 import { getBuilderFromTx, getProvider, getSigner, handleError, isAllowedChain, isValidTxHash } from '@/features';
 import { Button, Input, ErrorMsg } from '@/components/atoms';
 import { VerseInfo } from '@/components/organisms';

@@ -21,7 +21,7 @@ const Links = [
   },
   {
     text: 'Build verse',
-    url: '/verse',
+    url: '/',
   },
   {
     text: 'Check verse info',

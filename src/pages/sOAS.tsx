@@ -1,13 +1,11 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import SOAS from '@/contracts/oasysHub/SOAS.json';
-import { sOASAddress } from '@/config';
-import { Button, ErrorMsg } from '@/components/atoms';
+import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
-import { getProvider, getSigner, isAllowedChain, handleError } from '@/features';
-import { isNotConnectedMsg } from '@/const';
+import { getProvider, getSigner, isAllowedChain, handleError, getSOASContract } from '@/features';
+import { isNotConnectedMsg, sOASTokenUnit } from '@/consts';
 
 const SOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -17,7 +15,6 @@ const SOASPage: NextPage = () => {
   const [isClaiming, setIsClaiming] = useState(false);
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
-  const tokenUnit='sOAS'
 
   
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
@@ -66,10 +63,9 @@ const SOASPage: NextPage = () => {
   };
 
   const claim = useCallback(async () => {
-    const signer = await getSigner();
-    const sOASContract = new ethers.Contract(sOASAddress, SOAS.abi, signer);
+    const sOASContract = await getSOASContract();
     try {
-      if (!isClaimable) throw new Error(`You do not have claimable ${tokenUnit}`);
+      if (!isClaimable) throw new Error(`You do not have claimable ${sOASTokenUnit}`);
 
       setIsClaiming(true);
       await sOASContract.claim(claimInfo.claimable);
@@ -77,7 +73,7 @@ const SOASPage: NextPage = () => {
       const filter = sOASContract.filters.Claim(ownerAddress, null);
       sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
-        setSuccessMsg(`Success to convert ${oasAmount}${tokenUnit} to ${oasAmount}OAS`);
+        setSuccessMsg(`Success to convert ${oasAmount}${sOASTokenUnit} to ${oasAmount}OAS`);
         refreshSOASClaimInfo();
         setIsClaiming(false);
       })
@@ -97,17 +93,12 @@ const SOASPage: NextPage = () => {
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <div className='space-y-0.5 col-span-6 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address: { ownerAddress }</p>
-        <Button
-          handleClick={setOwner}
-        >
-          Connect
-        </Button>
-      </div>
+      <WalletConnect
+        className='space-y-0.5 col-span-6 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        setOwner={setOwner}
+      />
       <Claim
         className='col-span-8 col-start-2'
         ownerAddress={ownerAddress}
@@ -120,7 +111,7 @@ const SOASPage: NextPage = () => {
         successMsg={successMsg}
         isMinted={isMinted}
         isClaimable={isClaimable}
-        tokenUnit={tokenUnit}
+        tokenUnit={sOASTokenUnit}
       />
     </div>
   )
