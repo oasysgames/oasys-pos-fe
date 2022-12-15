@@ -77,7 +77,8 @@ export const BuildDeposit = (props: Props) => {
       const sOASContract = await getSOASContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
-      await sOASContract.approve(L1BuildDepositAddress, value);
+      const tx = await sOASContract.approve(L1BuildDepositAddress, value);
+      await tx.wait();
       await L1BuildDepositContract.depositERC20(ownerAddress, sOASAddress, value);
 
       const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
