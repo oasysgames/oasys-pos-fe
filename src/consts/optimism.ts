@@ -13,7 +13,7 @@ export const L2ContractAddresses: { [name: string]: string } = {
 } as const;
 
 export const GenesisGasParams = {
-  gasPriceOracleL2GasPrice: 1,
+  gasPriceOracleL2GasPrice: 0,
   gasPriceOracleL1BaseFee: 1,
   gasPriceOracleOverhead: 2750,
   gasPriceOracleScalar: 1500000,
