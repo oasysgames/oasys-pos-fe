@@ -23,7 +23,7 @@ export const WalletConnect = (props: Props) => {
       {ownerError && (
         <ErrorMsg text={ ownerError } className='w-full' />
       )}
-      <p>Owner Address:  {ownerAddress}</p>
+      <p>Address:  {ownerAddress}</p>
       <div className="flex items-center space-x-2">
         <Button
           handleClick={setOwner}
