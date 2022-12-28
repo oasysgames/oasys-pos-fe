@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import { getBuilderFromTx, getProvider, getSigner, handleError, isAllowedChain, isValidTxHash } from '@/features';
 import { Button, Input, ErrorMsg } from '@/components/atoms';
-import { VerseInfo } from '@/components/organisms';
+import { WalletConnect, VerseInfo } from '@/components/organisms';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
 import { getVerseInfo } from '@/features/optimism/verse';
 
@@ -72,19 +72,12 @@ const CheckVerse: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <div className='space-y-0.5 col-span-4 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address:  {ownerAddress}</p>
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={setOwner}
-          >
-            Connect
-          </Button>
-        </div>
-      </div>
+      <WalletConnect
+        className='space-y-0.5 col-span-6 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        setOwner={setOwner}
+      />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {txHashError && (
           <ErrorMsg text={ txHashError } className='w-full' />
