@@ -51,6 +51,9 @@ export const VerseInfo = (props: Props) => {
           <p>Builder: { ownerAddress }</p>
           <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
           <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
+          <p>L1CrossDomainMessenger: { verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger }</p>
+          <p>L1StandardBridge: { verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge }</p>
+          <p>L1ERC721Bridge: { verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge }</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
