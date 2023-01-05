@@ -6,7 +6,8 @@ import { getL1BuildDepositContract, getSOASContract, handleError } from '@/featu
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
 import { L1BuildDepositAddress, sOASAddress } from '@/config';
-import { ErrorMsg, SuccessMsg, Table } from '../atoms';
+import { ErrorMsg, SuccessMsg, Table, Button } from '../atoms';
+import { Modal } from './modal';
 
 type Props = {
   className?: string;
@@ -25,6 +26,7 @@ export const BuildDeposit = (props: Props) => {
   const [depositError, setDepositError] = useState('');
   const [OASAmount, setOASAmount] = useState('');
   const [SOASAmount, setSOASAmount] = useState('');
+  const [depositModalOpen, setDepositModalOpen] = useState(false);
   
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
 
@@ -136,44 +138,66 @@ export const BuildDeposit = (props: Props) => {
     ],
   ];
 
+  const DepositModal = () => {
+    return (
+      <Modal
+          setModalState={setDepositModalOpen}
+          isLoading={idDepositLoading}
+        >
+          <div className='space-y-4'>
+            {depositSuccess && (
+            <SuccessMsg className='text-center' text={depositSuccess} />
+            )}
+            {depositLoadError instanceof Error && (
+              <ErrorMsg className='text-center' text={depositLoadError.message} />
+            )}
+            {depositError && (
+              <ErrorMsg className='text-center' text={ depositError } />
+            )}
+            <Deposit
+              className='space-y-0.5'
+              depositedAmount={depositData?.depositOAS}
+              amount={OASAmount}
+              setAmount={setOASAmount}
+              deposit={depositOAS}
+              withdraw={withdrawOAS}
+              idDepositLoading={idDepositLoading}
+              tokenUnit={OASTokenUnit}
+            />
+            <Deposit
+              className='space-y-0.5'
+              depositedAmount={depositData?.depositSOAS}
+              amount={SOASAmount}
+              setAmount={setSOASAmount}
+              deposit={depositSOAS}
+              withdraw={withdrawSOAS}
+              idDepositLoading={idDepositLoading}
+              tokenUnit={sOASTokenUnit}
+            />
+          </div>
+        </Modal>
+    )
+  }
+
   return (
     <div className={clsx(
       className,
     )}>
-      {depositSuccess && (
-        <SuccessMsg className='text-center' text={depositSuccess} />
-      )}
-      {depositLoadError instanceof Error && (
-        <ErrorMsg className='text-center' text={depositLoadError.message} />
-      )}
-      {depositError && (
-        <ErrorMsg className='text-center' text={ depositError } />
-      )}
+      {depositModalOpen && <DepositModal />}
       <p>Deposit Token</p>
       <Table
         heads={heads}
         records={records}
       />
-      <Deposit
-        className='space-y-0.5'
-        depositedAmount={depositData?.depositOAS}
-        amount={OASAmount}
-        setAmount={setOASAmount}
-        deposit={depositOAS}
-        withdraw={withdrawOAS}
-        idDepositLoading={idDepositLoading}
-        tokenUnit={OASTokenUnit}
-      />
-      <Deposit
-        className='space-y-0.5'
-        depositedAmount={depositData?.depositSOAS}
-        amount={SOASAmount}
-        setAmount={setSOASAmount}
-        deposit={depositSOAS}
-        withdraw={withdrawSOAS}
-        idDepositLoading={idDepositLoading}
-        tokenUnit={sOASTokenUnit}
-      />
+      <Button
+        handleClick={() => {
+          setDepositSuccess('')
+          setDepositError('')
+          setDepositModalOpen(true)
+        }}
+      >
+        Change Deposit Amount
+      </Button>
     </div>
   )
 };
