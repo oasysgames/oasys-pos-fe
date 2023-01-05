@@ -38,6 +38,37 @@ export const VerseInfo = (props: Props) => {
     }
   };
 
+  const configs = [
+    {
+      key: 'Chain_id',
+      value: verseInfo.chainId.toString(),
+    },
+    {
+      key: 'Builder',
+      value: ownerAddress,
+    },
+    {
+      key: 'Sequencer',
+      value: verseInfo.namedAddresses.OVM_Sequencer,
+    },
+    {
+      key: 'Proposer',
+      value: verseInfo.namedAddresses.OVM_Proposer,
+    },
+    {
+      key: 'L1CrossDomainMessenger',
+      value: verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger,
+    },
+    {
+      key: 'L1StandardBridge',
+      value: verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge,
+    },
+    {
+      key: 'L1ERC721Bridge',
+      value: verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge ,
+    },
+  ];
+
   return (
     <div className={clsx(
       className,
@@ -46,15 +77,24 @@ export const VerseInfo = (props: Props) => {
           <ErrorMsg text={ downloadError } className='w-full' />
         )}
         <p>Download verse config</p>
-        <div>
-          <p>Chain_id : { verseInfo.chainId }</p>
-          <p>Builder: { ownerAddress }</p>
-          <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
-          <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
-          <p>L1CrossDomainMessenger: { verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger }</p>
-          <p>L1StandardBridge: { verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge }</p>
-          <p>L1ERC721Bridge: { verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge }</p>
-        </div>
+        <table className="table-auto border-collapse border border-slate-500">
+          <thead>
+            <tr>
+              <th className='border border-slate-600'>Config</th>
+              <th className='border border-slate-600'>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            { configs.map((config) => {
+              return (
+                <tr key={config.key}>
+                  <td className='border border-slate-700'>{config.key}</td>
+                  <td className='border border-slate-700'>{config.value}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
         <div className="flex items-center space-x-2">
           <Button
             handleClick={downloadAddresses}
