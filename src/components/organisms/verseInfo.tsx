@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ErrorMsg, Button } from '@/components/atoms';
+import { ErrorMsg, Button, Table } from '@/components/atoms';
 import { useState } from 'react';
 import { download, handleError } from '@/features';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
@@ -38,35 +38,40 @@ export const VerseInfo = (props: Props) => {
     }
   };
 
-  const configs = [
-    {
-      key: 'Chain_id',
-      value: verseInfo.chainId.toString(),
-    },
-    {
-      key: 'Builder',
-      value: ownerAddress,
-    },
-    {
-      key: 'Sequencer',
-      value: verseInfo.namedAddresses.OVM_Sequencer,
-    },
-    {
-      key: 'Proposer',
-      value: verseInfo.namedAddresses.OVM_Proposer,
-    },
-    {
-      key: 'L1CrossDomainMessenger',
-      value: verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger,
-    },
-    {
-      key: 'L1StandardBridge',
-      value: verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge,
-    },
-    {
-      key: 'L1ERC721Bridge',
-      value: verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge ,
-    },
+  const heads = [
+    'Config',
+    'Value'
+  ];
+
+  const records = [
+    [
+      'Chain_id',
+      verseInfo.chainId.toString(),
+    ],
+    [
+      'Builder',
+      ownerAddress,
+    ],
+    [
+      'Sequencer',
+      verseInfo.namedAddresses.OVM_Sequencer,
+    ],
+    [
+      'Proposer',
+      verseInfo.namedAddresses.OVM_Proposer,
+    ],
+    [
+      'L1CrossDomainMessenger',
+      verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger,
+    ],
+    [
+      'L1StandardBridge',
+      verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge,
+    ],
+    [
+      'L1ERC721Bridge',
+      verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge ,
+    ],
   ];
 
   return (
@@ -77,24 +82,10 @@ export const VerseInfo = (props: Props) => {
           <ErrorMsg text={ downloadError } className='w-full' />
         )}
         <p>Download verse config</p>
-        <table className="table-auto border-collapse border border-slate-500">
-          <thead>
-            <tr>
-              <th className='border border-slate-600'>Config</th>
-              <th className='border border-slate-600'>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            { configs.map((config) => {
-              return (
-                <tr key={config.key}>
-                  <td className='border border-slate-700'>{config.key}</td>
-                  <td className='border border-slate-700'>{config.value}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <Table
+          heads={heads}
+          records={records}
+        />
         <div className="flex items-center space-x-2">
           <Button
             handleClick={downloadAddresses}
