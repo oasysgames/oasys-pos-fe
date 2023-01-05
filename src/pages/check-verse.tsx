@@ -1,9 +1,9 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import { getBuilderFromTx, getProvider, getSigner, handleError, isAllowedChain, isValidTxHash } from '@/features';
 import { Button, Input, ErrorMsg } from '@/components/atoms';
-import { WalletConnect, VerseInfo } from '@/components/organisms';
+import { WalletConnect, VerseInfo, Form } from '@/components/organisms';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
 import { getVerseInfo } from '@/features/optimism/verse';
 
@@ -70,6 +70,22 @@ const CheckVerse: NextPage = () => {
     handleAccountsChanged();
   });
 
+  const inputs = [
+    {
+      placeholder: `set transaction hash that built the verse`,
+      value: txHash,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setTxHash(e.target.value)},
+    },
+  ];
+
+  const buttons = [
+    {
+      handleClick: getVerseConfig,
+      disabled: !txHash,
+      value: 'Get Verse Info',
+    },
+  ];
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <WalletConnect
@@ -83,18 +99,10 @@ const CheckVerse: NextPage = () => {
           <ErrorMsg text={ txHashError } className='w-full' />
         )}
         <p>Transaction hash</p>
-        <Input
-          placeholder='set transaction hash that built the verse.'
-          value={txHash}
-          handleClick={e => setTxHash(e.target.value)}
-          className='w-full'
+        <Form
+          inputs={inputs}
+          buttons={buttons}
         />
-        <Button
-          handleClick={getVerseConfig}
-          disabled={!txHash}
-        >
-          Get Verse Info
-        </Button>
       </div>
       { verseInfo && 
         <VerseInfo 
