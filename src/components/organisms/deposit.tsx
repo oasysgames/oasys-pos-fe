@@ -51,7 +51,6 @@ export const Deposit = (props: Props) => {
     <div className={clsx(
       className,
     )}>
-      <p>Deposit amount{ `(${tokenUnit})`}: {depositedAmount ? `${ethers.utils.formatEther(depositedAmount.toString())}`: ''}</p>
       <Form
         inputs={depositInputs}
         buttons={depositButtons}

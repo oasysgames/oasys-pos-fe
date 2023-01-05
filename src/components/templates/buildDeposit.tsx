@@ -6,7 +6,7 @@ import { getL1BuildDepositContract, getSOASContract, handleError } from '@/featu
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
 import { L1BuildDepositAddress, sOASAddress } from '@/config';
-import { ErrorMsg, SuccessMsg } from '../atoms';
+import { ErrorMsg, SuccessMsg, Table } from '../atoms';
 
 type Props = {
   className?: string;
@@ -116,13 +116,30 @@ export const BuildDeposit = (props: Props) => {
     }
   };
 
+  const heads = [
+    'Token',
+    'Amount'
+  ];
+
+  const records = [
+    [
+      'OAS',
+      depositData?.depositOAS ? `${ethers.utils.formatEther(depositData?.depositOAS.toString())}`: ''
+    ],
+    [
+      'sOAS',
+      depositData?.depositSOAS ? `${ethers.utils.formatEther(depositData?.depositSOAS.toString())}`: ''
+    ],
+    [
+      'Total',
+      depositData?.depositTotal ? `${ethers.utils.formatEther(depositData?.depositTotal.toString())}` : ''
+    ],
+  ];
+
   return (
     <div className={clsx(
       className,
     )}>
-      <p>Deposit total amount{`(${OASTokenUnit})`}: 
-        {depositData?.depositTotal ? `${ethers.utils.formatEther(depositData?.depositTotal.toString())}` : ''}
-      </p> 
       {depositSuccess && (
         <SuccessMsg className='text-center' text={depositSuccess} />
       )}
@@ -132,6 +149,11 @@ export const BuildDeposit = (props: Props) => {
       {depositError && (
         <ErrorMsg className='text-center' text={ depositError } />
       )}
+      <p>Deposit Token</p>
+      <Table
+        heads={heads}
+        records={records}
+      />
       <Deposit
         className='space-y-0.5'
         depositedAmount={depositData?.depositOAS}
