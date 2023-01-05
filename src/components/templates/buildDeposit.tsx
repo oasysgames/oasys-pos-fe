@@ -141,41 +141,41 @@ export const BuildDeposit = (props: Props) => {
   const DepositModal = () => {
     return (
       <Modal
-          setModalState={setDepositModalOpen}
-          isLoading={idDepositLoading}
-        >
-          <div className='space-y-4'>
-            {depositSuccess && (
-            <SuccessMsg className='text-center' text={depositSuccess} />
-            )}
-            {depositLoadError instanceof Error && (
-              <ErrorMsg className='text-center' text={depositLoadError.message} />
-            )}
-            {depositError && (
-              <ErrorMsg className='text-center' text={ depositError } />
-            )}
-            <Deposit
-              className='space-y-0.5'
-              depositedAmount={depositData?.depositOAS}
-              amount={OASAmount}
-              setAmount={setOASAmount}
-              deposit={depositOAS}
-              withdraw={withdrawOAS}
-              idDepositLoading={idDepositLoading}
-              tokenUnit={OASTokenUnit}
-            />
-            <Deposit
-              className='space-y-0.5'
-              depositedAmount={depositData?.depositSOAS}
-              amount={SOASAmount}
-              setAmount={setSOASAmount}
-              deposit={depositSOAS}
-              withdraw={withdrawSOAS}
-              idDepositLoading={idDepositLoading}
-              tokenUnit={sOASTokenUnit}
-            />
-          </div>
-        </Modal>
+        setModalState={setDepositModalOpen}
+        isLoading={idDepositLoading}
+      >
+        <div className='space-y-4'>
+          {depositSuccess && (
+          <SuccessMsg className='text-center' text={depositSuccess} />
+          )}
+          {depositLoadError instanceof Error && (
+            <ErrorMsg className='text-center' text={depositLoadError.message} />
+          )}
+          {depositError && (
+            <ErrorMsg className='text-center' text={ depositError } />
+          )}
+          <Deposit
+            className='space-y-0.5'
+            depositedAmount={depositData?.depositOAS}
+            amount={OASAmount}
+            setAmount={setOASAmount}
+            deposit={depositOAS}
+            withdraw={withdrawOAS}
+            idDepositLoading={idDepositLoading}
+            tokenUnit={OASTokenUnit}
+          />
+          <Deposit
+            className='space-y-0.5'
+            depositedAmount={depositData?.depositSOAS}
+            amount={SOASAmount}
+            setAmount={setSOASAmount}
+            deposit={depositSOAS}
+            withdraw={withdrawSOAS}
+            idDepositLoading={idDepositLoading}
+            tokenUnit={sOASTokenUnit}
+          />
+        </div>
+      </Modal>
     )
   }
 
