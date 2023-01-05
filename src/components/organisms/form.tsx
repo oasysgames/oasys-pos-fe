@@ -30,18 +30,21 @@ export const Form = (props: Props) => {
   return (
     <div className={clsx(
       className,
+      'space-y-1',
     )}>
-      {inputs.map(({ placeholder, value, handleClick }, index) => {
-        return (
-          <Input
-            key={index}
-            placeholder={placeholder}
-            value={value}
-            handleClick={handleClick}
-            className='w-full'
-          />
-        )
-      })}
+      <div className='space-y-0.5'>
+        {inputs.map(({ placeholder, value, handleClick }, index) => {
+          return (
+            <Input
+              key={index}
+              placeholder={placeholder}
+              value={value}
+              handleClick={handleClick}
+              className='w-full'
+            />
+          )
+        })}
+      </div>
       <div className="flex items-center space-x-2">
         {buttons.map(({ handleClick, disabled, value}, index) => {
           return (

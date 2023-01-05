@@ -25,7 +25,9 @@ export const Button = (props: Props) =>  {
         'bg-green-500',
         'hover:bg-green-700',
         'text-white',
-        'rounded',
+        'rounded-full',
+        'font-bold',
+        'py-2 px-4',
         disabled && 'opacity-50 cursor-not-allowed'
       )}
     >

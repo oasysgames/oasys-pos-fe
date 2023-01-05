@@ -27,6 +27,7 @@ export const Input = (props: Props) =>  {
       className={clsx(
         className,
         'border',
+        'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-4 focus:outline-green-500 focus:shadow-outline',
       )}
       type="text"
     />
