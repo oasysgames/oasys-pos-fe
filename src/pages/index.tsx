@@ -4,13 +4,13 @@ import { isNotConnectedMsg } from '@/consts';
 import { getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
-import { WalletConnect, VerseInfo } from '@/components/organisms';
+import { WalletConnect, VerseInfo, LoadingModal } from '@/components/organisms';
 import { BuildDeposit, BuildVerse } from '@/components/templates';
 
 const Verse: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const { verseInfo, verseInfoError } = useVerseInfo(ownerAddress);
+  const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
 
@@ -71,6 +71,7 @@ const Verse: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
+      {isVerseInfoLoading && <LoadingModal/>}
       <WalletConnect
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}

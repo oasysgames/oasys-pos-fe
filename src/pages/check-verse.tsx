@@ -2,8 +2,8 @@ import type { NextPage } from 'next';
 import { useEffect, useState, ChangeEvent } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import { getBuilderFromTx, getProvider, getSigner, handleError, isAllowedChain, isValidTxHash } from '@/features';
-import { Button, Input, ErrorMsg } from '@/components/atoms';
-import { WalletConnect, VerseInfo, Form } from '@/components/organisms';
+import { ErrorMsg } from '@/components/atoms';
+import { WalletConnect, VerseInfo, Form, LoadingModal } from '@/components/organisms';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
 import { getVerseInfo } from '@/features/optimism/verse';
 
@@ -13,6 +13,7 @@ const CheckVerse: NextPage = () => {
   const [txHashError, setTxHashError] = useState('');
   const [txHash, setTxHash] = useState('');
   const [verseInfo, setVerseInfo] = useState<VerseInfoType>();
+  const [isVerseInfoLoading, setIsVerseInfoLoading] = useState(false);
 
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
@@ -57,6 +58,7 @@ const CheckVerse: NextPage = () => {
 
   const getVerseConfig = async () => {
     try {
+      setIsVerseInfoLoading(true);
       isValidTxHash(txHash);
       const verseBuilder = await getBuilderFromTx(txHash);
       const data = await getVerseInfo(verseBuilder);
@@ -64,6 +66,7 @@ const CheckVerse: NextPage = () => {
     } catch (err) {
       handleError(err, setTxHashError);
     }
+    setIsVerseInfoLoading(false);
   };
 
   useEffect(() => {
@@ -104,6 +107,7 @@ const CheckVerse: NextPage = () => {
           buttons={buttons}
         />
       </div>
+      { isVerseInfoLoading && <LoadingModal/>}
       { verseInfo && 
         <VerseInfo 
           className='space-y-4 col-span-4 col-start-3'
