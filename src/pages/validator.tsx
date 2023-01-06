@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { Form } from '@/components/organisms';
+import { Form, LoadingModal } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
 
 const Home: NextPage = () => {
@@ -165,6 +165,7 @@ const Home: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
+      {(isClaiming || isOperatorUpdating) && <LoadingModal/>}
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {ownerError && (
           <ErrorMsg text={ ownerError } className='w-full' />

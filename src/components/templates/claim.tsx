@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { formattedDate } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { LoadingModal } from '../organisms';
 import { ClaimInfo as sOASClaimInfo  } from '@/types/oasysHub/sOAS';
 import { ClaimInfo as lOASClaimInfo } from '@/types/oasysHub/lOAS';
 import clsx from 'clsx';
@@ -36,7 +37,7 @@ export const Claim = (props: Props) => {
     tokenUnit,
   } = props;
 
-  if (ownerAddress && isClaimInfoLoading) return <div className='text-center'>Loading...</div>;
+  if (ownerAddress && isClaimInfoLoading) return <LoadingModal/>;
 
   return (
     <div className={clsx(

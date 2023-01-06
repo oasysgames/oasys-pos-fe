@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
+import Image from 'next/image'
 import { LinkTab } from '@/components/atoms';
 
 type Props = {
@@ -40,13 +41,21 @@ export const Sidebar = (props: Props) => {
       className,
       'bg-green-500',
     )}>
-      <div className='mt-16 md:mt-32'>
-        {Links.map(({ text, url }, index) => {
-          const isChosen = url === router.pathname;
-          return (
-            <LinkTab text={text} url={url} isChosen={isChosen} key={index} />
-          );
-        })}
+      <div className='mt-2 md:mt-4 space-y-10'>
+        <Image
+          src="/images/oasys.png"
+          alt="Oasys logo"
+          width={250}
+          height={250}
+        />
+        <div>
+          {Links.map(({ text, url }, index) => {
+            const isChosen = url === router.pathname;
+            return (
+              <LinkTab text={text} url={url} isChosen={isChosen} key={index} />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

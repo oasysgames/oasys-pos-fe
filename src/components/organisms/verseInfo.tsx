@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ErrorMsg, Button } from '@/components/atoms';
+import { ErrorMsg, Button, Table } from '@/components/atoms';
 import { useState } from 'react';
 import { download, handleError } from '@/features';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
@@ -38,6 +38,42 @@ export const VerseInfo = (props: Props) => {
     }
   };
 
+  const heads = [
+    'Config',
+    'Value'
+  ];
+
+  const records = [
+    [
+      'Chain_id',
+      verseInfo.chainId.toString(),
+    ],
+    [
+      'Builder',
+      ownerAddress,
+    ],
+    [
+      'Sequencer',
+      verseInfo.namedAddresses.OVM_Sequencer,
+    ],
+    [
+      'Proposer',
+      verseInfo.namedAddresses.OVM_Proposer,
+    ],
+    [
+      'L1CrossDomainMessenger',
+      verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger,
+    ],
+    [
+      'L1StandardBridge',
+      verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge,
+    ],
+    [
+      'L1ERC721Bridge',
+      verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge ,
+    ],
+  ];
+
   return (
     <div className={clsx(
       className,
@@ -46,15 +82,10 @@ export const VerseInfo = (props: Props) => {
           <ErrorMsg text={ downloadError } className='w-full' />
         )}
         <p>Download verse config</p>
-        <div>
-          <p>Chain_id : { verseInfo.chainId }</p>
-          <p>Builder: { ownerAddress }</p>
-          <p>Sequencer: { verseInfo.namedAddresses.OVM_Sequencer }</p>
-          <p>Proposer: { verseInfo.namedAddresses.OVM_Proposer }</p>
-          <p>L1CrossDomainMessenger: { verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger }</p>
-          <p>L1StandardBridge: { verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge }</p>
-          <p>L1ERC721Bridge: { verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge }</p>
-        </div>
+        <Table
+          heads={heads}
+          records={records}
+        />
         <div className="flex items-center space-x-2">
           <Button
             handleClick={downloadAddresses}
