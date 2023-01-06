@@ -1,12 +1,11 @@
 import { ReactNode, SetStateAction } from "react";
 import clsx from 'clsx';
-import { Button } from "../atoms";
+import { Button } from ".";
 
 type Props = {
   className?: string;
   children: ReactNode;
   setModalState: (value: SetStateAction<boolean>) => void;
-  isLoading: boolean;
 };
 
 export const Modal = (props: Props) => {
@@ -14,11 +13,9 @@ export const Modal = (props: Props) => {
     className,
     children,
     setModalState,
-    isLoading,
   } = props;
 
   const closeModal = () => {
-    if (isLoading) return;
     setModalState(false);
   }
 

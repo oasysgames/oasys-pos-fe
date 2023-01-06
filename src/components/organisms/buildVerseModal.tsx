@@ -1,10 +1,9 @@
 import { ethers } from 'ethers';
 import { ChangeEvent, SetStateAction, useState } from 'react';
-import { Modal } from './modal';
 import { ZERO_ADDRESS } from '@/consts';
 import { getL1BuildAgentContract, handleError } from '@/features';
-import { ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { Form } from '@/components/organisms';
+import { ErrorMsg, SuccessMsg, Modal } from '@/components/atoms';
+import { Form, LoadingModal } from '@/components/organisms';
 
 type Props = {
   className?: string;
@@ -75,22 +74,28 @@ export const BuildVerseModal = (props: Props) => {
   ];
 
   return (
-    <Modal
-      setModalState={setModalState}
-      isLoading={isBuilding}
-    >
-      <div className='space-y-4'>
-        {buildSuccess && (
-        <SuccessMsg className='w-full' text={buildSuccess} />
-        )}
-        {buildError && (
-          <ErrorMsg className='w-full' text={ buildError } />
-        )}
-        <Form
-          inputs={buildInputs}
-          buttons={buildButtons}
-        />
-      </div>
-    </Modal>
+    <>
+      {isBuilding &&
+        <LoadingModal />
+      }
+      {!isBuilding &&
+        <Modal
+          setModalState={setModalState}
+        >
+          <div className='space-y-4'>
+            {buildSuccess && (
+            <SuccessMsg className='w-full' text={buildSuccess} />
+            )}
+            {buildError && (
+              <ErrorMsg className='w-full' text={ buildError } />
+            )}
+            <Form
+              inputs={buildInputs}
+              buttons={buildButtons}
+            />
+          </div>
+        </Modal>
+      }
+    </>
   )
 };

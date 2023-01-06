@@ -5,8 +5,8 @@ import { getL1BuildDepositContract, getSOASContract, handleError } from '@/featu
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
 import { L1BuildDepositAddress, sOASAddress } from '@/config';
-import { ErrorMsg, SuccessMsg } from '../atoms';
-import { Modal } from './modal';
+import { ErrorMsg, SuccessMsg, Modal } from '../atoms';
+import { LoadingModal } from '.';
 
 type Props = {
   className?: string;
@@ -139,9 +139,13 @@ export const BuildDepositModal = (props: Props) => {
   ];
 
   return (
+    <>
+    {idDepositLoading &&
+      <LoadingModal />
+    }
+    {!idDepositLoading &&
     <Modal
       setModalState={setModalState}
-      isLoading={idDepositLoading}
     >
       <div className='space-y-4'>
         {depositSuccess && (
@@ -175,5 +179,7 @@ export const BuildDepositModal = (props: Props) => {
         />
       </div>
     </Modal>
+    }
+    </>
   )
 };
