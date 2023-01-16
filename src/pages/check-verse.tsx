@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState, ChangeEvent } from 'react';
 import { isNotConnectedMsg } from '@/consts';
-import { getBuilderFromTx, getProvider, getSigner, handleError, isAllowedChain, isValidTxHash } from '@/features';
+import { getBuilderFromTx, getProvider, getSigner, getVerseChainId, handleError, isAllowedChain, isValidTxHash } from '@/features';
 import { ErrorMsg } from '@/components/atoms';
 import { WalletConnect, VerseInfo, Form, LoadingModal } from '@/components/organisms';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
@@ -61,7 +61,9 @@ const CheckVerse: NextPage = () => {
       setIsVerseInfoLoading(true);
       isValidTxHash(txHash);
       const verseBuilder = await getBuilderFromTx(txHash);
-      const data = await getVerseInfo(verseBuilder);
+      const verseChainId = await getVerseChainId(verseBuilder);
+      if (!verseChainId) throw new Error('Sorry. We cannot get verse_chain from verse builder');
+      const data = await getVerseInfo(verseBuilder, verseChainId);
       setVerseInfo(data);
     } catch (err) {
       handleError(err, setTxHashError);
