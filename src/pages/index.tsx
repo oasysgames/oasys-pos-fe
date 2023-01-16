@@ -71,7 +71,7 @@ const Verse: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      {isVerseInfoLoading && <LoadingModal/>}
+      {(ownerAddress && isVerseInfoLoading) && <LoadingModal/>}
       <WalletConnect
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}
@@ -88,7 +88,7 @@ const Verse: NextPage = () => {
       {verseInfoError instanceof Error && (
         <ErrorMsg className='w-full' text={verseInfoError.message} />
       )}
-      { verseInfo && 
+      { verseInfo?.chainId && 
         <VerseInfo 
           className='space-y-4 col-span-4 col-start-3'
           ownerAddress={ownerAddress}

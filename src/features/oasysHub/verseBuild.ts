@@ -32,7 +32,7 @@ export const getBuilderFromTx = async (
     (x) => x.transactionHash.toLowerCase() === txhash.toLowerCase()
   );
   if (events.length === 0) throw new Error("Build event is not found");
-  if (!events[0].args?.builder) throw new Error("Builder is  not found");
+  if (!events[0].args?.builder) throw new Error("Builder is not found");
 
   return events[0].args.builder;
 };
@@ -62,7 +62,7 @@ export const getBuilts = async () => {
   };
 };
 
-export const getChainId = async (
+export const getVerseChainId = async (
   builder: string
 ) => {
   const { builders, chainIds } = await getBuilts();
