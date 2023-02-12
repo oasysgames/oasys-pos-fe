@@ -1,5 +1,3 @@
-import { ethers } from "ethers";
-
 export interface GenesisParams {
   chainId: number;
   ovmWhitelistOwner: string;
@@ -24,29 +22,30 @@ export interface GenesisParams {
   berlinBlock: number;
   period: number;
   epoch: number;
+  useOvmOas: boolean;
 }
 
 export interface Genesis {
-    commit: string;
-    config: {
-        chainId: number;
-        homesteadBlock: number;
-        eip150Block: number;
-        eip155Block: number;
-        eip158Block: number;
-        byzantiumBlock: number;
-        constantinopleBlock: number;
-        petersburgBlock: number;
-        istanbulBlock: number;
-        muirGlacierBlock: number;
-        berlinBlock: number;
-        clique: {
-          period: number,
-          epoch: number,
-        };
+  commit: string;
+  config: {
+    chainId: number;
+    homesteadBlock: number;
+    eip150Block: number;
+    eip155Block: number;
+    eip158Block: number;
+    byzantiumBlock: number;
+    constantinopleBlock: number;
+    petersburgBlock: number;
+    istanbulBlock: number;
+    muirGlacierBlock: number;
+    berlinBlock: number;
+    clique: {
+      period: number;
+      epoch: number;
     };
-    difficulty: string;
-    gasLimit: string;
-    extradata: string;
-    alloc: any;
+  };
+  difficulty: string;
+  gasLimit: string;
+  extradata: string;
+  alloc: any;
 }
