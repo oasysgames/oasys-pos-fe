@@ -19,7 +19,7 @@ import { makeGenesisJson } from "@/features/optimism";
 import { VerseInfo } from "@/types/optimism/verse";
 
 // Use OVM_OAS if created after this block.
-const OVM_OAS_BLOCK = BigNumber.from(763240);
+const OVM_OAS_BLOCK = BigNumber.from(630195);
 
 export const getVerseInfo = async (
   builder: string,
