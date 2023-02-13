@@ -91,7 +91,7 @@ const Verse: NextPage = () => {
       { verseInfo?.chainId && 
         <VerseInfo 
           className='space-y-4 col-span-4 col-start-3'
-          ownerAddress={ownerAddress}
+          verseBuilder={ownerAddress}
           verseInfo={verseInfo}
         />
       }

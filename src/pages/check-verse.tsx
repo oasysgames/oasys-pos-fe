@@ -12,6 +12,7 @@ const CheckVerse: NextPage = () => {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [txHashError, setTxHashError] = useState('');
   const [txHash, setTxHash] = useState('');
+  const [verseBuilder, setVerseBuilder] = useState('');
   const [verseInfo, setVerseInfo] = useState<VerseInfoType>();
   const [isVerseInfoLoading, setIsVerseInfoLoading] = useState(false);
 
@@ -61,6 +62,7 @@ const CheckVerse: NextPage = () => {
       setIsVerseInfoLoading(true);
       isValidTxHash(txHash);
       const verseBuilder = await getBuilderFromTx(txHash);
+      setVerseBuilder(verseBuilder);
       const verseChainId = await getVerseChainId(verseBuilder);
       if (!verseChainId) throw new Error('Sorry. We cannot get verse_chain from verse builder');
       const data = await getVerseInfo(verseBuilder, verseChainId);
@@ -110,10 +112,10 @@ const CheckVerse: NextPage = () => {
         />
       </div>
       { isVerseInfoLoading && <LoadingModal/>}
-      { verseInfo && 
+      { verseInfo && verseBuilder &&
         <VerseInfo 
           className='space-y-4 col-span-4 col-start-3'
-          ownerAddress={ownerAddress}
+          verseBuilder={verseBuilder}
           verseInfo={verseInfo}
         />
       }

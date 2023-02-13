@@ -6,7 +6,7 @@ import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
 
 type Props = {
   className?: string;
-  ownerAddress: string;
+  verseBuilder: string;
   verseInfo: VerseInfoType;
 };
 
@@ -14,7 +14,7 @@ type Props = {
 export const VerseInfo = (props: Props) => {
   const {
     className,
-    ownerAddress,
+    verseBuilder,
     verseInfo,
   } = props;
 
@@ -50,7 +50,7 @@ export const VerseInfo = (props: Props) => {
     ],
     [
       'Builder',
-      ownerAddress,
+      verseBuilder,
     ],
     [
       'Sequencer',
