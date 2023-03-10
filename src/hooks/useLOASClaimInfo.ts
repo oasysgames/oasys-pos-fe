@@ -16,6 +16,7 @@ const getLOASClaimInfo = async () => {
   const lOASContract = await getLOASContract();
   const res = await lOASContract.claimInfo(ownerAddress);
   const claimable: ethers.BigNumber = await lOASContract.getClaimableOAS(ownerAddress);
+  const balance: ethers.BigNumber = await lOASContract.balanceOf(ownerAddress);
   const currentClaimable = claimable.sub(res.claimed);
 
   // We actually have to toString since and until because since and until are uint64 at solidity.
@@ -24,7 +25,7 @@ const getLOASClaimInfo = async () => {
   const data: ClaimInfo = {
     amount: res.amount,
     claimed: res.claimed,
-    claimable: currentClaimable,
+    claimable: currentClaimable.gte(balance) ? balance :currentClaimable,
     since: new Date(res.since.toNumber() * 1000), // res.since unit is seconds
     until: new Date(res.until.toNumber() * 1000), // res.until unit is seconds
     from: res.from,

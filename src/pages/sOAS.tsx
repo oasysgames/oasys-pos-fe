@@ -13,6 +13,7 @@ const SOASPage: NextPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
+  const [claimOASAmount, setClaimOASAmount] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useSOASClaimInfo();
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
 
@@ -65,10 +66,12 @@ const SOASPage: NextPage = () => {
   const claim = useCallback(async () => {
     const sOASContract = await getSOASContract();
     try {
+      const claimAmount = ethers.utils.parseEther(claimOASAmount);
       if (!isClaimable) throw new Error(`You do not have claimable ${sOASTokenUnit}`);
+      if (claimAmount.gt(claimInfo.claimable)) throw new Error('It is above the claimable amount');
 
       setIsClaiming(true);
-      await sOASContract.claim(claimInfo.claimable);
+      await sOASContract.claim(claimAmount);
 
       const filter = sOASContract.filters.Claim(ownerAddress, null);
       sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
@@ -76,12 +79,13 @@ const SOASPage: NextPage = () => {
         setSuccessMsg(`Success to convert ${oasAmount}${sOASTokenUnit} to ${oasAmount}OAS`);
         refreshSOASClaimInfo();
         setIsClaiming(false);
+        setClaimOASAmount('');
       })
     } catch (err) {
       setIsClaiming(false);
       handleError(err, setErrorMsg);
     }
-  }, [isClaimable, claimInfo, ownerAddress, refreshSOASClaimInfo]);
+  }, [isClaimable, claimInfo, ownerAddress, claimOASAmount, refreshSOASClaimInfo]);
 
   useEffect(() => {
     handleAccountsChanged();
@@ -106,6 +110,8 @@ const SOASPage: NextPage = () => {
         isClaimInfoLoading={isClaimInfoLoading}
         claimInfoError={claimInfoError}
         claim={claim}
+        claimOASAmount={claimOASAmount}
+        setClaimOASAmount={setClaimOASAmount}
         isClaiming={isClaiming}
         errorMsg={errorMsg}
         successMsg={successMsg}

@@ -13,6 +13,7 @@ const LOASPage: NextPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
+  const [claimOASAmount, setClaimOASAmount] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
 
@@ -64,22 +65,25 @@ const LOASPage: NextPage = () => {
   const claim = useCallback(async () => {
     const lOASContract = await getLOASContract();
     try {
+      const claimAmount = ethers.utils.parseEther(claimOASAmount);
       if (!isClaimable) throw new Error(`You do not have claimable ${lOASTokenUnit}`);
+      if (claimAmount.gt(claimInfo.claimable)) throw new Error('It is above the claimable amount');
 
       setIsClaiming(true);
-      await lOASContract.claim(claimInfo.claimable);
+      await lOASContract.claim(claimAmount);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setSuccessMsg(`Success to convert ${oasAmount}${lOASTokenUnit} to ${oasAmount}OAS`);
         refreshLOASClaimInfo();
         setIsClaiming(false);
+        setClaimOASAmount('');
       })
     } catch (err) {
       setIsClaiming(false);
       handleError(err, setErrorMsg);
     }
-  }, [isClaimable, claimInfo, ownerAddress, refreshLOASClaimInfo]);
+  }, [isClaimable, claimInfo, ownerAddress, claimOASAmount, refreshLOASClaimInfo]);
 
   useEffect(() => {
     handleAccountsChanged();
@@ -104,6 +108,8 @@ const LOASPage: NextPage = () => {
         isClaimInfoLoading={isClaimInfoLoading}
         claimInfoError={claimInfoError}
         claim={claim}
+        claimOASAmount={claimOASAmount}
+        setClaimOASAmount={setClaimOASAmount}
         isClaiming={isClaiming}
         errorMsg={errorMsg}
         successMsg={successMsg}
