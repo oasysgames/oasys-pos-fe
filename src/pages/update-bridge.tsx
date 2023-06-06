@@ -6,6 +6,8 @@ import { WalletConnect, Form, LoadingModal } from '@/components/organisms';
 import { UpdateBridgeContract } from '@/components/templates';
 import { useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
+import L1StandardBridge from '@/contracts/oasysHub/L1StandardBridge.json';
+import L1ERC721Bridge from '@/contracts/oasysHub/L1ERC721Bridge.json';
 
 const UpdateBridge: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -93,10 +95,7 @@ const UpdateBridge: NextPage = () => {
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge}
               updateBridgeContractMethod={updateERC20BridgeContract}
               bytecodeOptions={[
-                { label: 'Version 1', value: 'aaaaa' },
-                { label: 'Version 2', value: 'bbbbb' },
-                { label: 'Version 3', value: 'ccccc' },
-                { label: 'Version 4', value: 'ddddd' },
+                { label: 'Version 1', value: L1StandardBridge.deployedBytecode },
               ]}
             />
             <UpdateBridgeContract
@@ -104,10 +103,7 @@ const UpdateBridge: NextPage = () => {
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge}
               updateBridgeContractMethod={updateERC721BridgeContract}
               bytecodeOptions={[
-                { label: 'Version 1', value: 'aaaaa' },
-                { label: 'Version 2', value: 'bbbbb' },
-                { label: 'Version 3', value: 'ccccc' },
-                { label: 'Version 4', value: 'ddddd' },
+                { label: 'Version 1', value: L1ERC721Bridge.deployedBytecode },
               ]}
             />
           </div>
