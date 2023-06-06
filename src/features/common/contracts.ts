@@ -12,6 +12,7 @@ import SOAS from '@/contracts/oasysHub/SOAS.json';
 import LOAS from '@/contracts/oasysHub/LOAS.json';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
+import L1ChugSplashProxy from '@/contracts/oasysHub/L1ChugSplashProxy.json';
 import { getSigner } from './wallet';
 import { ethers } from 'ethers';
 
@@ -44,4 +45,16 @@ export const getL1BuildAgentContract = async () => {
   const signer = await getSigner();
   const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
   return L1BuildAgentContract;
+};
+
+export const getL1StandardBridgeProxyContract = async (address: string) => {
+  const signer = await getSigner();
+  const L1StandardBridgeProxyContract = new ethers.Contract(address, L1ChugSplashProxy.abi, signer);
+  return L1StandardBridgeProxyContract;
+};
+
+export const getL1ERC721BridgeProxyContract = async (address: string) => {
+  const signer = await getSigner();
+  const L1ERC721BridgeProxyContract = new ethers.Contract(address, L1ChugSplashProxy.abi, signer);
+  return L1ERC721BridgeProxyContract;
 };

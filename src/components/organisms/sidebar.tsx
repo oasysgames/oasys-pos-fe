@@ -27,6 +27,10 @@ const Links = [
   {
     text: 'Check verse info',
     url: '/check-verse',
+  },
+  {
+    text: 'Update bridge contract',
+    url: '/update-bridge',
   }
 ];
 
