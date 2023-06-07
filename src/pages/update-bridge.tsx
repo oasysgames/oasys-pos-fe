@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import { getL1ERC721BridgeProxyContract, getL1StandardBridgeProxyContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { WalletConnect, LoadingModal } from '@/components/organisms';
@@ -12,6 +12,8 @@ import L1ERC721Bridge from '@/contracts/oasysHub/L1ERC721Bridge.json';
 const UpdateBridge: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [preERC20BridgeBytecode, setPreERC20BridgeBytecode] = useState('');
+  const [preERC721BridgeBytecode, setPreERC721BridgeBytecode] = useState('');
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshVerseInfo = useRefreshVerseInfo();
 
@@ -56,8 +58,34 @@ const UpdateBridge: NextPage = () => {
     }
   };
 
+  const setPreERC20BridgeContractBytecode = async (l1StandardBridgeProxyAddress: string) => {
+    const l1StandardBridgeProxy = await getL1StandardBridgeProxyContract(l1StandardBridgeProxyAddress);
+    const bridgeContractAddress = await l1StandardBridgeProxy.callStatic.getImplementation();
+
+    const provider = await getProvider();
+    const bytecode = await provider.send('eth_getCode', [bridgeContractAddress, 'latest']);
+    setPreERC20BridgeBytecode(bytecode);
+  }
+
+  const setPreERC721BridgeContractBytecode = async (l1ERC721BridgeProxyAddress: string,) => {
+    const l1ERC721BridgeProxy = await getL1ERC721BridgeProxyContract(l1ERC721BridgeProxyAddress);
+    const bridgeContractAddress = await l1ERC721BridgeProxy.callStatic.getImplementation();
+
+    const provider = await getProvider();
+    const bytecode = await provider.send('eth_getCode', [bridgeContractAddress, 'latest']);
+    setPreERC721BridgeBytecode(bytecode);
+  }
+
+  const setPreBridgeContractBytecode = async (l1StandardBridgeProxyAddress: string, l1ERC721BridgeProxyAddress: string) => {
+    await setPreERC20BridgeContractBytecode(l1StandardBridgeProxyAddress);
+    await setPreERC721BridgeContractBytecode(l1ERC721BridgeProxyAddress);
+  }
+
   useEffect(() => {
     handleAccountsChanged();
+    if (verseInfo?.namedAddresses) {
+      setPreBridgeContractBytecode(verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge, verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge);
+    }
   });
 
   useEffect(() => {
@@ -81,6 +109,17 @@ const UpdateBridge: NextPage = () => {
   const updateERC20BridgeTitle = 'Update ERC20 Bridge Contract';
   const updateERC721BridgeTitle = 'Update ERC721 Bridge Contract';
 
+  const preERC20BridgeBytecodeOptions = useMemo(() => {
+    return [
+      { label: `Version 1${preERC20BridgeBytecode === L1StandardBridge.deployedBytecode ? ' (currently deployed)': ''}`, value: L1StandardBridge.deployedBytecode },
+    ];
+  }, [preERC20BridgeBytecode]);
+  const preERC721BridgeBytecodeOptions = useMemo(() => {
+    return [
+      { label: `Version 1${preERC721BridgeBytecode === L1ERC721Bridge.deployedBytecode ? ' (currently deployed)': ''}`,  value: L1ERC721Bridge.deployedBytecode },
+    ];
+  }, [preERC721BridgeBytecode]);
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <WalletConnect
@@ -101,18 +140,14 @@ const UpdateBridge: NextPage = () => {
               title={updateERC20BridgeTitle}
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge}
               updateBridgeContractMethod={updateERC20BridgeContract}
-              bytecodeOptions={[
-                { label: 'Version 1', value: L1StandardBridge.deployedBytecode },
-              ]}
+              bytecodeOptions={preERC20BridgeBytecodeOptions}
               buttonText={updateERC20BridgeTitle}
             />
             <UpdateBridgeContract
               title={updateERC721BridgeTitle}
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge}
               updateBridgeContractMethod={updateERC721BridgeContract}
-              bytecodeOptions={[
-                { label: 'Version 1', value: L1ERC721Bridge.deployedBytecode },
-              ]}
+              bytecodeOptions={preERC721BridgeBytecodeOptions}
               buttonText={updateERC721BridgeTitle}
             />
           </div>
