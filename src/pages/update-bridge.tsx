@@ -78,6 +78,9 @@ const UpdateBridge: NextPage = () => {
     handleUpdateSuccess('Successfully updated the ERC721 bridge contract!');
   }, [])
 
+  const updateERC20BridgeTitle = 'Update ERC20 Bridge Contract';
+  const updateERC721BridgeTitle = 'Update ERC721 Bridge Contract';
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <WalletConnect
@@ -93,22 +96,24 @@ const UpdateBridge: NextPage = () => {
         )}
         {verseInfo?.namedAddresses ?
         (
-          <div>
+          <div className='space-y-8'>
             <UpdateBridgeContract
-              title='Update ERC20 Bridge Contract'
+              title={updateERC20BridgeTitle}
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge}
               updateBridgeContractMethod={updateERC20BridgeContract}
               bytecodeOptions={[
                 { label: 'Version 1', value: L1StandardBridge.deployedBytecode },
               ]}
+              buttonText={updateERC20BridgeTitle}
             />
             <UpdateBridgeContract
-              title='Update ERC721 Bridge Contract'
+              title={updateERC721BridgeTitle}
               bridgeProxyAddress={verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge}
               updateBridgeContractMethod={updateERC721BridgeContract}
               bytecodeOptions={[
                 { label: 'Version 1', value: L1ERC721Bridge.deployedBytecode },
               ]}
+              buttonText={updateERC721BridgeTitle}
             />
           </div>
         ) :

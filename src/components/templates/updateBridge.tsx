@@ -14,9 +14,10 @@ type Props = {
   bridgeProxyAddress: string;
   updateBridgeContractMethod: (bridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => Promise<void>;
   bytecodeOptions: BytecodeOption[];
+  buttonText?: string;
 };
 
-export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, updateBridgeContractMethod, bytecodeOptions }: Props) => {
+export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, updateBridgeContractMethod, bytecodeOptions, buttonText }: Props) => {
   const bytecodeSettingOptionValues = {
     selectBytecode: 'selectBytecode',
     inputBytecode: 'inputBytecode',
@@ -70,6 +71,7 @@ export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, upd
   return (
     <div className={clsx(
       className,
+      'space-y-3'
     )}>
       <p>{title}</p>
       { updateBridgeError && (
@@ -78,33 +80,35 @@ export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, upd
       { updateBridgeSuccess && (
         <SuccessMsg text={ updateBridgeSuccess } className='w-full' />
       )}
-      <div>
-        <Select options={bytecodeSettingOptions} value={selectedBytecodeSetting} handleClick={handleSelectBytecodeSetting} />
+      <div className='space-y-0.5'>
+        <div>
+          <Select options={bytecodeSettingOptions} value={selectedBytecodeSetting} handleClick={handleSelectBytecodeSetting} />
+        </div>
+        {selectedBytecodeSetting === bytecodeSettingOptionValues.selectBytecode &&
+          <div>
+            <Select options={bytecodeOptions} value={selectedBytecode} handleClick={handleSelectBytecode} />
+            <Textarea
+              value={selectedBytecode}
+              placeholder={''}
+              disabled={true}
+              handleClick={() => {}}
+            />
+          </div>
+        }
+        {selectedBytecodeSetting === bytecodeSettingOptionValues.inputBytecode &&
+          <div>
+            <Textarea
+              value={inputBytecode}
+              placeholder={''}
+              handleClick={handleInputBytecode}
+            />
+          </div>
+        }
       </div>
-      {selectedBytecodeSetting === bytecodeSettingOptionValues.selectBytecode &&
-        <div>
-          <Select options={bytecodeOptions} value={selectedBytecode} handleClick={handleSelectBytecode} />
-          <Textarea
-            value={selectedBytecode}
-            placeholder={''}
-            disabled={true}
-            handleClick={() => {}}
-          />
-        </div>
-      }
-      {selectedBytecodeSetting === bytecodeSettingOptionValues.inputBytecode &&
-        <div>
-          <Textarea
-            value={inputBytecode}
-            placeholder={''}
-            handleClick={handleInputBytecode}
-          />
-        </div>
-      }
       <Button
         handleClick={handleClick}
       >
-        Update Bridge Contract
+        { buttonText || 'Update bridge contract' }
       </Button>
     </div>
   )
