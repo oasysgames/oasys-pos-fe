@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import { getL1ERC721BridgeProxyContract, getL1StandardBridgeProxyContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
 import { WalletConnect, LoadingModal } from '@/components/organisms';
@@ -64,19 +64,19 @@ const UpdateBridge: NextPage = () => {
     refreshVerseInfo();
   }, [ownerAddress, refreshVerseInfo]);
 
-  const updateERC20BridgeContract = async (l1StandardBridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => {
+  const updateERC20BridgeContract = useCallback(async (l1StandardBridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => {
     const l1StandardBridgeProxy = await getL1StandardBridgeProxyContract(l1StandardBridgeProxyAddress);
     const tx = await l1StandardBridgeProxy.setCode(bytecode);
     await tx.wait();
     handleUpdateSuccess('Successfully updated the ERC20 bridge contract!');
-  }
+  }, [])
 
-  const updateERC721BridgeContract = async (l1ERC721BridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => {
+  const updateERC721BridgeContract = useCallback(async (l1ERC721BridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => {
     const l1ERC721BridgeProxy = await getL1ERC721BridgeProxyContract(l1ERC721BridgeProxyAddress);
     const tx = await l1ERC721BridgeProxy.setCode(bytecode);
     await tx.wait();
     handleUpdateSuccess('Successfully updated the ERC721 bridge contract!');
-  }
+  }, [])
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
