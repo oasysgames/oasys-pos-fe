@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { ChangeEvent, useState } from 'react';
-import { Button, ErrorMsg, Select, Textarea } from '@/components/atoms';
-import { BuildVerseModal } from '../organisms';
+import { Button, ErrorMsg, Select, SuccessMsg, Textarea } from '@/components/atoms';
 import { handleError } from '@/features';
 
 type BytecodeOption = {
@@ -13,7 +12,7 @@ type Props = {
   className?: string;
   title: string;
   bridgeProxyAddress: string;
-  updateBridgeContractMethod: (bridgeProxyAddress: string, bytecode: string) => Promise<void>;
+  updateBridgeContractMethod: (bridgeProxyAddress: string, bytecode: string, handleUpdateSuccess: (successMsg: string) => void) => Promise<void>;
   bytecodeOptions: BytecodeOption[];
 };
 
@@ -32,12 +31,15 @@ export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, upd
   const [selectedBytecode, setSelectedBytecode] = useState(selectedBytecodeDefault);
   const [inputBytecode, setInputBytecode] = useState('');
   const [newBridgeContractBytecode, setNewBridgeContractBytecode] = useState(selectedBytecodeDefault);
+  const [updateBridgeSuccess, setUpdateBridgeSuccess] = useState('');
   const [updateBridgeError, setUpdateBridgeError] = useState('');
-  
+
   const handleClick = async () => {
     try {
+      setUpdateBridgeSuccess('');
+      setUpdateBridgeError('');
       console.log('newBridgeContractBytecode', newBridgeContractBytecode);
-      await updateBridgeContractMethod(bridgeProxyAddress, newBridgeContractBytecode);
+      await updateBridgeContractMethod(bridgeProxyAddress, newBridgeContractBytecode, setUpdateBridgeSuccess);
     } catch (err) {
       handleError(err, setUpdateBridgeError);
     }
@@ -72,6 +74,9 @@ export const UpdateBridgeContract = ({ className, title, bridgeProxyAddress, upd
       <p>{title}</p>
       { updateBridgeError && (
         <ErrorMsg text={ updateBridgeError } className='w-full' />
+      )}
+      { updateBridgeSuccess && (
+        <SuccessMsg text={ updateBridgeSuccess } className='w-full' />
       )}
       <div>
         <Select options={bytecodeSettingOptions} value={selectedBytecodeSetting} handleClick={handleSelectBytecodeSetting} />
