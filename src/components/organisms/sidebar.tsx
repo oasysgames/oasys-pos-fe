@@ -28,6 +28,10 @@ const Links = [
     text: 'Check verse',
     url: '/check-verse',
   },
+  {
+    text: 'Update bridge contract',
+    url: '/update-bridge',
+  }
 ];
 
 export const Sidebar = (props: Props) => {
