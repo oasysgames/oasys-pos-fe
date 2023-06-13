@@ -6,8 +6,9 @@ import { WalletConnect, LoadingModal } from '@/components/organisms';
 import { UpdateBridgeContract } from '@/components/templates';
 import { useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
-import L1StandardBridge from '@/contracts/oasysHub/L1StandardBridge.json';
-import L1ERC721Bridge from '@/contracts/oasysHub/L1ERC721Bridge.json';
+import L1StandardBridgeV1 from '@/contracts/oasysHub/bridge/version1/L1StandardBridge.json';
+import L1ERC721BridgeV1 from '@/contracts/oasysHub/bridge/version1/L1ERC721Bridge.json';
+import L1ERC721BridgeV2 from '@/contracts/oasysHub/bridge/version2/L1ERC721Bridge.json';
 
 const UpdateBridge: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -109,14 +110,19 @@ const UpdateBridge: NextPage = () => {
   const updateERC20BridgeTitle = 'Update ERC20 Bridge Contract';
   const updateERC721BridgeTitle = 'Update ERC721 Bridge Contract';
 
+  const deployedStatus = (preDeployedBytecode: string, bytecode: string) => {
+    return preDeployedBytecode === bytecode ? ' (currently deployed)' : '';
+  }
+
   const preERC20BridgeBytecodeOptions = useMemo(() => {
     return [
-      { label: `Version 1${preERC20BridgeBytecode === L1StandardBridge.deployedBytecode ? ' (currently deployed)': ''}`, value: L1StandardBridge.deployedBytecode },
+      { label: `Version 1${deployedStatus(preERC20BridgeBytecode, L1StandardBridgeV1.deployedBytecode)}`, value: L1StandardBridgeV1.deployedBytecode },
     ];
   }, [preERC20BridgeBytecode]);
   const preERC721BridgeBytecodeOptions = useMemo(() => {
     return [
-      { label: `Version 1${preERC721BridgeBytecode === L1ERC721Bridge.deployedBytecode ? ' (currently deployed)': ''}`,  value: L1ERC721Bridge.deployedBytecode },
+      { label: `Version 1${deployedStatus(preERC721BridgeBytecode, L1ERC721BridgeV1.deployedBytecode)}`, value: L1ERC721BridgeV1.deployedBytecode },
+      { label: `Version 2${deployedStatus(preERC721BridgeBytecode, L1ERC721BridgeV2.deployedBytecode)}`,  value: L1ERC721BridgeV2.deployedBytecode },
     ];
   }, [preERC721BridgeBytecode]);
 
