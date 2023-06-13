@@ -1,4 +1,3 @@
-export const isValidTxHash = (s: string) => {
-  if (!/^0x[a-fA-F0-9]{64}$/.test(s))
-    throw new Error("Invalid transaction format");
-}
+export const isTxHash = (s: string): boolean => /^0x[a-fA-F0-9]{64}$/.test(s);
+
+export const isAddress = (s: string): boolean => /^0x[a-fA-F0-9]{40}$/.test(s);
