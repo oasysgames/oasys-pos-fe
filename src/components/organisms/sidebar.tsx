@@ -1,25 +1,20 @@
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { LinkTab } from '@/components/atoms';
+import { SidebarNavigation } from '@/components/organisms';
 
 type Props = {
   className?: string;
 };
 
-const Links = [
-  {
-    text: 'Claim sOAS',
-    url: '/sOAS',
-  },
-  {
-    text: 'Claim lOAS',
-    url: '/lOAS',
-  },
+const validatorLinks = [
   {
     text: 'Join validator',
     url: '/validator',
   },
+];
+
+const verseBuilderLinks = [
   {
     text: 'Build verse',
     url: '/',
@@ -32,6 +27,17 @@ const Links = [
     text: 'Update bridge contract',
     url: '/update-bridge',
   }
+];
+
+const otherLinks = [
+  {
+    text: 'Claim sOAS',
+    url: '/sOAS',
+  },
+  {
+    text: 'Claim lOAS',
+    url: '/lOAS',
+  },
 ];
 
 export const Sidebar = (props: Props) => {
@@ -47,13 +53,19 @@ export const Sidebar = (props: Props) => {
           width={250}
           height={250}
         />
-        <div>
-          {Links.map(({ text, url }, index) => {
-            const isChosen = url === router.pathname;
-            return (
-              <LinkTab text={text} url={url} isChosen={isChosen} key={index} />
-            );
-          })}
+        <div className='space-y-8'>
+          <SidebarNavigation
+            linkTitle='Validators'
+            links={validatorLinks}
+          />
+          <SidebarNavigation
+            linkTitle='Verse Builders'
+            links={verseBuilderLinks}
+          />
+          <SidebarNavigation
+            linkTitle='Others'
+            links={otherLinks}
+          />
         </div>
       </div>
     </div>

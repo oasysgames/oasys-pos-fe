@@ -15,7 +15,7 @@ export const LinkTab = (props: Props) => {
       <a
         className={clsx(
           'text-white',
-          'h-12',
+          'leading-8',
           'pl-1 pr-1',
           'text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg',
           'flex',
