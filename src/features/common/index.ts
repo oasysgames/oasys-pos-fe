@@ -1,4 +1,5 @@
 export * from './wallet';
+export * from './address';
 export * from './allowList';
 export * from './timestamp';
 export * from './network';

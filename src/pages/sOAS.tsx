@@ -10,6 +10,7 @@ import { isNotConnectedMsg, sOASTokenUnit } from '@/consts';
 const SOASPage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [connectedChainId, setConnectedChainId] = useState<number>();
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
@@ -36,6 +37,7 @@ const SOASPage: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
       refreshSOASClaimInfo();
@@ -56,6 +58,7 @@ const SOASPage: NextPage = () => {
       window.ethereum.on('chainChanged', handleChainChanged);
 
       setOwnerAddress(address);
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -101,6 +104,7 @@ const SOASPage: NextPage = () => {
         className='space-y-0.5 col-span-6 col-start-3'
         ownerError={ownerError}
         ownerAddress={ownerAddress}
+        chainId={connectedChainId}
         setOwner={setOwner}
       />
       <Claim

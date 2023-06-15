@@ -10,6 +10,7 @@ import { BuildDeposit, BuildVerse } from '@/components/templates';
 const Verse: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [connectedChainId, setConnectedChainId] = useState<number>();
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
@@ -29,6 +30,7 @@ const Verse: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
       refreshL1BuildDeposit();
@@ -50,6 +52,7 @@ const Verse: NextPage = () => {
       window.ethereum.on('chainChanged', handleChainChanged);
 
       setOwnerAddress(address);
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -76,6 +79,7 @@ const Verse: NextPage = () => {
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}
         ownerAddress={ownerAddress}
+        chainId={connectedChainId}
         setOwner={setOwner}
       />
       <BuildDeposit

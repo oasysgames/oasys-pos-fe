@@ -13,6 +13,7 @@ import L1ERC721BridgeV2 from '@/contracts/oasysHub/bridge/version2/L1ERC721Bridg
 const UpdateBridge: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
+  const [connectedChainId, setConnectedChainId] = useState<number>();
   const [preERC20BridgeBytecode, setPreERC20BridgeBytecode] = useState('');
   const [preERC721BridgeBytecode, setPreERC721BridgeBytecode] = useState('');
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
@@ -33,6 +34,7 @@ const UpdateBridge: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
     } catch (err) {
@@ -52,6 +54,7 @@ const UpdateBridge: NextPage = () => {
       window.ethereum.on('chainChanged', handleChainChanged);
 
       setOwnerAddress(address);
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -132,6 +135,7 @@ const UpdateBridge: NextPage = () => {
         className='space-y-0.5 col-span-6 col-start-3'
         ownerError={ownerError}
         ownerAddress={ownerAddress}
+        chainId={connectedChainId}
         setOwner={setOwner}
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
