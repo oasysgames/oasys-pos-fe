@@ -77,17 +77,20 @@ const UpdateBridge: NextPage = () => {
     setPreERC721BridgeBytecode(bytecode);
   }
 
-  const setPreBridgeContractBytecode = async (l1StandardBridgeProxyAddress: string, l1ERC721BridgeProxyAddress: string) => {
+  const setPreBridgeContractBytecode = useCallback(async (l1StandardBridgeProxyAddress: string, l1ERC721BridgeProxyAddress: string) => {
     await setPreERC20BridgeContractBytecode(l1StandardBridgeProxyAddress);
     await setPreERC721BridgeContractBytecode(l1ERC721BridgeProxyAddress);
-  }
+  }, []);
 
   useEffect(() => {
     handleAccountsChanged();
+  });
+
+  useEffect(() => {
     if (verseInfo?.namedAddresses) {
       setPreBridgeContractBytecode(verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge, verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge);
     }
-  });
+  }, [setPreBridgeContractBytecode, verseInfo]);
 
   useEffect(() => {
     refreshVerseInfo();
