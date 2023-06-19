@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { getProvider, getSigner, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
+import { getProvider, getSigner, handleError, getStakeManagerContract } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
@@ -36,7 +36,6 @@ const ClaimCommissions: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
     } catch (err) {
       handleError(err, setOwnerError);
@@ -58,7 +57,6 @@ const ClaimCommissions: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== ZERO_ADDRESS) {
         setOperatorAddress(result.operator);

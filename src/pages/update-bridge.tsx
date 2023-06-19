@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { isNotConnectedMsg } from '@/consts';
-import { getL1ERC721BridgeProxyContract, getL1StandardBridgeProxyContract, getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { getL1ERC721BridgeProxyContract, getL1StandardBridgeProxyContract, getProvider, getSigner, handleError } from '@/features';
 import { WalletConnect, LoadingModal } from '@/components/organisms';
 import { UpdateBridgeContract } from '@/components/templates';
 import { useVerseInfo, useRefreshVerseInfo } from '@/hooks';
@@ -35,7 +35,6 @@ const UpdateBridge: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
     } catch (err) {
       handleError(err, setOwnerError);
@@ -55,7 +54,6 @@ const UpdateBridge: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);
