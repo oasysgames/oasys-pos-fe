@@ -1,16 +1,14 @@
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { ethers } from 'ethers';
-import { getProvider, getSigner, isAllowedAddress, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
-import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { Form, LoadingModal } from '@/components/organisms';
+import { getProvider, getSigner, isAllowedChain, handleError, getStakeManagerContract } from '@/features';
+import { ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { Form, LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
 
-const Home: NextPage = () => {
+const JoinValidator: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const [ownerSuccessMsg, setOwnerSuccessMsg] = useState('');
-  const [isClaiming, setIsClaiming] = useState(false);
+  const [connectedChainId, setConnectedChainId] = useState<number>();
   const [isOperatorUpdating, setIsOperatorUpdating] = useState(false);
   const [operatorError, setOperatorError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
@@ -37,6 +35,7 @@ const Home: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
     } catch (err) {
@@ -58,8 +57,8 @@ const Home: NextPage = () => {
       const stakeManagerContract = await getStakeManagerContract();
 
       setOwnerAddress(address);
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
-      await isAllowedAddress(address);
       const result = await stakeManagerContract.getValidatorInfo(address, 0);
       if (result.operator !== ZERO_ADDRESS) {
         setOperatorAddress(result.operator);
@@ -73,7 +72,6 @@ const Home: NextPage = () => {
   const registerOperator = async () => {
     try {
       const stakeManagerContract = await getStakeManagerContract();
-      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.joinValidator(newOperator);
@@ -99,7 +97,6 @@ const Home: NextPage = () => {
   const updateOperator = async () => {
     try {
       const stakeManagerContract = await getStakeManagerContract();
-      await isAllowedAddress(ownerAddress);
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
@@ -117,26 +114,6 @@ const Home: NextPage = () => {
       handleError(err, setOperatorError);
     }
   }
-
-  const claimCommissions = async () => {
-    try {
-      const stakeManagerContract = await getStakeManagerContract();
-      await isAllowedAddress(ownerAddress);
-      refreshError();
-      setIsClaiming(true);
-      await stakeManagerContract.claimCommissions(ownerAddress, 0);
-      const filter = stakeManagerContract.filters.ClaimedCommissions(ownerAddress, null);
-      stakeManagerContract.once(filter, (owner: string, amount: ethers.BigNumber) => {
-        const oasAmount = ethers.utils.formatEther(amount.toString());
-        setOwnerSuccessMsg(`claim commissions is successful(${oasAmount}OAS)`);
-        setIsClaiming(false);
-      });
-    } catch (err) {
-      setOwnerSuccessMsg('');
-      setIsClaiming(false);
-      handleError(err, setOwnerError);
-    }
-  };
 
   useEffect(() => {
     handleAccountsChanged();
@@ -165,38 +142,22 @@ const Home: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      {(isClaiming || isOperatorUpdating) && <LoadingModal/>}
-      <div className='space-y-0.5 col-span-4 col-start-3'>
-        {ownerError && (
-          <ErrorMsg text={ ownerError } className='w-full' />
-        )}
-        <p>Owner Address:  {ownerAddress}</p>
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={setOwner}
-          >
-            Connect
-          </Button>
-          <Button
-            handleClick={claimCommissions}
-            disabled={!ownerAddress || isClaiming}
-          >
-            Claim Commissions
-          </Button>
-        </div>
-        <div>
-          {
-            ownerSuccessMsg && (
-              <SuccessMsg text={ownerSuccessMsg} />
-            )
-          }
-        </div>
-      </div>
-      <div className='space-y-0.5 col-span-4 col-start-3'>
+      {(isOperatorUpdating) && <LoadingModal/>}
+      <WalletConnect
+        className='space-y-0.5 col-span-4 col-start-3'
+        ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        chainId={connectedChainId}
+        setOwner={setOwner}
+      />
+      <div className='space-y-4 col-span-4 col-start-3'>
         {operatorError && (
           <ErrorMsg text={ operatorError } />
         )}
-        <p>Operator address: { operatorAddress }</p>
+        <ValidatorInfo
+          ownerAddress={ownerAddress}
+          operatorAddress={operatorAddress}
+        />
         <Form
           inputs={operatorInputs}
           buttons={operatorButtons}
@@ -213,4 +174,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default JoinValidator

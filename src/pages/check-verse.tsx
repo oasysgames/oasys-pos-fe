@@ -24,6 +24,8 @@ import { getVerseInfo } from '@/features/optimism/verse';
 
 const CheckVerse: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
+  const [ownerAddress, setOwnerAddress] = useState('');
+  const [connectedChainId, setConnectedChainId] = useState<number>();
   const [txHashError, setTxHashError] = useState('');
   const [formValue, setFormValue] = useState('');
   const [verseBuilder, setVerseBuilder] = useState('');
@@ -34,6 +36,7 @@ const CheckVerse: NextPage = () => {
     const provider = await getProvider();
     const accounts = await provider.send('eth_accounts', []);
     if (accounts.length === 0) {
+      setOwnerAddress('');
       setOwnerError(isNotConnectedMsg);
       return;
     }
@@ -44,6 +47,7 @@ const CheckVerse: NextPage = () => {
     const signer = await getSigner();
     const chainId = await signer.getChainId();
     try {
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwner();
     } catch (err) {
@@ -54,6 +58,7 @@ const CheckVerse: NextPage = () => {
   const setOwner = async () => {
     try {
       const signer = await getSigner();
+      const address = await signer.getAddress();
       const chainId = await signer.getChainId();
 
       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
@@ -61,6 +66,8 @@ const CheckVerse: NextPage = () => {
       window.ethereum.removeListener('chainChanged', handleChainChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
+      setOwnerAddress(address);
+      setConnectedChainId(chainId);
       isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
@@ -126,6 +133,8 @@ const CheckVerse: NextPage = () => {
       <WalletConnect
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}
+        ownerAddress={ownerAddress}
+        chainId={connectedChainId}
         setOwner={setOwner}
       />
 

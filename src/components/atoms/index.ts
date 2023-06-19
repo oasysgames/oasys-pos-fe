@@ -7,3 +7,4 @@ export * from './modal';
 export * from './error';
 export * from './success';
 export * from './linkTab';
+export * from './linkTitle';
