@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
-import { getProvider, getSigner, isAllowedChain, handleError, getSOASContract } from '@/features';
+import { getProvider, getSigner, handleError, getSOASContract } from '@/features';
 import { isNotConnectedMsg, sOASTokenUnit } from '@/consts';
 
 const SOASPage: NextPage = () => {
@@ -38,7 +38,6 @@ const SOASPage: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
       refreshSOASClaimInfo();
     } catch (err) {
@@ -59,7 +58,6 @@ const SOASPage: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);

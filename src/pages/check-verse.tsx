@@ -8,7 +8,6 @@ import {
   getSigner,
   getVerseChainId,
   handleError,
-  isAllowedChain,
   isTxHash,
   isAddress,
 } from '@/features';
@@ -48,7 +47,6 @@ const CheckVerse: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
     } catch (err) {
       handleError(err, setOwnerError);
@@ -68,7 +66,6 @@ const CheckVerse: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);

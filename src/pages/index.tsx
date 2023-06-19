@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { isNotConnectedMsg } from '@/consts';
-import { getProvider, getSigner, handleError, isAllowedChain } from '@/features';
+import { getProvider, getSigner, handleError } from '@/features';
 import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
 import { WalletConnect, VerseInfo, LoadingModal } from '@/components/organisms';
@@ -31,7 +31,6 @@ const Verse: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
       refreshL1BuildDeposit();
       refreshVerseInfo();
@@ -53,7 +52,6 @@ const Verse: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { getProvider, getSigner, isAllowedChain, handleError, getLOASContract } from '@/features';
+import { getProvider, getSigner, handleError, getLOASContract } from '@/features';
 import { WalletConnect } from '@/components/organisms';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
@@ -37,7 +37,6 @@ const LOASPage: NextPage = () => {
     const chainId = await signer.getChainId();
     try {
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwner();
       refreshLOASClaimInfo();
     } catch (err) {
@@ -58,7 +57,6 @@ const LOASPage: NextPage = () => {
 
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      isAllowedChain(chainId);
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);
