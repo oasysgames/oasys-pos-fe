@@ -5,7 +5,7 @@ import {
   getSigner,
   getL1BuildDepositContract,
 } from "@/features";
-import { GenesisParams } from "@/types/optimism/genesis";
+import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import {
   GenesisGasParams,
   GenesisBlockParams,
@@ -47,10 +47,18 @@ export const getVerseInfo = async (
     ...GenesisBlockParams,
     ...GenesisCliqueParams,
   };
-  const genesis = await makeGenesisJson(genesisParams, namedAddresses);
+  const genesisVersionCount = 2;
+  const geneses: Genesis[] = [];
+
+  for (let i = 0; i < genesisVersionCount; i++) {
+    const version = i + 1;
+    const genesis = await makeGenesisJson(genesisParams, namedAddresses, version);
+    geneses.push(genesis);
+  }
+
   return {
     chainId: verseChainId,
     namedAddresses,
-    genesis,
+    geneses,
   };
 };

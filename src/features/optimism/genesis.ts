@@ -21,20 +21,28 @@ const INITIAL_COMMIT = "c724bfe6e326c7bcc321e20deb9c2129ec0d4112";
 // https://github.com/oasysgames/oasys-optimism/tree/49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6/packages/contracts
 const OVM_OAS_COMMIT = "49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6";
 
-const CONTRACT_COMMITS: { [name: string]: string } = {
-  OVM_L2ToL1MessagePasser: INITIAL_COMMIT,
-  OVM_DeployerWhitelist: INITIAL_COMMIT,
-  L2CrossDomainMessenger: INITIAL_COMMIT,
-  OVM_GasPriceOracle: INITIAL_COMMIT,
-  L2StandardBridge: INITIAL_COMMIT,
-  L2ERC721Bridge: INITIAL_COMMIT,
-  OVM_SequencerFeeVault: INITIAL_COMMIT,
-  L2StandardTokenFactory: INITIAL_COMMIT,
-  OVM_L1BlockNumber: INITIAL_COMMIT,
-  OVM_ETH: INITIAL_COMMIT,
-  WETH9: INITIAL_COMMIT,
-  OVM_OAS: OVM_OAS_COMMIT,
-} as const;
+// https://github.com/oasysgames/oasys-optimism/tree/5186190c3250121179064b70d8e2fbd2d0a03ce3/packages/contracts
+const BRIDGE_CONTRACT_V2_COMMIT = "5186190c3250121179064b70d8e2fbd2d0a03ce3";
+
+const getContractCommit = (version: number): { [name: string]: string } => {
+
+  const CONTRACT_COMMITS: { [name: string]: string } = {
+    OVM_L2ToL1MessagePasser: INITIAL_COMMIT,
+    OVM_DeployerWhitelist: INITIAL_COMMIT,
+    L2CrossDomainMessenger: INITIAL_COMMIT,
+    OVM_GasPriceOracle: INITIAL_COMMIT,
+    L2StandardBridge: (version === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    L2ERC721Bridge: (version === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    OVM_SequencerFeeVault: INITIAL_COMMIT,
+    L2StandardTokenFactory: INITIAL_COMMIT,
+    OVM_L1BlockNumber: INITIAL_COMMIT,
+    OVM_ETH: INITIAL_COMMIT,
+    WETH9: INITIAL_COMMIT,
+    OVM_OAS: OVM_OAS_COMMIT,
+  } as const;
+
+  return CONTRACT_COMMITS;
+}
 
 const getContractArtifact = async (
   commit: string,
@@ -48,7 +56,8 @@ const getContractArtifact = async (
 
 export const makeGenesisJson = async (
   params: GenesisParams,
-  contracts: NamedAddresses
+  contracts: NamedAddresses,
+  version: number,
 ): Promise<Genesis> => {
   let commit = INITIAL_COMMIT;
   const addresses = clone(L2ContractAddresses);
@@ -112,6 +121,7 @@ export const makeGenesisJson = async (
   }
 
   const dump: any = {};
+  const CONTRACT_COMMITS = getContractCommit(version);
   for (const [predeployName, predeployAddress] of Object.entries(addresses)) {
     dump[predeployAddress] = {
       balance: "00",

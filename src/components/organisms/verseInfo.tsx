@@ -1,8 +1,10 @@
 import clsx from 'clsx';
 import { ErrorMsg, Button, Table } from '@/components/atoms';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { download, handleError } from '@/features';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
+import { Genesis } from '@/types/optimism/genesis';
+import { NamedAddresses } from '@/types/oasysHub/verseBuild';
 
 type Props = {
   className?: string;
@@ -20,23 +22,21 @@ export const VerseInfo = (props: Props) => {
 
   const [downloadError, setDownloadError] = useState('');
 
-  const downloadAddresses = async () => {
+  const downloadAddresses = useCallback((namedAddresses: NamedAddresses) => {
     try {
-      if (!verseInfo?.namedAddresses) throw new Error('You have to build verse');
-      download(verseInfo.namedAddresses, 'addresses.json');
+      download(namedAddresses, 'addresses.json');
     } catch (err) {
       handleError(err, setDownloadError);
     }
-  };
+  }, []);
 
-  const downloadGenesis = async () => {
+  const downloadGenesis = useCallback((genesis: Genesis) => {
     try {
-      if (!verseInfo?.genesis) throw new Error('You have to build verse');
-      download(verseInfo.genesis, 'genesis.json');
+      download(genesis, 'genesis.json');
     } catch (err) {
       handleError(err, setDownloadError);
     }
-  };
+  }, []);
 
   const heads = [
     'Config',
@@ -86,20 +86,29 @@ export const VerseInfo = (props: Props) => {
           heads={heads}
           records={records}
         />
-        <div className="flex items-center space-x-2">
-          <Button
-            handleClick={downloadAddresses}
-            disabled={ !verseInfo?.namedAddresses }
-          >
-            Download Address.json
-          </Button>
-          <Button
-            handleClick={downloadGenesis}
-            disabled={ !verseInfo?.genesis }
-          >
-            Download genesis.json
-          </Button>
-        </div>
+          {verseInfo?.namedAddresses && verseInfo?.geneses &&
+            <div className="flex flex-col space-y-2">
+              <Button
+                handleClick={() => downloadAddresses(verseInfo.namedAddresses)}
+              >
+                Download Address.json
+              </Button>
+              {
+                verseInfo.geneses.map((genesis, index) => {
+                  const version = index + 1;
+                  return (
+                    <Button
+                      key={index}
+                      handleClick={() => downloadGenesis(genesis)}
+                    >
+                      Download genesis.json(Version{version})
+                    </Button>
+                  );
+                })
+              }
+            </div>
+          }
+
     </div>
   );
 };
