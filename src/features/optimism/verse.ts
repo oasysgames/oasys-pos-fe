@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import { genesisVersions } from "@/consts/";
 
 import {
   getNamedAddresses,
@@ -47,13 +48,14 @@ export const getVerseInfo = async (
     ...GenesisBlockParams,
     ...GenesisCliqueParams,
   };
-  const genesisVersionCount = 2;
   const geneses: Genesis[] = [];
 
-  for (let i = 0; i < genesisVersionCount; i++) {
-    const version = i + 1;
-    const genesis = await makeGenesisJson(genesisParams, namedAddresses, version);
-    geneses.push(genesis);
+  for (const key in genesisVersions) {
+    if (genesisVersions.hasOwnProperty(key)) {
+      const version = genesisVersions[key];
+      const genesis = await makeGenesisJson(genesisParams, namedAddresses, version.bridgeContractVersion);
+      geneses.push(genesis);
+    }
   }
 
   return {

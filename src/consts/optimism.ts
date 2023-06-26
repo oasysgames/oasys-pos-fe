@@ -1,3 +1,5 @@
+import { GenesisVersion } from "@/types/optimism/genesis";
+
 export const L2ContractAddresses: { [name: string]: string } = {
   OVM_L2ToL1MessagePasser: "0x4200000000000000000000000000000000000000",
   OVM_DeployerWhitelist: "0x4200000000000000000000000000000000000002",
@@ -11,6 +13,15 @@ export const L2ContractAddresses: { [name: string]: string } = {
   OVM_ETH: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
   WETH9: "0x4200000000000000000000000000000000000006",
 } as const;
+
+export const genesisVersions: GenesisVersion = {
+  1: {
+    bridgeContractVersion: 1,
+  },
+  2: {
+    bridgeContractVersion: 2,
+  },
+};
 
 export const GenesisGasParams = {
   gasPriceOracleL2GasPrice: 0,

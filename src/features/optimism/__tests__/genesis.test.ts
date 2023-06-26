@@ -42,8 +42,8 @@ describe("makeGenesisJson()", () => {
       ...GenesisCliqueParams,
     };
 
-    const version = 1;
-    const actual = await makeGenesisJson(params, contracts, version);
+    const bridgeVersion = 1;
+    const actual = await makeGenesisJson(params, contracts, bridgeVersion);
 
     expect(actual).toEqual({
       commit: "c724bfe6e326c7bcc321e20deb9c2129ec0d4112",
@@ -193,8 +193,8 @@ describe("makeGenesisJson()", () => {
       ...GenesisCliqueParams,
     };
 
-    const version = 1;
-    const actual = await makeGenesisJson(params, contracts, version);
+    const bridgeVersion = 1;
+    const actual = await makeGenesisJson(params, contracts, bridgeVersion);
 
     expect(actual).toEqual({
       commit: "49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6",
@@ -344,8 +344,8 @@ describe("makeGenesisJson()", () => {
       ...GenesisCliqueParams,
     };
 
-    const version = 2;
-    const actual = await makeGenesisJson(params, contracts, version);
+    const bridgeVersion = 2;
+    const actual = await makeGenesisJson(params, contracts, bridgeVersion);
 
     expect(actual).toEqual({
       commit: "49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6",

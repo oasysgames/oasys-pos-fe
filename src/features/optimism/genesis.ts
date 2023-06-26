@@ -9,11 +9,18 @@ import {
   L2ContractAddresses,
   L2ContractStorageLayouts,
   ZERO_ADDRESS,
+  genesisVersions,
 } from "@/consts";
 import { remove0x } from "@/features/smock/hexUtils";
 import { computeStorageSlots } from "@/features/smock/storage";
 import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import { NamedAddresses } from "@/types/oasysHub/verseBuild";
+
+import L2StandardBridgeV1 from '@/contracts/optimism/c724bfe6e3/L2StandardBridge.json';
+import L2ERC721BridgeV1 from '@/contracts/optimism/c724bfe6e3/L2ERC721Bridge.json';
+import L2StandardBridgeV2 from '@/contracts/optimism/5186190c32/L2StandardBridge.json';
+import L2ERC721BridgeV2 from '@/contracts/optimism/5186190c32/L2ERC721Bridge.json';
+import { providers } from "ethers";
 
 // https://github.com/oasysgames/oasys-optimism/tree/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts
 const INITIAL_COMMIT = "c724bfe6e326c7bcc321e20deb9c2129ec0d4112";
@@ -24,15 +31,15 @@ const OVM_OAS_COMMIT = "49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6";
 // https://github.com/oasysgames/oasys-optimism/tree/5186190c3250121179064b70d8e2fbd2d0a03ce3/packages/contracts
 const BRIDGE_CONTRACT_V2_COMMIT = "5186190c3250121179064b70d8e2fbd2d0a03ce3";
 
-const getContractCommit = (version: number): { [name: string]: string } => {
+const getContractCommit = (bridgeVersion: number): { [name: string]: string } => {
 
   const CONTRACT_COMMITS: { [name: string]: string } = {
     OVM_L2ToL1MessagePasser: INITIAL_COMMIT,
     OVM_DeployerWhitelist: INITIAL_COMMIT,
     L2CrossDomainMessenger: INITIAL_COMMIT,
     OVM_GasPriceOracle: INITIAL_COMMIT,
-    L2StandardBridge: (version === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
-    L2ERC721Bridge: (version === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    L2StandardBridge: (bridgeVersion === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    L2ERC721Bridge: (bridgeVersion === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
     OVM_SequencerFeeVault: INITIAL_COMMIT,
     L2StandardTokenFactory: INITIAL_COMMIT,
     OVM_L1BlockNumber: INITIAL_COMMIT,
@@ -57,7 +64,7 @@ const getContractArtifact = async (
 export const makeGenesisJson = async (
   params: GenesisParams,
   contracts: NamedAddresses,
-  version: number,
+  bridgeVersion: number,
 ): Promise<Genesis> => {
   let commit = INITIAL_COMMIT;
   const addresses = clone(L2ContractAddresses);
@@ -121,7 +128,7 @@ export const makeGenesisJson = async (
   }
 
   const dump: any = {};
-  const CONTRACT_COMMITS = getContractCommit(version);
+  const CONTRACT_COMMITS = getContractCommit(bridgeVersion);
   for (const [predeployName, predeployAddress] of Object.entries(addresses)) {
     dump[predeployAddress] = {
       balance: "00",
@@ -187,3 +194,36 @@ export const makeGenesisJson = async (
 
   return genesis;
 };
+
+const checkBridgeContractVersion = async (provider: providers.JsonRpcProvider) => {
+
+  const preERC20BridgeBytecode = await provider.getCode(L2ContractAddresses.L2StandardBridge);
+  const preERC721BridgeBytecode = await provider.getCode(L2ContractAddresses.L2ERC721Bridge);
+
+  const isVersion1 = preERC20BridgeBytecode === L2StandardBridgeV1.deployedBytecode && preERC721BridgeBytecode === L2ERC721BridgeV1.deployedBytecode;
+  const isVersion2 = preERC20BridgeBytecode === L2StandardBridgeV2.deployedBytecode && preERC721BridgeBytecode === L2ERC721BridgeV2.deployedBytecode;
+
+  if (isVersion1) {
+    return 1;
+  } else if (isVersion2) {
+    return 2;
+  } else {
+    throw new Error('Unknown version');
+  }
+}
+
+export const getGenesisVersion = async (provider: providers.JsonRpcProvider) => {
+  const bridgeVersion = await checkBridgeContractVersion(provider);
+
+  for (const key in genesisVersions) {
+    if (genesisVersions.hasOwnProperty(key)) {
+      const version = genesisVersions[key];
+      const isRelevantVersion = version.bridgeContractVersion === bridgeVersion;
+
+      if (isRelevantVersion) {
+        return key;
+      }
+    }
+  }
+  throw new Error('Unknown version');
+}
