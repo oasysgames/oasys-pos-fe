@@ -15,10 +15,10 @@ export const L2ContractAddresses: { [name: string]: string } = {
 } as const;
 
 export const genesisVersions: GenesisVersion = {
-  1: {
+  '1': {
     bridgeContractVersion: 1,
   },
-  2: {
+  '2': {
     bridgeContractVersion: 2,
   },
 };

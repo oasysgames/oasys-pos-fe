@@ -10,12 +10,9 @@ import { ErrorMsg } from '@/components/atoms';
 import {
   WalletConnect,
   Form,
+  GenesisVersionDetail,
 } from '@/components/organisms';
-import { ethers, providers } from 'ethers';
-import L2StandardBridgeV1 from '@/contracts/optimism/c724bfe6e3/L2StandardBridge.json';
-import L2ERC721BridgeV1 from '@/contracts/optimism/c724bfe6e3/L2ERC721Bridge.json';
-import L2StandardBridgeV2 from '@/contracts/optimism/5186190c32/L2StandardBridge.json';
-import L2ERC721BridgeV2 from '@/contracts/optimism/5186190c32/L2ERC721Bridge.json';
+import { ethers } from 'ethers';
 import { getGenesisVersion } from '@/features/optimism';
 
 const CheckGenesisVersion: NextPage = () => {
@@ -111,10 +108,12 @@ const CheckGenesisVersion: NextPage = () => {
         setOwner={setOwner}
       />
 
-      <div className='space-y-0.5 col-span-4 col-start-3'>
+      <div className='space-y-4 col-span-4 col-start-3'>
         {genesisVersionError && <ErrorMsg text={genesisVersionError} className='w-full' />}
         <Form inputs={inputs} buttons={buttons} />
-        <p>Version{genesisVersion}</p>
+        {genesisVersion && 
+          <GenesisVersionDetail version={genesisVersion} />
+        }
       </div>
     </div>
   );

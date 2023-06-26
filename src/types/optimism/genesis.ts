@@ -1,5 +1,5 @@
 export interface GenesisVersion {
-  [key: number]: {
+  [key: string]: {
     bridgeContractVersion: number;
   };
 }
