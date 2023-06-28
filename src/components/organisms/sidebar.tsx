@@ -28,10 +28,6 @@ const verseBuilderLinks = [
     url: '/check-verse',
   },
   {
-    text: 'Check genesis version',
-    url: '/check-genesis-version',
-  },
-  {
     text: 'Update bridge contract',
     url: '/update-bridge',
   }

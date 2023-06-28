@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { ErrorMsg, Button, Table } from '@/components/atoms';
+import { CheckGenesisVersionModal } from '@/components/organisms';
 import { useCallback, useState } from 'react';
 import { download, handleError } from '@/features';
 import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
@@ -21,6 +22,7 @@ export const VerseInfo = (props: Props) => {
   } = props;
 
   const [downloadError, setDownloadError] = useState('');
+  const [checkModalOpen, setCheckModalOpen] = useState(false);
 
   const downloadAddresses = useCallback((namedAddresses: NamedAddresses) => {
     try {
@@ -78,6 +80,11 @@ export const VerseInfo = (props: Props) => {
     <div className={clsx(
       className,
     )}>
+      {checkModalOpen &&
+        <CheckGenesisVersionModal
+          setModalState={setCheckModalOpen}
+        />
+      }
       {downloadError && (
           <ErrorMsg text={ downloadError } className='w-full' />
         )}
@@ -106,9 +113,15 @@ export const VerseInfo = (props: Props) => {
                   );
                 })
               }
+              <Button
+              handleClick={() => {
+                setCheckModalOpen(true)
+              }}
+              >
+                Check Genesis Version
+              </Button>
             </div>
           }
-
     </div>
   );
 };

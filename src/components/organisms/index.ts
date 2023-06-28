@@ -9,3 +9,4 @@ export * from './verseInfo';
 export * from './buildDepositModal';
 export * from './buildVerseModal';
 export * from './loadingModal';
+export * from './checkGenesisVersionModal';
