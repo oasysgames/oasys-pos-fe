@@ -108,7 +108,7 @@ export const VerseInfo = (props: Props) => {
                       key={index}
                       handleClick={() => downloadGenesis(genesis)}
                     >
-                      Download genesis.json(Version{version})
+                      Download genesis.json(Version{version}{index === verseInfo.geneses.length - 1 ? ': For new verse builder' : ''})
                     </Button>
                   );
                 })
