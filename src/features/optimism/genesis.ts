@@ -197,11 +197,11 @@ export const makeGenesisJson = async (
 
 const checkBridgeContractVersion = async (provider: providers.JsonRpcProvider) => {
 
-  const preERC20BridgeBytecode = await provider.getCode(L2ContractAddresses.L2StandardBridge);
-  const preERC721BridgeBytecode = await provider.getCode(L2ContractAddresses.L2ERC721Bridge);
+  const initialERC20BridgeBytecode = await provider.getCode(L2ContractAddresses.L2StandardBridge, 0);
+  const initialERC721BridgeBytecode = await provider.getCode(L2ContractAddresses.L2ERC721Bridge, 0);
 
-  const isVersion1 = preERC20BridgeBytecode === L2StandardBridgeV1.deployedBytecode && preERC721BridgeBytecode === L2ERC721BridgeV1.deployedBytecode;
-  const isVersion2 = preERC20BridgeBytecode === L2StandardBridgeV2.deployedBytecode && preERC721BridgeBytecode === L2ERC721BridgeV2.deployedBytecode;
+  const isVersion1 = initialERC20BridgeBytecode === L2StandardBridgeV1.deployedBytecode && initialERC721BridgeBytecode === L2ERC721BridgeV1.deployedBytecode;
+  const isVersion2 = initialERC20BridgeBytecode === L2StandardBridgeV2.deployedBytecode && initialERC721BridgeBytecode === L2ERC721BridgeV2.deployedBytecode;
 
   if (isVersion1) {
     return 1;
