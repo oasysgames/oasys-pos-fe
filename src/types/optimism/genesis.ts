@@ -1,3 +1,9 @@
+export interface GenesisVersion {
+  [key: string]: {
+    bridgeContractVersion: number;
+  };
+}
+
 export interface GenesisParams {
   chainId: number;
   ovmWhitelistOwner: string;

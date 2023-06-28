@@ -4,5 +4,5 @@ import { Genesis } from "./genesis";
 export type VerseInfo = {
   chainId: number;
   namedAddresses: NamedAddresses;
-  genesis: Genesis;
+  geneses: Genesis[];
 }

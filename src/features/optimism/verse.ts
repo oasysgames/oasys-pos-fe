@@ -1,11 +1,12 @@
 import { BigNumber } from "ethers";
+import { genesisVersions } from "@/consts/";
 
 import {
   getNamedAddresses,
   getSigner,
   getL1BuildDepositContract,
 } from "@/features";
-import { GenesisParams } from "@/types/optimism/genesis";
+import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import {
   GenesisGasParams,
   GenesisBlockParams,
@@ -47,10 +48,19 @@ export const getVerseInfo = async (
     ...GenesisBlockParams,
     ...GenesisCliqueParams,
   };
-  const genesis = await makeGenesisJson(genesisParams, namedAddresses);
+  const geneses: Genesis[] = [];
+
+  for (const key in genesisVersions) {
+    if (genesisVersions.hasOwnProperty(key)) {
+      const version = genesisVersions[key];
+      const genesis = await makeGenesisJson(genesisParams, namedAddresses, version.bridgeContractVersion);
+      geneses.push(genesis);
+    }
+  }
+
   return {
     chainId: verseChainId,
     namedAddresses,
-    genesis,
+    geneses,
   };
 };
