@@ -39,7 +39,7 @@ export const BuildDepositModal = (props: Props) => {
       await L1BuildDepositContract.deposit(ownerAddress, options);
 
       const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter, (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter, (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${OASTokenUnit} deposit is successful`);
         setOASAmount('');
@@ -60,7 +60,7 @@ export const BuildDepositModal = (props: Props) => {
       await L1BuildDepositContract.withdraw(ownerAddress, value);
 
       const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter,  (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter,  (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${OASTokenUnit} withdraw is successful`);
         setOASAmount('');
@@ -84,7 +84,7 @@ export const BuildDepositModal = (props: Props) => {
       await L1BuildDepositContract.depositERC20(ownerAddress, sOASAddress, value);
 
       const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter, (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter, (builder, depositer, token, amount) => {
         const sOASAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${sOASAmount}${sOASTokenUnit} deposit is successful`);
         setSOASAmount('');
@@ -105,7 +105,7 @@ export const BuildDepositModal = (props: Props) => {
       await L1BuildDepositContract.withdrawERC20(ownerAddress, sOASAddress, value);
 
       const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
-      L1BuildDepositContract.once(filter,  (builder: string, depositer: string, token: string, amount: ethers.BigNumber) => {
+      L1BuildDepositContract.once(filter,  (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${sOASTokenUnit} withdraw is successful`);
         setSOASAmount('');

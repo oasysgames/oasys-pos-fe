@@ -74,7 +74,7 @@ const ClaimCommissions: NextPage = () => {
       setIsClaiming(true);
       await stakeManagerContract.claimCommissions(ownerAddress, 0);
       const filter = stakeManagerContract.filters.ClaimedCommissions(ownerAddress, null);
-      stakeManagerContract.once(filter, (owner: string, amount: ethers.BigNumber) => {
+      stakeManagerContract.once(filter, (owner, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setClaimSuccessMsg(`claim commissions is successful(${oasAmount}OAS)`);
         setIsClaiming(false);

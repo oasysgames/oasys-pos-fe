@@ -75,16 +75,14 @@ const JoinValidator: NextPage = () => {
       await stakeManagerContract.joinValidator(newOperator);
 
       const filter = stakeManagerContract.filters.ValidatorJoined(null);
-      const callback = (owner: string) => {
+      stakeManagerContract.once(filter, (owner) => {
         if (owner === ownerAddress) {
           setOperatorAddress(newOperator);
           setNewOperator('');
           setOperatorSuccessMsg(`operator register is successful`);
           setIsOperatorUpdating(false);
-          stakeManagerContract.off(filter, callback);
         }
-      };
-      stakeManagerContract.on(filter, callback);
+      });
     } catch (err) {
       setOperatorSuccessMsg('');
       setIsOperatorUpdating(false);
@@ -99,13 +97,12 @@ const JoinValidator: NextPage = () => {
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
       const filter = stakeManagerContract.filters.OperatorUpdated(ownerAddress, null, null);
-      const callback = (owner: string, oldOperator: string, operator: string) => {
+      stakeManagerContract.once(filter, (owner, oldOperator, operator) => {
         setOperatorAddress(newOperator);
         setNewOperator('');
         setOperatorSuccessMsg(`update is successful. (${oldOperator} => ${operator})`);
         setIsOperatorUpdating(false);
-      }
-      stakeManagerContract.once(filter, callback);
+      });
     } catch (err) {
       setOperatorSuccessMsg('');
       setIsOperatorUpdating(false);

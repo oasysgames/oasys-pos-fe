@@ -75,7 +75,7 @@ const SOASPage: NextPage = () => {
       await sOASContract.claim(claimAmount);
 
       const filter = sOASContract.filters.Claim(ownerAddress, null);
-      sOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
+      sOASContract.once(filter, (address, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setSuccessMsg(`Success to convert ${oasAmount}${sOASTokenUnit} to ${oasAmount}OAS`);
         refreshSOASClaimInfo();
