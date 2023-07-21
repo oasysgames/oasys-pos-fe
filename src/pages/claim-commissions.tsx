@@ -4,16 +4,18 @@ import { ethers } from 'ethers';
 import { getProvider, getSigner, handleError, getStakeManagerContract } from '@/features';
 import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
+import { isNotConnectedMsg } from '@/consts';
+import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
 
 const ClaimCommissions: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
-  const [operatorAddress, setOperatorAddress] = useState('');
   const [connectedChainId, setConnectedChainId] = useState<number>();
   const [claimSuccessMsg, setClaimSuccessMsg] = useState('');
   const [claimErrorMsg, setClaimErrorMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
+  const { validatorInfo, isValidatorInfoLoading, validatorInfoError } = useValidatorInfo(ownerAddress);
+  const refreshValidatorInfo = useRefreshValidatorInfo();
 
   const refreshError = () => {
     setOwnerError('');
@@ -37,6 +39,7 @@ const ClaimCommissions: NextPage = () => {
     try {
       setConnectedChainId(chainId);
       setOwner();
+      refreshValidatorInfo();
     } catch (err) {
       handleError(err, setOwnerError);
     }
@@ -53,14 +56,8 @@ const ClaimCommissions: NextPage = () => {
       window.ethereum.removeListener('chainChanged', handleChainChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
-      const stakeManagerContract = await getStakeManagerContract();
-
       setOwnerAddress(address);
       setConnectedChainId(chainId);
-      const result = await stakeManagerContract.getValidatorInfo(address, 0);
-      if (result.operator !== ZERO_ADDRESS) {
-        setOperatorAddress(result.operator);
-      }
       setOwnerError('');
     } catch (err) {
       handleError(err, setOwnerError);
@@ -90,25 +87,13 @@ const ClaimCommissions: NextPage = () => {
     handleAccountsChanged();
   });
 
-  const heads = [
-    'Address',
-    'Value'
-  ];
-
-  const records = [
-    [
-      'Validator Owner',
-      ownerAddress,
-    ],
-    [
-      'Validator Operator',
-      operatorAddress,
-    ]
-  ]
+  useEffect(() => {
+    refreshValidatorInfo();
+  }, [ownerAddress, refreshValidatorInfo]);
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      {(isClaiming) && <LoadingModal/>}
+      {(isClaiming || isValidatorInfoLoading) && <LoadingModal/>}
       <WalletConnect
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}
@@ -117,10 +102,10 @@ const ClaimCommissions: NextPage = () => {
         setOwner={setOwner}
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
-        {(!ownerAddress || !operatorAddress) &&
+        {(!ownerAddress || !validatorInfo) &&
         <p>You have to join validator.</p>
         }
-        {(ownerAddress && operatorAddress)  &&
+        {(ownerAddress && validatorInfo)  &&
           <div className='space-y-4'>
             {claimErrorMsg && (
               <ErrorMsg text={ claimErrorMsg } className='w-full' />
@@ -128,9 +113,12 @@ const ClaimCommissions: NextPage = () => {
             {claimSuccessMsg && (
               <SuccessMsg text={claimSuccessMsg} className='w-full' />
             )}
+            {validatorInfoError instanceof Error && (
+              <ErrorMsg text={validatorInfoError.message} className='w-full' />
+            )}
             <ValidatorInfo
               ownerAddress={ownerAddress}
-              operatorAddress={operatorAddress}
+              validatorInfo={validatorInfo}
             />
             <div className="flex items-center space-x-2">
               <Button

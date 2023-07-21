@@ -1,10 +1,12 @@
 import clsx from 'clsx';
+import { ethers } from 'ethers';
 import { Table } from '@/components/atoms';
+import { ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
 
 type Props = {
   className?: string;
   ownerAddress: string;
-  operatorAddress: string;
+  validatorInfo: ValidatorInfoType;
 };
 
 
@@ -12,32 +14,70 @@ export const ValidatorInfo = (props: Props) => {
   const {
     className,
     ownerAddress,
-    operatorAddress,
+    validatorInfo,
   } = props;
 
-  const heads = [
-    'Address',
+  const baseInfoHeads = [
+    'Key',
     'Value'
   ];
 
-  const records = [
+  const baseInfoRecords = [
     [
       'Validator Owner',
       ownerAddress,
     ],
     [
       'Validator Operator',
-      operatorAddress,
-    ]
+      validatorInfo.operatorAddress,
+    ],
+    [
+      'joined',
+      validatorInfo.joined ? 'Yes' : 'No',
+    ],
+    [
+      'status',
+      validatorInfo.status,
+    ],
+    [
+      'jailed',
+      validatorInfo.jailed ? 'Yes' : 'No',
+    ],
+    [
+      'commissions (OAS)',
+      ethers.utils.formatEther(validatorInfo.commissions),
+    ],
+    [
+      'currentEpochStakes (OAS)',
+      ethers.utils.formatEther(validatorInfo.currentEpochStakes),
+    ],
+    [
+      'nextEpochStakes (OAS)',
+      ethers.utils.formatEther(validatorInfo.nextEpochStakes),
+    ],
   ];
+
+  const slashInfoHeads = [
+    'Epoch',
+    'Slash Count',
+  ];
+
+  const slashInfoRecords = Object.entries(validatorInfo.epochToSlashes).map(([epoch, slashCount]) => { return [epoch, `${slashCount.toNumber()}`]});
 
   return (
     <div className={clsx(
       className,
+      'space-y-4',
     )}>
+      <p>Validator Base Information</p>
       <Table
-        heads={heads}
-        records={records}
+        heads={baseInfoHeads}
+        records={baseInfoRecords}
+      />
+      <p>Validator Slash Information (Last 30 Epoch)</p>
+      <Table
+        heads={slashInfoHeads}
+        records={slashInfoRecords}
       />
     </div>
   );
