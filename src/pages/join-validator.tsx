@@ -162,6 +162,7 @@ const JoinValidator: NextPage = () => {
         )}
         {ownerAddress && validatorInfo && (
           <ValidatorInfo
+            className='space-y-2'
             ownerAddress={ownerAddress}
             validatorInfo={validatorInfo}
           />

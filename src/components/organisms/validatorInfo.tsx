@@ -67,7 +67,6 @@ export const ValidatorInfo = (props: Props) => {
   return (
     <div className={clsx(
       className,
-      'space-y-4',
     )}>
       <p>Validator Base Information</p>
       <Table

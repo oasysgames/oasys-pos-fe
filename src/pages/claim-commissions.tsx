@@ -117,6 +117,7 @@ const ClaimCommissions: NextPage = () => {
               <ErrorMsg text={validatorInfoError.message} className='w-full' />
             )}
             <ValidatorInfo
+              className='space-y-2'
               ownerAddress={ownerAddress}
               validatorInfo={validatorInfo}
             />
