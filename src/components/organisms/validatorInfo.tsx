@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import { ethers } from 'ethers';
 import { Table } from '@/components/atoms';
 import { ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
+import { formatWeiAmount } from '@/features';
 
 type Props = {
   className?: string;
@@ -45,15 +45,15 @@ export const ValidatorInfo = (props: Props) => {
     ],
     [
       'commissions (OAS)',
-      ethers.utils.formatEther(validatorInfo.commissions),
+      formatWeiAmount(validatorInfo.commissions),
     ],
     [
       'currentEpochStakes (OAS)',
-      ethers.utils.formatEther(validatorInfo.currentEpochStakes),
+      formatWeiAmount(validatorInfo.currentEpochStakes),
     ],
     [
       'nextEpochStakes (OAS)',
-      ethers.utils.formatEther(validatorInfo.nextEpochStakes),
+      formatWeiAmount(validatorInfo.nextEpochStakes),
     ],
   ];
 
