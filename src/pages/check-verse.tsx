@@ -48,6 +48,7 @@ const CheckVerse: NextPage = () => {
     try {
       setConnectedChainId(chainId);
       setOwner();
+      setVerseInfo(undefined);
     } catch (err) {
       handleError(err, setOwnerError);
     }

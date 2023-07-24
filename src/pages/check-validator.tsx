@@ -42,6 +42,7 @@ const CheckValidator: NextPage = () => {
     try {
       setConnectedChainId(chainId);
       setOwner();
+      setValidatorInfo(undefined);
     } catch (err) {
       handleError(err, setOwnerError);
     }
