@@ -102,10 +102,10 @@ const ClaimCommissions: NextPage = () => {
         setOwner={setOwner}
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
-        {(!ownerAddress || !validatorInfo) &&
+        {(!ownerAddress || !validatorInfo || !validatorInfo.joined) &&
         <p>You have to join validator.</p>
         }
-        {(ownerAddress && validatorInfo)  &&
+        {(ownerAddress && validatorInfo && validatorInfo.joined)  &&
           <div className='space-y-4'>
             {claimErrorMsg && (
               <ErrorMsg text={ claimErrorMsg } className='w-full' />

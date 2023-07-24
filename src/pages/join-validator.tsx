@@ -160,7 +160,7 @@ const JoinValidator: NextPage = () => {
         {validatorInfoError instanceof Error && (
           <ErrorMsg text={validatorInfoError.message} className='w-full' />
         )}
-        {ownerAddress && validatorInfo && (
+        {ownerAddress && validatorInfo && validatorInfo.joined && (
           <ValidatorInfo
             className='space-y-2'
             ownerAddress={ownerAddress}
