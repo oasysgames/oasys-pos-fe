@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { getProvider, getSigner, handleError, getStakeManagerContract } from '@/features';
-import { Button, ErrorMsg, SuccessMsg } from '@/components/atoms';
+import { getProvider, getSigner, handleError, getStakeManagerContract, formatWeiAmount } from '@/features';
+import { Button, ErrorMsg, SuccessMsg, Table } from '@/components/atoms';
 import { LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
 import { isNotConnectedMsg } from '@/consts';
 import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
@@ -91,6 +91,18 @@ const ClaimCommissions: NextPage = () => {
     refreshValidatorInfo();
   }, [ownerAddress, refreshValidatorInfo]);
 
+  const heads = [
+    'Key',
+    'Value'
+  ];
+
+  const records = [
+    [
+      'commissions (OAS)',
+      validatorInfo?.commissions ? formatWeiAmount(validatorInfo.commissions) : '0.0',
+    ],
+  ];
+
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       {(isClaiming || isValidatorInfoLoading) && <LoadingModal/>}
@@ -116,10 +128,9 @@ const ClaimCommissions: NextPage = () => {
             {validatorInfoError instanceof Error && (
               <ErrorMsg text={validatorInfoError.message} className='w-full' />
             )}
-            <ValidatorInfo
-              className='space-y-2'
-              ownerAddress={ownerAddress}
-              validatorInfo={validatorInfo}
+            <Table
+              heads={heads}
+              records={records}
             />
             <div className="flex items-center space-x-2">
               <Button
