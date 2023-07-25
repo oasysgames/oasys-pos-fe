@@ -15,8 +15,8 @@ const getLOASClaimInfo = async () => {
   const ownerAddress = await signer.getAddress();
   const lOASContract = await getLOASContract();
   const res = await lOASContract.claimInfo(ownerAddress);
-  const claimable: ethers.BigNumber = await lOASContract.getClaimableOAS(ownerAddress);
-  const balance: ethers.BigNumber = await lOASContract.balanceOf(ownerAddress);
+  const claimable = await lOASContract.getClaimableOAS(ownerAddress);
+  const balance = await lOASContract.balanceOf(ownerAddress);
   const currentClaimable = claimable.sub(res.claimed);
 
   // We actually have to toString since and until because since and until are uint64 at solidity.

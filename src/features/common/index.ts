@@ -6,3 +6,4 @@ export * from './error';
 export * from './download';
 export * from './contracts';
 export * from './transaction';
+export * from './amount';

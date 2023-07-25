@@ -32,7 +32,7 @@ export const getBuilderFromTx = async (txhash: string): Promise<string> => {
   if (!receipt) throw Error('Transaction not found');
 
   const events = (
-    await L1BuildDepositContract.queryFilter('Build', receipt.blockHash)
+    await L1BuildDepositContract.queryFilter(L1BuildDepositContract.filters.Build(), receipt.blockHash)
   ).filter((x) => x.transactionHash.toLowerCase() === txhash.toLowerCase());
   if (events.length === 0) throw new Error('Build event is not found');
   if (!events[0].args?.builder) throw new Error('Builder is not found');

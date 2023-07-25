@@ -73,7 +73,7 @@ const LOASPage: NextPage = () => {
       setIsClaiming(true);
       await lOASContract.claim(claimAmount);
       const filter = lOASContract.filters.Claim(ownerAddress, null);
-      lOASContract.once(filter, (address: string, amount: ethers.BigNumber) => {
+      lOASContract.once(filter, (address, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setSuccessMsg(`Success to convert ${oasAmount}${lOASTokenUnit} to ${oasAmount}OAS`);
         refreshLOASClaimInfo();

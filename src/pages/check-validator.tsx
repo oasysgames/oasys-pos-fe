@@ -2,34 +2,28 @@ import type { NextPage } from 'next';
 import { useEffect, useState, ChangeEvent } from 'react';
 import { isNotConnectedMsg } from '@/consts';
 import {
-  getBuilderFromChainID,
-  getBuilderFromTx,
   getProvider,
   getSigner,
-  getVerseChainId,
   handleError,
-  isTxHash,
-  isAddress,
 } from '@/features';
 import { ErrorMsg } from '@/components/atoms';
 import {
   WalletConnect,
-  VerseInfo,
+  ValidatorInfo,
   Form,
   LoadingModal,
 } from '@/components/organisms';
-import { VerseInfo as VerseInfoType } from '@/types/optimism/verse';
-import { getVerseInfo } from '@/features/optimism/verse';
+import { ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
+import {  getValidatorInfo as getValidatorInfoFromContract } from '@/features';
 
-const CheckVerse: NextPage = () => {
+const CheckValidator: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [connectedChainId, setConnectedChainId] = useState<number>();
-  const [txHashError, setTxHashError] = useState('');
-  const [formValue, setFormValue] = useState('');
-  const [verseBuilder, setVerseBuilder] = useState('');
-  const [verseInfo, setVerseInfo] = useState<VerseInfoType>();
-  const [isVerseInfoLoading, setIsVerseInfoLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [validatorAddress, setValidatorAddress] = useState('');
+  const [validatorInfo, setValidatorInfo] = useState<ValidatorInfoType>();
+  const [isValidatorInfoLoading, setIsValidatorInfoLoading] = useState(false);
 
   const handleAccountsChanged = async () => {
     const provider = await getProvider();
@@ -48,7 +42,7 @@ const CheckVerse: NextPage = () => {
     try {
       setConnectedChainId(chainId);
       setOwner();
-      setVerseInfo(undefined);
+      setValidatorInfo(undefined);
     } catch (err) {
       handleError(err, setOwnerError);
     }
@@ -73,36 +67,16 @@ const CheckVerse: NextPage = () => {
     }
   };
 
-  const getVerseConfig = async () => {
-    setTxHashError('');
-    setIsVerseInfoLoading(true);
+  const getValidatorInfo = async () => {
+    setFormError('');
+    setIsValidatorInfoLoading(true);
 
     try {
-      let chainId: undefined | number;
-      let builder: string;
-      if (/^\d+$/.test(formValue)) {
-        chainId = ~~formValue;
-        builder = await getBuilderFromChainID(chainId);
-      } else if (isTxHash(formValue)) {
-        builder = await getBuilderFromTx(formValue);
-        chainId = await getVerseChainId(builder);
-      } else if (isAddress(formValue)) {
-        builder = formValue;
-        chainId = await getVerseChainId(builder);
-      } else {
-        throw new Error('Invalid format');
-      }
-
-      if (!chainId) {
-        throw new Error('Sorry. We cannot get verse information.');
-      }
-
-      setVerseBuilder(builder);
-      setVerseInfo(await getVerseInfo(builder, chainId));
+      setValidatorInfo(await getValidatorInfoFromContract(validatorAddress));
     } catch (err) {
-      handleError(err, setTxHashError);
+      handleError(err, setFormError);
     }
-    setIsVerseInfoLoading(false);
+    setIsValidatorInfoLoading(false);
   };
 
   useEffect(() => {
@@ -111,18 +85,18 @@ const CheckVerse: NextPage = () => {
 
   const inputs = [
     {
-      placeholder: 'Chain ID / Builder address / Build tx hash',
-      value: formValue,
+      placeholder: 'Validator Owner Address',
+      value: validatorAddress,
       handleClick: (e: ChangeEvent<HTMLInputElement>) =>
-        setFormValue(e.target.value.trim()),
+        setValidatorAddress(e.target.value.trim()),
     },
   ];
 
   const buttons = [
     {
-      handleClick: getVerseConfig,
-      disabled: !formValue,
-      value: 'Get Verse Info',
+      handleClick: getValidatorInfo,
+      disabled: !validatorAddress,
+      value: 'Get Validator Info',
     },
   ];
 
@@ -136,22 +110,22 @@ const CheckVerse: NextPage = () => {
         setOwner={setOwner}
       />
 
+      {isValidatorInfoLoading && <LoadingModal />}
+  
       <div className='space-y-0.5 col-span-4 col-start-3'>
-        {txHashError && <ErrorMsg text={txHashError} className='w-full' />}
+        {formError && <ErrorMsg text={formError} className='w-full' />}
         <Form inputs={inputs} buttons={buttons} />
       </div>
 
-      {isVerseInfoLoading && <LoadingModal />}
-
-      {verseInfo && verseBuilder && (
-        <VerseInfo
-          className='space-y-4 col-span-4 col-start-3'
-          verseBuilder={verseBuilder}
-          verseInfo={verseInfo}
+      {validatorInfo && (
+        <ValidatorInfo
+          className='space-y-2 col-span-4 col-start-3'
+          ownerAddress={validatorAddress}
+          validatorInfo={validatorInfo}
         />
       )}
     </div>
   );
 };
 
-export default CheckVerse;
+export default CheckValidator;

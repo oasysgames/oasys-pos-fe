@@ -9,6 +9,10 @@ type Props = {
 
 const validatorLinks = [
   {
+    text: 'Check validator',
+    url: '/check-validator',
+  },
+  {
     text: 'Join validator',
     url: '/join-validator',
   },

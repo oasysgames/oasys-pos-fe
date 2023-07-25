@@ -4,6 +4,7 @@ import { getProvider, getSigner, handleError, getStakeManagerContract } from '@/
 import { ErrorMsg, SuccessMsg } from '@/components/atoms';
 import { Form, LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
 import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
+import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
 
 const JoinValidator: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
@@ -14,6 +15,8 @@ const JoinValidator: NextPage = () => {
   const [operatorAddress, setOperatorAddress] = useState('');
   const [newOperator, setNewOperator] = useState('');
   const [operatorSuccessMsg, setOperatorSuccessMsg] = useState('');
+  const { validatorInfo, isValidatorInfoLoading, validatorInfoError } = useValidatorInfo(ownerAddress);
+  const refreshValidatorInfo = useRefreshValidatorInfo();
 
   const refreshError = () => {
     setOwnerError('');
@@ -37,6 +40,7 @@ const JoinValidator: NextPage = () => {
     try {
       setConnectedChainId(chainId);
       setOwner();
+      refreshValidatorInfo();
     } catch (err) {
       handleError(err, setOwnerError);
     }
@@ -75,16 +79,14 @@ const JoinValidator: NextPage = () => {
       await stakeManagerContract.joinValidator(newOperator);
 
       const filter = stakeManagerContract.filters.ValidatorJoined(null);
-      const callback = (owner: string) => {
+      stakeManagerContract.once(filter, (owner) => {
         if (owner === ownerAddress) {
           setOperatorAddress(newOperator);
           setNewOperator('');
           setOperatorSuccessMsg(`operator register is successful`);
           setIsOperatorUpdating(false);
-          stakeManagerContract.off(filter, callback);
         }
-      };
-      stakeManagerContract.on(filter, callback);
+      });
     } catch (err) {
       setOperatorSuccessMsg('');
       setIsOperatorUpdating(false);
@@ -99,13 +101,12 @@ const JoinValidator: NextPage = () => {
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
       const filter = stakeManagerContract.filters.OperatorUpdated(ownerAddress, null, null);
-      const callback = (owner: string, oldOperator: string, operator: string) => {
+      stakeManagerContract.once(filter, (owner, oldOperator, operator) => {
         setOperatorAddress(newOperator);
         setNewOperator('');
         setOperatorSuccessMsg(`update is successful. (${oldOperator} => ${operator})`);
         setIsOperatorUpdating(false);
-      }
-      stakeManagerContract.once(filter, callback);
+      });
     } catch (err) {
       setOperatorSuccessMsg('');
       setIsOperatorUpdating(false);
@@ -116,6 +117,10 @@ const JoinValidator: NextPage = () => {
   useEffect(() => {
     handleAccountsChanged();
   });
+
+  useEffect(() => {
+    refreshValidatorInfo();
+  }, [ownerAddress, refreshValidatorInfo]);
 
   const operatorInputs = [
     {
@@ -140,7 +145,7 @@ const JoinValidator: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      {(isOperatorUpdating) && <LoadingModal/>}
+      {(isOperatorUpdating || isValidatorInfoLoading) && <LoadingModal/>}
       <WalletConnect
         className='space-y-0.5 col-span-4 col-start-3'
         ownerError={ownerError}
@@ -152,10 +157,16 @@ const JoinValidator: NextPage = () => {
         {operatorError && (
           <ErrorMsg text={ operatorError } />
         )}
-        <ValidatorInfo
-          ownerAddress={ownerAddress}
-          operatorAddress={operatorAddress}
-        />
+        {validatorInfoError instanceof Error && (
+          <ErrorMsg text={validatorInfoError.message} className='w-full' />
+        )}
+        {ownerAddress && validatorInfo && validatorInfo.joined && (
+          <ValidatorInfo
+            className='space-y-2'
+            ownerAddress={ownerAddress}
+            validatorInfo={validatorInfo}
+          />
+        )}
         <Form
           inputs={operatorInputs}
           buttons={operatorButtons}
