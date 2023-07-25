@@ -10,7 +10,7 @@ export const getSlashesForLast30Epochs = async (owner: string, epoch: BigNumber)
 
   let contractCallContext: ContractCallContext[] = [];
 
-  let firstEpoch = epoch.sub(BigNumber.from(30)).toNumber();
+  let firstEpoch = epoch.sub(BigNumber.from(29)).toNumber();
   if (firstEpoch < 0) firstEpoch = 1;
   for (var i = firstEpoch; i <= epoch.toNumber(); i++) {
     contractCallContext.push(
