@@ -24,8 +24,12 @@ const validatorLinks = [
 
 const verseBuilderLinks = [
   {
-    text: 'Build verse',
+    text: 'Deposit OAS',
     url: '/',
+  },
+  {
+    text: 'Build verse',
+    url: '/build-verse',
   },
   {
     text: 'Check verse',
