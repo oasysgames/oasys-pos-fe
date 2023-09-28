@@ -1,11 +1,7 @@
 import { ethers } from 'ethers';
-import { Deposit } from '.';
 import { useState, SetStateAction, ChangeEvent } from 'react';
-import { getL1BuildDepositContract, getSOASContract, handleError } from '@/features';
-import { OASTokenUnit, sOASTokenUnit } from '@/consts';
-import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
-import { L1BuildDepositAddress, sOASAddress } from '@/config';
-import { ErrorMsg, SuccessMsg, Modal } from '@/components/atoms';
+import { handleError } from '@/features';
+import { ErrorMsg, Modal } from '@/components/atoms';
 import {
   LoadingModal,
   Form,

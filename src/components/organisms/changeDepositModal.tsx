@@ -3,28 +3,27 @@ import { Deposit } from '.';
 import { useState, SetStateAction } from 'react';
 import { getL1BuildDepositContract, getSOASContract, handleError } from '@/features';
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
-import { useL1BuildDeposit, useRefreshL1BuildDeposit } from '@/hooks';
+import { useRefreshL1BuildDeposit } from '@/hooks';
 import { L1BuildDepositAddress, sOASAddress } from '@/config';
 import { ErrorMsg, SuccessMsg, Modal } from '../atoms';
 import { LoadingModal } from '.';
 
 type Props = {
   className?: string;
-  ownerAddress: string;
   setModalState: (value: SetStateAction<boolean>) => void;
 };
 
-export const BuildDepositModal = (props: Props) => {
+export const ChangeDepositModal = (props: Props) => {
   const {
     className,
-    ownerAddress,
     setModalState,
   } = props;
 
-  const { data: depositData, error: depositLoadError } = useL1BuildDeposit();
   const [depositSuccess, setDepositSuccess] = useState('');
   const [idDepositLoading, setIsDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState('');
+  const [OASVerseBuilder, setOASVerseBuilder] = useState('');
+  const [SOASVerseBuilder, setSOASVerseBuilder] = useState('');
   const [OASAmount, setOASAmount] = useState('');
   const [SOASAmount, setSOASAmount] = useState('');
   
@@ -36,13 +35,14 @@ export const BuildDepositModal = (props: Props) => {
       const value = ethers.utils.parseEther(OASAmount);
       const options = { value: value };
       setIsDepositLoading(true);
-      await L1BuildDepositContract.deposit(ownerAddress, options);
+      await L1BuildDepositContract.deposit(OASVerseBuilder, options);
 
-      const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
+      const filter = L1BuildDepositContract.filters.Deposit(OASVerseBuilder, null, null);
       L1BuildDepositContract.once(filter, (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${OASTokenUnit} deposit is successful`);
         setOASAmount('');
+        setOASVerseBuilder('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });
@@ -57,13 +57,14 @@ export const BuildDepositModal = (props: Props) => {
       const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(OASAmount);
       setIsDepositLoading(true);
-      await L1BuildDepositContract.withdraw(ownerAddress, value);
+      await L1BuildDepositContract.withdraw(OASVerseBuilder, value);
 
-      const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
+      const filter = L1BuildDepositContract.filters.Withdrawal(OASVerseBuilder, null, null);
       L1BuildDepositContract.once(filter,  (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${OASTokenUnit} withdraw is successful`);
         setOASAmount('');
+        setOASVerseBuilder('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });
@@ -81,13 +82,14 @@ export const BuildDepositModal = (props: Props) => {
       setIsDepositLoading(true);
       const tx = await sOASContract.approve(L1BuildDepositAddress, value);
       await tx.wait();
-      await L1BuildDepositContract.depositERC20(ownerAddress, sOASAddress, value);
+      await L1BuildDepositContract.depositERC20(SOASVerseBuilder, sOASAddress, value);
 
-      const filter = L1BuildDepositContract.filters.Deposit(ownerAddress, null, null);
+      const filter = L1BuildDepositContract.filters.Deposit(SOASVerseBuilder, null, null);
       L1BuildDepositContract.once(filter, (builder, depositer, token, amount) => {
         const sOASAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${sOASAmount}${sOASTokenUnit} deposit is successful`);
         setSOASAmount('');
+        setSOASVerseBuilder('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });
@@ -102,13 +104,14 @@ export const BuildDepositModal = (props: Props) => {
       const L1BuildDepositContract = await getL1BuildDepositContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
-      await L1BuildDepositContract.withdrawERC20(ownerAddress, sOASAddress, value);
+      await L1BuildDepositContract.withdrawERC20(SOASVerseBuilder, sOASAddress, value);
 
-      const filter = L1BuildDepositContract.filters.Withdrawal(ownerAddress, null, null);
+      const filter = L1BuildDepositContract.filters.Withdrawal(SOASVerseBuilder, null, null);
       L1BuildDepositContract.once(filter,  (builder, depositer, token, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
         setDepositSuccess(`${oasAmount}${sOASTokenUnit} withdraw is successful`);
         setSOASAmount('');
+        setSOASVerseBuilder('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });
@@ -117,26 +120,6 @@ export const BuildDepositModal = (props: Props) => {
       handleError(err, setDepositError);
     }
   };
-
-  const heads = [
-    'Token',
-    'Amount'
-  ];
-
-  const records = [
-    [
-      'OAS',
-      depositData?.depositOAS ? `${ethers.utils.formatEther(depositData?.depositOAS.toString())}`: ''
-    ],
-    [
-      'sOAS',
-      depositData?.depositSOAS ? `${ethers.utils.formatEther(depositData?.depositSOAS.toString())}`: ''
-    ],
-    [
-      'Total',
-      depositData?.depositTotal ? `${ethers.utils.formatEther(depositData?.depositTotal.toString())}` : ''
-    ],
-  ];
 
   return (
     <>
@@ -151,17 +134,15 @@ export const BuildDepositModal = (props: Props) => {
         {depositSuccess && (
           <SuccessMsg className='text-center' text={depositSuccess} />
         )}
-        {depositLoadError instanceof Error && (
-          <ErrorMsg className='text-center' text={depositLoadError.message} />
-        )}
         {depositError && (
           <ErrorMsg className='text-center' text={depositError} />
         )}
         <Deposit
           className='space-y-0.5'
-          depositedAmount={depositData?.depositOAS}
           amount={OASAmount}
+          builder={OASVerseBuilder}
           setAmount={setOASAmount}
+          setBuilder={setOASVerseBuilder}
           deposit={depositOAS}
           withdraw={withdrawOAS}
           idDepositLoading={idDepositLoading}
@@ -169,9 +150,10 @@ export const BuildDepositModal = (props: Props) => {
         />
         <Deposit
           className='space-y-0.5'
-          depositedAmount={depositData?.depositSOAS}
           amount={SOASAmount}
+          builder={SOASVerseBuilder}
           setAmount={setSOASAmount}
+          setBuilder={setSOASVerseBuilder}
           deposit={depositSOAS}
           withdraw={withdrawSOAS}
           idDepositLoading={idDepositLoading}

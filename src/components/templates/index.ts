@@ -1,5 +1,5 @@
 export * from './layout';
 export * from './claim';
-export * from './buildDeposit';
+export * from './depositVerse';
 export * from './buildVerse';
 export * from './updateBridge';

@@ -1,13 +1,13 @@
 import clsx from 'clsx';
-import { ethers } from 'ethers';
 import { ChangeEvent, SetStateAction } from 'react';
 import { Form } from '@/components/organisms';
 
 type Props = {
   className?: string;
-  depositedAmount?: ethers.BigNumber;
   amount: string;
+  builder: string;
   setAmount: (value: SetStateAction<string>) => void;
+  setBuilder: (value: SetStateAction<string>) => void;
   deposit: () => Promise<void>;
   withdraw: () => Promise<void>;
   idDepositLoading: boolean;
@@ -17,8 +17,9 @@ type Props = {
 export const Deposit = (props: Props) => {
   const {
     className,
-    depositedAmount,
+    builder,
     amount,
+    setBuilder,
     setAmount,
     deposit,
     withdraw,
@@ -27,6 +28,11 @@ export const Deposit = (props: Props) => {
   } = props;
 
   const depositInputs = [
+    {
+      placeholder: 'set verse builder address',
+      value: builder,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setBuilder(e.target.value)},
+    },
     {
       placeholder: `set amount(${tokenUnit})`,
       value: amount,
@@ -37,12 +43,12 @@ export const Deposit = (props: Props) => {
   const depositButtons = [
     {
       handleClick: deposit,
-      disabled: !amount || idDepositLoading,
+      disabled: !builder || !amount || idDepositLoading,
       value: 'Deposit',
     },
     {
       handleClick: withdraw,
-      disabled: !amount || idDepositLoading,
+      disabled: !builder || !amount || idDepositLoading,
       value: 'Withdraw',
     },
   ];
