@@ -2,7 +2,7 @@ import { ethers, BigNumber } from "ethers";
 import { ContractCallContext, ContractCallResults } from 'ethereum-multicall';
 import StakeManager from '@/contracts/oasysHub/StakeManager.json';
 import { getMulticallContract, getEnvironmentContract, getStakeManagerContract } from '@/features';
-import { stakeManagerAddress } from "@/config";
+import { stakeManagerAddress } from "@/consts";
 import { EpochToSlashes, ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
 
 export const getSlashesForLast30Epochs = async (owner: string, epoch: BigNumber) => {
