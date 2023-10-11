@@ -4,7 +4,7 @@ import { useState, SetStateAction } from 'react';
 import { getL1BuildDepositContract, getSOASContract, handleError } from '@/features';
 import { OASTokenUnit, sOASTokenUnit } from '@/consts';
 import { useRefreshL1BuildDeposit } from '@/hooks';
-import { L1BuildDepositAddress, sOASAddress } from '@/config';
+import { L1BuildDepositAddress, sOASAddress } from '@/consts';
 import { ErrorMsg, SuccessMsg, Modal } from '../atoms';
 import { LoadingModal } from '.';
 

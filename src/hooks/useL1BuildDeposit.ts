@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
 import { getL1BuildDepositContract, getProvider, getSigner } from '@/features';
-import { sOASAddress } from '@/config';
+import { sOASAddress } from '@/consts';
 import { L1BuildDeposit as depositType } from '@/types/oasysHub/verseBuild';
 
 const SWR_KEY = 'L1BuildDeposit';

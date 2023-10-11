@@ -11,7 +11,7 @@ import {
   L1BuildDepositAddress,
   L1BuildAgentAddress,
   multicallContractAddress,
-} from '@/config';
+} from '@/consts';
 import Environment from '@/contracts/oasysHub/Environment.json';
 import StakeManager from '@/contracts/oasysHub/StakeManager.json';
 import AllowList from '@/contracts/oasysHub/AllowList.json';

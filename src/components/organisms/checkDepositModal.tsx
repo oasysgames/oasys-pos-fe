@@ -3,7 +3,7 @@ import { useState, SetStateAction, ChangeEvent } from 'react';
 import { ErrorMsg, SuccessMsg, Modal, Table } from '@/components/atoms';
 import { Form, LoadingModal, DepositDetail } from '@/components/organisms';
 import { handleError, getL1BuildDepositContract } from '@/features';
-import { sOASAddress } from '@/config';
+import { sOASAddress } from '@/consts';
 
 type Props = {
   className?: string;
