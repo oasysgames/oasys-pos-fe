@@ -12,23 +12,30 @@ const getLOASClaimInfo = async () => {
   if (accounts.length === 0) return undefined;
 
   const signer = await getSigner();
-  const ownerAddress = await signer.getAddress();
   const lOASContract = await getLOASContract();
-  const res = await lOASContract.claimInfo(ownerAddress);
-  const claimable = await lOASContract.getClaimableOAS(ownerAddress);
-  const balance = await lOASContract.balanceOf(ownerAddress);
-  const currentClaimable = claimable.sub(res.claimed);
+
+  const allowedClaimer = await signer.getAddress();
+  const originalClaimer = await lOASContract.originalClaimer(allowedClaimer);
+
+  const balance = await lOASContract.balanceOf(allowedClaimer);
+  const claimInfo = await lOASContract.claimInfo(originalClaimer);
+  const claimable = await lOASContract.getClaimableOAS(originalClaimer);
+
+  let currentClaimable = claimable.sub(claimInfo.claimed);
+  if (balance.lte(currentClaimable)) {
+    currentClaimable = balance;
+  }
 
   // We actually have to toString since and until because since and until are uint64 at solidity.
   // But when mint, since and until are set by javascript.
-  // That's why It is ok that res.since.toNumber() and res.until.toNumber().
+  // That's why It is ok that claimInfo.since.toNumber() and claimInfo.until.toNumber().
   const data: ClaimInfo = {
-    amount: res.amount,
-    claimed: res.claimed,
-    claimable: currentClaimable.gte(balance) ? balance :currentClaimable,
-    since: new Date(res.since.toNumber() * 1000), // res.since unit is seconds
-    until: new Date(res.until.toNumber() * 1000), // res.until unit is seconds
-    from: res.from,
+    amount: balance,
+    claimed: claimInfo.claimed,
+    claimable: currentClaimable,
+    since: new Date(claimInfo.since.toNumber() * 1000), // claimInfo.since unit is seconds
+    until: new Date(claimInfo.until.toNumber() * 1000), // claimInfo.until unit is seconds
+    from: claimInfo.from,
   };
   return data;
 };
@@ -42,7 +49,7 @@ export const useLOASClaimInfo = () => {
     isClaimInfoLoading: !error && !data,
     claimInfoError: error,
   };
-}
+};
 
 export const useRefreshLOASClaimInfo = () => {
   const { mutate } = useSWRConfig();
