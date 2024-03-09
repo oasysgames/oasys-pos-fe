@@ -19,13 +19,13 @@ export const BuildVerse = (props: Props) => {
       className,
     )}>
       {buildModalOpen && <BuildVerseModal setModalState={setBuildModalOpen} />}
-      <p>Build Verse</p>
+      <p>Build Verse 2.0</p>
       <Button
         handleClick={() => {
           setBuildModalOpen(true);
         }}
       >
-        Build
+        Continue Building Verse
       </Button>
     </div>
   )

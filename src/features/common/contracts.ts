@@ -9,7 +9,9 @@ import {
   sOASAddress,
   lOASAddress,
   L1BuildDepositAddress,
+  LegacyL1BuildDepositAddress,
   L1BuildAgentAddress,
+  LegacyL1BuildAgentAddress,
   multicallContractAddress,
 } from '@/consts';
 import Environment from '@/contracts/oasysHub/Environment.json';
@@ -20,6 +22,10 @@ import LOAS from '@/contracts/oasysHub/LOAS.json';
 import L1BuildDeposit from '@/contracts/oasysHub/L1BuildDeposit.json';
 import L1BuildAgent from '@/contracts/oasysHub/L1BuildAgent.json';
 import L1ChugSplashProxy from '@/contracts/oasysHub/L1ChugSplashProxy.json';
+import ProxyAdmin from '@/contracts/oasysHub/ProxyAdmin.json';
+import OasysL2OutputOracle from '@/contracts/oasysHub/OasysL2OutputOracle.json';
+import OasysPortal from '@/contracts/oasysHub/OasysPortal.json';
+import SystemConfig from '@/contracts/oasysHub/SystemConfig.json';
 import { getSigner, getProvider } from './wallet';
 import {
   Environment as EnvironmentContractType,
@@ -56,14 +62,16 @@ export const getLOASContract = async () => {
   const lOASContract = new ethers.Contract(lOASAddress, LOAS.abi, signer);
   return lOASContract as LOASContractType;
 };
-export const getL1BuildDepositContract = async () => {
+export const getL1BuildDepositContract = async (isLegacy: boolean = true) => {
   const signer = await getSigner();
-  const L1BuildDepositContract = new ethers.Contract(L1BuildDepositAddress, L1BuildDeposit.abi, signer);
+  const address = isLegacy ? LegacyL1BuildDepositAddress : L1BuildDepositAddress;
+  const L1BuildDepositContract = new ethers.Contract(address, L1BuildDeposit.abi, signer);
   return L1BuildDepositContract as L1BuildDepositContractType;
 };
-export const getL1BuildAgentContract = async () => {
+export const getL1BuildAgentContract = async (isLegacy: boolean = true) => {
   const signer = await getSigner();
-  const L1BuildAgentContract = new ethers.Contract(L1BuildAgentAddress, L1BuildAgent.abi, signer);
+  const address = isLegacy ? LegacyL1BuildAgentAddress : L1BuildAgentAddress;
+  const L1BuildAgentContract = new ethers.Contract(address, L1BuildAgent.abi, signer);
   return L1BuildAgentContract as L1BuildAgentContractType;
 };
 
@@ -86,4 +94,24 @@ export const getMulticallContract = async () => {
     ethersProvider: provider
   });
   return multicall;
+}
+
+export const getProxyAdminContract = async (address: string) => {
+  const signer = await getSigner();
+  return new ethers.Contract(address, ProxyAdmin.abi, signer);
+}
+
+export const getOasysL2OutputOracleContract = async (address: string) => {
+  const signer = await getSigner();
+  return new ethers.Contract(address, OasysL2OutputOracle.abi, signer);
+}
+
+export const getOasysPortalContract = async (address: string) => {
+  const signer = await getSigner();
+  return new ethers.Contract(address, OasysPortal.abi, signer);
+}
+
+export const getSystemConfigContract = async (address: string) => {
+  const signer = await getSigner();
+  return new ethers.Contract(address, SystemConfig.abi, signer);
 }

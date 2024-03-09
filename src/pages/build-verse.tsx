@@ -11,7 +11,8 @@ const BuildVersePage: NextPage = () => {
   const [ownerError, setOwnerError] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [connectedChainId, setConnectedChainId] = useState<number>();
-  const { data: depositData, error: depositLoadError, isLoading: isDepositLoading } = useL1BuildDeposit();
+  const isLegacy = false;
+  const { data: depositData, error: depositLoadError, isLoading: isDepositLoading } = useL1BuildDeposit(isLegacy);
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
@@ -86,7 +87,7 @@ const BuildVersePage: NextPage = () => {
       )}
       { depositData && 
         <div className='space-y-4 col-span-4 col-start-3'>
-          <p>Deposit for Connected Account</p>
+          <p>Deposits from Connected Account</p>
           <DepositDetail
             depositTotal={depositData.depositTotal}
             depositOAS={depositData.depositOAS}

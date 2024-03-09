@@ -9,6 +9,7 @@ type Props = {
   className?: string;
   ownerAddress: string;
   setModalState: (value: SetStateAction<boolean>) => void;
+  isLegacy: boolean;
 };
 
 export const CheckDepositModal = (props: Props) => {
@@ -16,6 +17,7 @@ export const CheckDepositModal = (props: Props) => {
     className,
     ownerAddress,
     setModalState,
+    isLegacy,
   } = props;
 
   const [checkSuccess, setCheckSuccess] = useState('');
@@ -27,7 +29,7 @@ export const CheckDepositModal = (props: Props) => {
   const [depositSOAS, setDepositSOAS] = useState<ethers.BigNumber>();
 
   const check = async () => {
-    const L1BuildDepositContract = await getL1BuildDepositContract();
+    const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
 
     try {
       setIsChecking(true);

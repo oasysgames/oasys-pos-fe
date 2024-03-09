@@ -22,8 +22,13 @@ import type {
   OnEvent,
 } from "./common";
 
+export type BuildConfigStruct = [
+  string, string, string, string, string, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish
+];
+
 export interface L1BuildAgentInterface extends utils.Interface {
   functions: {
+    "build(uint256,(address,address,address,address,uint256,uint64,uint256,uint256,uint256,uint256))": FunctionFragment;
     "build(uint256,address,address)": FunctionFragment;
     "depositAddress()": FunctionFragment;
     "getAddressManager(uint256)": FunctionFragment;
@@ -42,6 +47,8 @@ export interface L1BuildAgentInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "build"
+      | "builders"
+      | "builtLists"
       | "depositAddress"
       | "getAddressManager"
       | "getBuilts"
@@ -58,7 +65,7 @@ export interface L1BuildAgentInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "build",
-    values: [BigNumberish, string, string]
+    values: [BigNumberish, BuildConfigStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "depositAddress",
@@ -188,10 +195,19 @@ export interface L1BuildAgent extends BaseContract {
   functions: {
     build(
       _chainId: BigNumberish,
-      _sequencer: string,
-      _proposer: string,
+      _cfg: BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
+
+    builders(
+      _chainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    builtLists(
+      _chainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string, string, string, string, string, string, string, string, string, string]>;
 
     depositAddress(overrides?: CallOverrides): Promise<[string]>;
 
@@ -255,10 +271,19 @@ export interface L1BuildAgent extends BaseContract {
 
   build(
     _chainId: BigNumberish,
-    _sequencer: string,
-    _proposer: string,
+    _cfg: BuildConfigStruct,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
+
+  builders(
+    _chainId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  builtLists(
+    _chainId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[string, string, string, string, string, string, string, string, string, string, string]>;
 
   depositAddress(overrides?: CallOverrides): Promise<string>;
 
@@ -322,10 +347,19 @@ export interface L1BuildAgent extends BaseContract {
   callStatic: {
     build(
       _chainId: BigNumberish,
-      _sequencer: string,
-      _proposer: string,
+      _cfg: BuildConfigStruct,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    builders(
+      _chainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    builtLists(
+      _chainId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string, string, string, string, string, string, string, string, string, string]>;
 
     depositAddress(overrides?: CallOverrides): Promise<string>;
 
@@ -392,10 +426,13 @@ export interface L1BuildAgent extends BaseContract {
   estimateGas: {
     build(
       _chainId: BigNumberish,
-      _sequencer: string,
-      _proposer: string,
+      _cfg: BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
+
+    builders(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     depositAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -460,10 +497,13 @@ export interface L1BuildAgent extends BaseContract {
   populateTransaction: {
     build(
       _chainId: BigNumberish,
-      _sequencer: string,
-      _proposer: string,
+      _cfg: BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
+
+    builders(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     depositAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

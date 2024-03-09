@@ -435,3 +435,12 @@ export const L2ContractStorageLayouts: { [name: string]: any } = {
     },
   },
 } as const;
+
+// ---------- Verse 2.0 ----------
+
+export const L2_GASLIMIT = 30000000;
+// The defualt of opstack is 120
+// To speed up l2->l1 bridge, shorten the opstack to 30
+export const L2_OO_SUBMISSION_INTERVAL = 30;
+// 7 days
+export const FINALIZATION_PERIOD_SECONDS = 604800;

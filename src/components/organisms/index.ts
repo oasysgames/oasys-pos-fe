@@ -7,6 +7,7 @@ export * from './depositDetail';
 export * from './genesisVersionDetail';
 export * from './validatorInfo'
 export * from './verseInfo';
+export * from './verseInfoV2';
 export * from './changeDepositModal';
 export * from './checkDepositModal';
 export * from './buildVerseModal';

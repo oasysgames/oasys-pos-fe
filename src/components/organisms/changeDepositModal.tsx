@@ -11,12 +11,14 @@ import { LoadingModal } from '.';
 type Props = {
   className?: string;
   setModalState: (value: SetStateAction<boolean>) => void;
+  isLegacy: boolean;
 };
 
 export const ChangeDepositModal = (props: Props) => {
   const {
     className,
     setModalState,
+    isLegacy,
   } = props;
 
   const [depositSuccess, setDepositSuccess] = useState('');
@@ -31,7 +33,7 @@ export const ChangeDepositModal = (props: Props) => {
 
   const depositOAS = async () => {
     try {
-      const L1BuildDepositContract = await getL1BuildDepositContract();
+      const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
       const value = ethers.utils.parseEther(OASAmount);
       const options = { value: value };
       setIsDepositLoading(true);
@@ -54,7 +56,7 @@ export const ChangeDepositModal = (props: Props) => {
 
   const withdrawOAS = async () => {
     try {
-      const L1BuildDepositContract = await getL1BuildDepositContract();
+      const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
       const value = ethers.utils.parseEther(OASAmount);
       setIsDepositLoading(true);
       await L1BuildDepositContract.withdraw(OASVerseBuilder, value);
@@ -76,7 +78,7 @@ export const ChangeDepositModal = (props: Props) => {
 
   const depositSOAS = async () => {
     try {
-      const L1BuildDepositContract = await getL1BuildDepositContract();
+      const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
       const sOASContract = await getSOASContract();
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
@@ -101,7 +103,7 @@ export const ChangeDepositModal = (props: Props) => {
 
   const withdrawSOAS = async () => {
     try {
-      const L1BuildDepositContract = await getL1BuildDepositContract();
+      const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
       const value = ethers.utils.parseEther(SOASAmount);
       setIsDepositLoading(true);
       await L1BuildDepositContract.withdrawERC20(SOASVerseBuilder, sOASAddress, value);
@@ -147,18 +149,22 @@ export const ChangeDepositModal = (props: Props) => {
           withdraw={withdrawOAS}
           idDepositLoading={idDepositLoading}
           tokenUnit={OASTokenUnit}
+          isLegacy={isLegacy}
         />
-        <Deposit
-          className='space-y-0.5'
-          amount={SOASAmount}
-          builder={SOASVerseBuilder}
-          setAmount={setSOASAmount}
-          setBuilder={setSOASVerseBuilder}
-          deposit={depositSOAS}
-          withdraw={withdrawSOAS}
-          idDepositLoading={idDepositLoading}
-          tokenUnit={sOASTokenUnit}
-        />
+        {isLegacy && (
+          <Deposit
+            className='space-y-0.5'
+            amount={SOASAmount}
+            builder={SOASVerseBuilder}
+            setAmount={setSOASAmount}
+            setBuilder={setSOASVerseBuilder}
+            deposit={depositSOAS}
+            withdraw={withdrawSOAS}
+            idDepositLoading={idDepositLoading}
+            tokenUnit={sOASTokenUnit}
+            isLegacy={isLegacy}
+          />
+        )}
       </div>
     </Modal>
     }

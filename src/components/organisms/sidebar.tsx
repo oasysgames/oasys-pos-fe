@@ -28,17 +28,19 @@ const verseBuilderLinks = [
     url: '/',
   },
   {
-    text: 'Build verse',
+    text: 'Build Verse',
     url: '/build-verse',
   },
   {
     text: 'Check verse',
     url: '/check-verse',
   },
-  {
-    text: 'Update bridge contract',
-    url: '/update-bridge',
-  }
+  // Remove the /update-bridge link from the sidebar
+  // Although allowed to access to via direct link
+  // {
+  //   text: 'Update bridge contract',
+  //   url: '/update-bridge',
+  // }
 ];
 
 const otherLinks = [

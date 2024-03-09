@@ -40,27 +40,206 @@
   "type": "constructor"
   },
   {
-  "inputs": [
-  {
-  "internalType": "uint256",
-  "name": "_chainId",
-  "type": "uint256"
+    "type": "function",
+    "name": "build",
+    "inputs": [{
+        "name": "_chainId",
+        "type": "uint256",
+        "internalType": "uint256"
+    }, {
+        "name": "_cfg",
+        "type": "tuple",
+        "internalType": "struct IL1BuildAgent.BuildConfig",
+        "components": [{
+            "name": "finalSystemOwner",
+            "type": "address",
+            "internalType": "address"
+        }, {
+            "name": "l2OutputOracleProposer",
+            "type": "address",
+            "internalType": "address"
+        }, {
+            "name": "l2OutputOracleChallenger",
+            "type": "address",
+            "internalType": "address"
+        }, {
+            "name": "batchSenderAddress",
+            "type": "address",
+            "internalType": "address"
+        }, {
+            "name": "p2pSequencerAddress",
+            "type": "address",
+            "internalType": "address"
+        }, {
+            "name": "l2BlockTime",
+            "type": "uint256",
+            "internalType": "uint256"
+        }, {
+            "name": "l2GasLimit",
+            "type": "uint64",
+            "internalType": "uint64"
+        }, {
+            "name": "l2OutputOracleSubmissionInterval",
+            "type": "uint256",
+            "internalType": "uint256"
+        }, {
+            "name": "finalizationPeriodSeconds",
+            "type": "uint256",
+            "internalType": "uint256"
+        }, {
+            "name": "l2OutputOracleStartingBlockNumber",
+            "type": "uint256",
+            "internalType": "uint256"
+        }, {
+            "name": "l2OutputOracleStartingTimestamp",
+            "type": "uint256",
+            "internalType": "uint256"
+        }]
+    }],
+    "outputs": [{
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "",
+        "type": "address[7]",
+        "internalType": "address[7]"
+    }, {
+        "name": "",
+        "type": "address[7]",
+        "internalType": "address[7]"
+    }, {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+    }],
+    "stateMutability": "nonpayable"
   },
   {
-  "internalType": "address",
-  "name": "_sequencer",
-  "type": "address"
+    "type": "function",
+    "name": "builders",
+    "inputs": [{
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+    }],
+    "outputs": [{
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+    }],
+    "stateMutability": "view"
   },
   {
-  "internalType": "address",
-  "name": "_proposer",
-  "type": "address"
-  }
-  ],
-  "name": "build",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
+    "type": "function",
+    "name": "builtLists",
+    "inputs": [{
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+    }],
+    "outputs": [{
+        "name": "proxyAdmin",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "systemConfig",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "l1StandardBridge",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "l1ERC721Bridge",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "l1CrossDomainMessenger",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "oasysL2OutputOracle",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "oasysPortal",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "protocolVersions",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "batchInbox",
+        "type": "address",
+        "internalType": "address"
+    }, {
+        "name": "addressManager",
+        "type": "address",
+        "internalType": "address"
+    }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "chainIds",
+    "inputs": [{
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+    }],
+    "outputs": [{
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+    }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "Deployed",
+    "inputs": [{
+        "name": "chainId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+    }, {
+        "name": "owner",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+    }, {
+        "name": "proxyAdmin",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+    }, {
+        "name": "proxys",
+        "type": "address[7]",
+        "indexed": false,
+        "internalType": "address[7]"
+    }, {
+        "name": "impls",
+        "type": "address[7]",
+        "indexed": false,
+        "internalType": "address[7]"
+    }, {
+        "name": "batchInbox",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+    }, {
+        "name": "addressManager",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+    }],
+    "anonymous": false
   },
   {
   "inputs": [],

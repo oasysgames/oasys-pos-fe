@@ -21,3 +21,21 @@ export type NamedAddresses = {
   Proxy__OVM_L1StandardBridge: string;
   StateCommitmentChain: string;
 }
+
+export type NamedAddressesV2 = {
+  FinalSystemOwner: string;
+  L2OutputOracleProposer: string;
+  L2OutputOracleChallenger: string;
+  BatchSender: string;
+  ProxyAdmin: string;
+  SystemConfigProxy: string;
+  L1StandardBridgeProxy: string;
+  L1ERC721BridgeProxy: string;
+  L1CrossDomainMessengerProxy: string;
+  L2OutputOracleProxy: string;
+  OptimismPortalProxy: string;
+  ProtocolVersions: string;
+  BatchInbox: string;
+  AddressManager: string;
+  P2PSequencer: string;
+}
