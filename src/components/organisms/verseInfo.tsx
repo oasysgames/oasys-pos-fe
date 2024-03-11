@@ -88,7 +88,7 @@ export const VerseInfo = (props: Props) => {
       {downloadError && (
           <ErrorMsg text={ downloadError } className='w-full' />
         )}
-        <p>Download verse config</p>
+        <p>Download Config Files</p>
         <Table
           heads={heads}
           records={records}

@@ -28,7 +28,7 @@ export const ChangeDepositModal = (props: Props) => {
   const [SOASVerseBuilder, setSOASVerseBuilder] = useState('');
   const [OASAmount, setOASAmount] = useState('');
   const [SOASAmount, setSOASAmount] = useState('');
-  
+
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
 
   const depositOAS = async () => {
@@ -45,6 +45,7 @@ export const ChangeDepositModal = (props: Props) => {
         setDepositSuccess(`${oasAmount}${OASTokenUnit} deposit is successful`);
         setOASAmount('');
         setOASVerseBuilder('');
+        setDepositError('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });
@@ -67,6 +68,7 @@ export const ChangeDepositModal = (props: Props) => {
         setDepositSuccess(`${oasAmount}${OASTokenUnit} withdraw is successful`);
         setOASAmount('');
         setOASVerseBuilder('');
+        setDepositError('');
         setIsDepositLoading(false);
         refreshL1BuildDeposit();
       });

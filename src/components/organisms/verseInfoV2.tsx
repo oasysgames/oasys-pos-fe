@@ -66,7 +66,7 @@ export const VerseInfoV2 = (props: Props) => {
   return (
     <div className={clsx(className)}>
       {downloadError && <ErrorMsg text={downloadError} className='w-full' />}
-      <p>Download verse config</p>
+      <p>Download Config Files</p>
       <Table heads={heads} records={records} />
       {verseInfo?.namedAddresses && verseInfo?.deployConfig && (
         <div className='flex flex-col space-y-2'>
