@@ -440,7 +440,14 @@ export const L2ContractStorageLayouts: { [name: string]: any } = {
 
 export const L2_GASLIMIT = 30000000;
 // The defualt of opstack is 120
-// To speed up l2->l1 bridge, shorten the opstack to 30
-export const L2_OO_SUBMISSION_INTERVAL = 30;
+// The submission interval significantly impacts both the waiting time for L2->L1 withdrawals and the speed at which the L2 state proposer operates. If the interval is short, the waiting time for L2 withdrawals decreases. Conversely, if the interval is too short, the state proposer may fail to keep pace with the growth speed of the L2 block height.
+// ----
+// Why have we set the default value to 80?
+// Assumptions:
+// - The L2 block time is 1a.
+// - The operational proposer (op-proposer) confirms 4 blocks.
+// - The op-proposer cannot send multiple rollups to a single block.
+// The op-proposer submits the L2 state every 5 L1 block intervals. During this period, the L2 block grows by 75 blocks. Therefore, 80 was selected as the default value.
+export const L2_OO_SUBMISSION_INTERVAL = 70;
 // 7 days
 export const FINALIZATION_PERIOD_SECONDS = 604800;
