@@ -121,7 +121,7 @@
   },
   {
     "type": "function",
-    "name": "builders",
+    "name": "getBuilderGlobally",
     "inputs": [{
         "name": "",
         "type": "uint256",
@@ -176,10 +176,6 @@
         "internalType": "address"
     }, {
         "name": "batchInbox",
-        "type": "address",
-        "internalType": "address"
-    }, {
-        "name": "addressManager",
         "type": "address",
         "internalType": "address"
     }],

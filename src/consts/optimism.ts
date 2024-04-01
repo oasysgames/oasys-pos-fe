@@ -448,6 +448,6 @@ export const L2_GASLIMIT = 30000000;
 // - The operational proposer (op-proposer) confirms 4 blocks.
 // - The op-proposer cannot send multiple rollups to a single block.
 // The op-proposer submits the L2 state every 5 L1 block intervals. During this period, the L2 block grows by 75 blocks. Therefore, 80 was selected as the default value.
-export const L2_OO_SUBMISSION_INTERVAL = 70;
+export const L2_OO_SUBMISSION_INTERVAL = 80;
 // 7 days
 export const FINALIZATION_PERIOD_SECONDS = 604800;

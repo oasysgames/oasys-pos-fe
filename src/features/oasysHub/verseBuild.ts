@@ -31,6 +31,10 @@ export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string 
   const l1BuildAgent = await getL1BuildAgentContract(isLegacy);
   const builtAddresses = await l1BuildAgent.builtLists(chainId);
 
+  // Get address manager from Legacy L1BuildAgent
+  const l1BuildAgentLegacy = await getL1BuildAgentContract(true);
+  const addressManager = await l1BuildAgentLegacy.getAddressManager(chainId);
+
   const result = {
     ProxyAdmin: builtAddresses[0],
     SystemConfigProxy: builtAddresses[1],
@@ -41,7 +45,7 @@ export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string 
     OptimismPortalProxy: builtAddresses[6],
     ProtocolVersions: builtAddresses[7],
     BatchInbox: builtAddresses[8],
-    AddressManager: builtAddresses[9],
+    AddressManager:  addressManager,
     P2PSequencer: p2pSequencer,
   } as NamedAddressesV2;
 
@@ -83,7 +87,7 @@ export const getBuilderFromChainIDV2 = async (
   chainId: number,
 ): Promise<string> => {
   const l1BuildAgent = await getL1BuildAgentContract(false);
-  return await l1BuildAgent.builders(chainId);
+  return await l1BuildAgent.getBuilderGlobally(chainId);
 };
 
 export const getBuilts = async (isLegacy: boolean = true): Promise<{

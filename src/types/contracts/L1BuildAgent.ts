@@ -47,7 +47,7 @@ export interface L1BuildAgentInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "build"
-      | "builders"
+      | "getBuilderGlobally"
       | "builtLists"
       | "depositAddress"
       | "getAddressManager"
@@ -199,7 +199,7 @@ export interface L1BuildAgent extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    builders(
+    getBuilderGlobally(
       _chainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -275,7 +275,7 @@ export interface L1BuildAgent extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  builders(
+  getBuilderGlobally(
     _chainId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -351,7 +351,7 @@ export interface L1BuildAgent extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    builders(
+    getBuilderGlobally(
       _chainId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -430,7 +430,7 @@ export interface L1BuildAgent extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    builders(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getBuilderGlobally(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -501,7 +501,7 @@ export interface L1BuildAgent extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    builders(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getBuilderGlobally(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
