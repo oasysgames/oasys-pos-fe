@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { ChangeEvent, SetStateAction, useState } from 'react';
 import { ZERO_ADDRESS, L2_GASLIMIT, L2_OO_SUBMISSION_INTERVAL, FINALIZATION_PERIOD_SECONDS } from '@/consts';
-import { getL1BuildAgentContract, handleError } from '@/features';
+import { getL1BuildAgentContract, handleError, getSigner } from '@/features';
 import { ErrorMsg, SuccessMsg, Modal, InputType } from '@/components/atoms';
 import { Form, LoadingModal } from '@/components/organisms';
 
@@ -24,9 +24,8 @@ export const BuildVerseModal = (props: Props) => {
   const [proposerAddress, setProposerAddress] = useState('');
   const [batchSenderAddress, setBatchSenderAddress] = useState('');
   const [p2pSequencerAddress, setP2PSequencerAddress] = useState('');
+  const [messageRelayer, setMessageRelayer] = useState('');
   const [l2BlockTime, setL2BlockTime] = useState<number>();
-  const [l2OOStartingBlockNumber, setL2OOStartingBlockNumber] = useState<number>();
-  const [l2OOStartingTimestamp, setL2OOStartingTimestamp] = useState<number>();
 
   const build = async () => {
     const isLegacy = false;
@@ -39,9 +38,14 @@ export const BuildVerseModal = (props: Props) => {
         throw new Error('L2 Block Time must be between 1 and 7');
       }
 
+      // At first, set default Values
+      // Correct values are expected to be set via another button
+      const l2OOStartingBlockNumber = 0;
+      const l2OOStartingTimestamp = (await (await getSigner()).provider.getBlock('latest')).timestamp;
+
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(
         newChainId!,
-        [finalSystemOwner, proposerAddress, finalSystemOwner, batchSenderAddress, p2pSequencerAddress, l2BlockTime!, L2_GASLIMIT, L2_OO_SUBMISSION_INTERVAL, FINALIZATION_PERIOD_SECONDS, l2OOStartingBlockNumber!, l2OOStartingTimestamp!]
+        [finalSystemOwner, proposerAddress, finalSystemOwner, batchSenderAddress, p2pSequencerAddress, messageRelayer, l2BlockTime!, L2_GASLIMIT, L2_OO_SUBMISSION_INTERVAL, FINALIZATION_PERIOD_SECONDS, l2OOStartingBlockNumber, l2OOStartingTimestamp]
       );
       const receipt = await tx.wait();
       if (receipt.status === 1) {
@@ -51,9 +55,8 @@ export const BuildVerseModal = (props: Props) => {
         setProposerAddress('');
         setBatchSenderAddress('');
         setP2PSequencerAddress('');
+        setMessageRelayer('');
         setL2BlockTime(undefined);
-        setL2OOStartingBlockNumber(undefined);
-        setL2OOStartingTimestamp(undefined);
         setBuildError('');
         setIsBuilding(false);
       }
@@ -91,28 +94,21 @@ export const BuildVerseModal = (props: Props) => {
       handleClick: (e: ChangeEvent<HTMLInputElement>) => {setP2PSequencerAddress(e.target.value)},
     },
     {
+      placeholder: 'set message relayer address',
+      value: messageRelayer,
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setMessageRelayer(e.target.value)},
+    },
+    {
       placeholder: 'set L2 Block Time (range of 1 to 7)',
       value: l2BlockTime?.toString() || '',
       inputType: InputType.Number,
       handleClick: (e: ChangeEvent<HTMLInputElement>) => {setL2BlockTime(Number(e.target.value))},
     },
-    {
-      placeholder: 'set L2 Output Oracle Starting Block Number',
-      value: l2OOStartingBlockNumber?.toString() || '',
-      inputType: InputType.Number,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setL2OOStartingBlockNumber(Number(e.target.value))},
-    },
-    {
-      placeholder: 'set L2 Output Oracle Starting Block Timestamp (sec)',
-      value: l2OOStartingTimestamp?.toString() || '',
-      inputType: InputType.Number,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setL2OOStartingTimestamp(Number(e.target.value))},
-    },
   ];
   const buildButtons = [
     {
       handleClick: build,
-      disabled: !finalSystemOwner || !batchSenderAddress || !p2pSequencerAddress || !proposerAddress || !l2BlockTime || !(l2OOStartingBlockNumber || l2OOStartingBlockNumber === 0) || !(l2OOStartingTimestamp || l2OOStartingTimestamp === 0) || isBuilding,
+      disabled: !finalSystemOwner || !batchSenderAddress || !p2pSequencerAddress || !proposerAddress || !messageRelayer || !l2BlockTime || isBuilding,
       value: 'Build',
     }
   ];

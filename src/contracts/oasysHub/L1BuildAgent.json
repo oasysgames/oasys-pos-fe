@@ -71,6 +71,10 @@
             "type": "address",
             "internalType": "address"
         }, {
+            "name": "messageRelayer",
+            "type": "address",
+            "internalType": "address"
+        }, {
             "name": "l2BlockTime",
             "type": "uint256",
             "internalType": "uint256"

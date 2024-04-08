@@ -23,12 +23,12 @@ import type {
 } from "./common";
 
 export type BuildConfigStruct = [
-  string, string, string, string, string, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish
+  string, string, string, string, string, string, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish
 ];
 
 export interface L1BuildAgentInterface extends utils.Interface {
   functions: {
-    "build(uint256,(address,address,address,address,uint256,uint64,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "build(uint256,(address,address,address,address,address,uint256,uint64,uint256,uint256,uint256,uint256))": FunctionFragment;
     "build(uint256,address,address)": FunctionFragment;
     "depositAddress()": FunctionFragment;
     "getAddressManager(uint256)": FunctionFragment;

@@ -50,6 +50,7 @@ export type DeployConfig = {
   l2OutputOracleStartingBlockNumber: number;
   l2OutputOracleStartingTimestamp: number;
   l2OutputOracleSubmissionInterval: number;
+  l2ZeroFeeTime: number;
   maxSequencerDrift: number;
   optimismPortalProxy: string;
   p2pSequencerAddress: string;

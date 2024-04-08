@@ -6,6 +6,7 @@ import {
   getL1BuildDepositContract,
   getProxyAdminContract,
   getOasysL2OutputOracleContract,
+  getOasysPortalContract,
   getSystemConfigContract,
 } from '@/features/';
 
@@ -53,6 +54,7 @@ export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string 
   result.L2OutputOracleProposer = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).PROPOSER();
   result.L2OutputOracleChallenger = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).CHALLENGER();
   result.BatchSender = (await (await getSystemConfigContract(result.SystemConfigProxy)).batcherHash()).replace(/(0{24})(?=\w)/g, '');
+  result.MessageRelayer = await (await getOasysPortalContract(result.OptimismPortalProxy)).messageRelayer();
 
   return result;
 };
