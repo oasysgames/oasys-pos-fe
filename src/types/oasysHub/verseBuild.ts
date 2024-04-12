@@ -36,7 +36,6 @@ export type NamedAddressesV2 = {
   OptimismPortalProxy: string;
   ProtocolVersions: string;
   BatchInbox: string;
-  MessageRelayer: string;
   AddressManager: string;
   P2PSequencer: string;
 }

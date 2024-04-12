@@ -9,6 +9,7 @@ export type VerseInfo = {
 
 export type VerseInfoV2 = {
   chainId: number;
+  messageRelayer: string;
   namedAddresses: NamedAddressesV2;
   deployConfig: DeployConfig;
 }

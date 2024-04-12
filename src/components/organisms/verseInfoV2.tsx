@@ -59,7 +59,7 @@ export const VerseInfoV2 = (props: Props) => {
     ['OptimismPortalProxy', verseInfo.namedAddresses.OptimismPortalProxy],
     ['ProtocolVersions', verseInfo.namedAddresses.ProtocolVersions],
     ['BatchInbox', verseInfo.namedAddresses.BatchInbox],
-    ['MessageRelayer', verseInfo.namedAddresses.MessageRelayer],
+    ['MessageRelayer', verseInfo.messageRelayer],
     ['AddressManager', verseInfo.namedAddresses.AddressManager],
     ['P2PSequencer', verseInfo.namedAddresses.P2PSequencer],
   ];

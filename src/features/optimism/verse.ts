@@ -102,6 +102,7 @@ export const getVerseInfoV2 = async (
   const l2OOContract = await getOasysL2OutputOracleContract(namedAddresses.L2OutputOracleProxy);
   const portalContract = await getOasysPortalContract(namedAddresses.OptimismPortalProxy);
   const systemConfigContract = await getSystemConfigContract(namedAddresses.SystemConfigProxy);
+  const messageRelayer = await (await getOasysPortalContract(namedAddresses.OptimismPortalProxy)).messageRelayer();
 
   namedAddresses.P2PSequencer = await systemConfigContract.unsafeBlockSigner();
 
@@ -113,6 +114,7 @@ export const getVerseInfoV2 = async (
 
   return {
     chainId: verseChainId,
+    messageRelayer: messageRelayer,
     namedAddresses: namedAddresses,
     deployConfig: {
       baseFeeVaultMinimumWithdrawalAmount: BaseFeeVaultMinimumWithdrawalAmount,
