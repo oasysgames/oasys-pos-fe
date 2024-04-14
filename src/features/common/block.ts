@@ -25,7 +25,7 @@ export const getBlockByTime = async (
     if (Math.abs(diff) < blockPeriod) {
       break;
     }
-    number -= ~(diff / blockPeriod);
+    number -= ~~(diff / blockPeriod);
   }
 
   return null;
