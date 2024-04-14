@@ -26,10 +26,10 @@ import {
   getNamedAddressesV2,
   getSigner,
   getL1BuildDepositContract,
-  getL1BuildAgentContract,
   getSystemConfigContract,
   getOasysL2OutputOracleContract,
   getOasysPortalContract,
+  getBlockByTime,
 } from "@/features";
 import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import {
@@ -110,6 +110,15 @@ export const getVerseInfoV2 = async (
   // Go ERR: cannot unmarshal deploy config: json: cannot unmarshal hex number with leading zero digits into Go struct field DeployConfig.l2GenesisBlockGasLimit of type hexutil.Uint64
   l2GasLimit = l2GasLimit.replace(/^(0x)0+/, '$1');
 
+  // Search for the L1 starting block from the L2OO starting timestamp.
+  const l2StartTime: BigNumber = await l2OOContract.startingTimestamp();
+  if (l2StartTime.isZero()) {
+    throw new Error("`startingTimestamp` is not set for the L2OutputOracle");
+  }
+  const l1StartBlock = await getBlockByTime(signer.provider, Number(l2StartTime), L1BlockTime);
+  if (!l1StartBlock) {
+    throw new Error(`Could not find L1 block matching L2 starting timestamp: ${l2StartTime}`);
+  }
 
   return {
     chainId: verseChainId,
@@ -140,7 +149,7 @@ export const getVerseInfoV2 = async (
       l1FeeVaultRecipient: namedAddresses.FinalSystemOwner,
       l1FeeVaultWithdrawalNetwork: L1FeeVaultWithdrawalNetwork,
       l1StandardBridgeProxy: namedAddresses.L1StandardBridgeProxy,
-      l1StartingBlockTag: latestL1Block.hash,
+      l1StartingBlockTag: l1StartBlock.hash,
       l2BlockTime: Number(await l2OOContract.L2_BLOCK_TIME()),
       l2ChainID: verseChainId,
       l2GenesisBlockBaseFeePerGas: L2GenesisBlockBaseFeePerGas,
@@ -149,9 +158,9 @@ export const getVerseInfoV2 = async (
       l2OutputOracleChallenger: namedAddresses.L2OutputOracleChallenger,
       l2OutputOracleProposer: namedAddresses.L2OutputOracleProposer,
       l2OutputOracleStartingBlockNumber: Number(await l2OOContract.startingBlockNumber()),
-      l2OutputOracleStartingTimestamp: Number(await l2OOContract.startingTimestamp()),
+      l2OutputOracleStartingTimestamp: Number(l2StartTime),
       l2OutputOracleSubmissionInterval: Number(await l2OOContract.SUBMISSION_INTERVAL()),
-      l2ZeroFeeTime: latestL1Block.timestamp,
+      l2ZeroFeeTime: Number(l2StartTime),
       maxSequencerDrift: MaxSequencerDrift,
       optimismPortalProxy: namedAddresses.OptimismPortalProxy,
       p2pSequencerAddress: namedAddresses.P2PSequencer,
