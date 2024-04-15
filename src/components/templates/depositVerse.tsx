@@ -36,7 +36,7 @@ export const DepositVerse = (props: Props) => {
           isLegacy={isLegacy}
         />
       }
-      <h2>Deposit / Withdraw Token for Verse 2.0</h2>
+      <h2>Deposit / Withdraw Token for Verse v1</h2>
       <div className='space-x-2'>
         <Button
           handleClick={() => {
@@ -56,8 +56,8 @@ export const DepositVerse = (props: Props) => {
         </Button>
       </div>
       <hr/>
-      <h2>Witdraw Token for Verse 1.0</h2>
-      <p>Since the Verse 1.0 has been deprecated, depositing and building can only be performed through a direct function call to the contract.</p>
+      <h2>Witdraw Token for Verse v0</h2>
+      <p>Since the Verse v0 has been deprecated, depositing and building can only be performed through a direct function call to the contract.</p>
       <div className='space-x-2'>
       <Button
           handleClick={() => {

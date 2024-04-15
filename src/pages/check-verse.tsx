@@ -131,12 +131,12 @@ const CheckVerse: NextPage = () => {
     {
       handleClick: () => (getVerseConfig(false)),
       disabled: !l2ChainId,
-      value: 'Get Verse 2.0 Info',
+      value: 'Get Verse v1 Info',
     },
     {
       handleClick: () => (getVerseConfig(true)),
       disabled: !l2ChainId,
-      value: 'Get Verse 1.0 Info',
+      value: 'Get Verse v0 Info',
     },
   ];
 
