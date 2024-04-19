@@ -1,13 +1,17 @@
 import { BigNumber } from 'ethers';
 import { getProvider } from '@/features/common/wallet';
-import { NamedAddresses } from '@/types/oasysHub/verseBuild';
+import { NamedAddresses, NamedAddressesV2 } from '@/types/oasysHub/verseBuild';
 import {
   getL1BuildAgentContract,
   getL1BuildDepositContract,
+  getProxyAdminContract,
+  getOasysL2OutputOracleContract,
+  getOasysPortalContract,
+  getSystemConfigContract,
 } from '@/features/';
 
-export const getNamedAddresses = async (chainId: number) => {
-  const L1BuildAgentContract = await getL1BuildAgentContract();
+export const getNamedAddresses = async (chainId: number, isLegacy: boolean = true) => {
+  const L1BuildAgentContract = await getL1BuildAgentContract(isLegacy);
 
   const namedAddresses: { [name: string]: string } = {
     Lib_AddressManager: await L1BuildAgentContract.getAddressManager(chainId),
@@ -23,9 +27,40 @@ export const getNamedAddresses = async (chainId: number) => {
   return namedAddresses as NamedAddresses;
 };
 
-export const getBuilderFromTx = async (txhash: string): Promise<string> => {
+export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string = "") => {
+  const isLegacy = false;
+  const l1BuildAgent = await getL1BuildAgentContract(isLegacy);
+  const builtAddresses = await l1BuildAgent.builtLists(chainId);
+
+  // Get address manager from Legacy L1BuildAgent
+  const l1BuildAgentLegacy = await getL1BuildAgentContract(true);
+  const addressManager = await l1BuildAgentLegacy.getAddressManager(chainId);
+
+  const result = {
+    ProxyAdmin: builtAddresses[0],
+    SystemConfigProxy: builtAddresses[1],
+    L1StandardBridgeProxy: builtAddresses[2],
+    L1ERC721BridgeProxy: builtAddresses[3],
+    L1CrossDomainMessengerProxy: builtAddresses[4],
+    L2OutputOracleProxy: builtAddresses[5],
+    OptimismPortalProxy: builtAddresses[6],
+    ProtocolVersions: builtAddresses[7],
+    BatchInbox: builtAddresses[8],
+    AddressManager:  addressManager,
+    P2PSequencer: p2pSequencer,
+  } as NamedAddressesV2;
+
+  result.FinalSystemOwner = await (await getProxyAdminContract(result.ProxyAdmin)).owner();
+  result.L2OutputOracleProposer = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).PROPOSER();
+  result.L2OutputOracleChallenger = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).CHALLENGER();
+  result.BatchSender = (await (await getSystemConfigContract(result.SystemConfigProxy)).batcherHash()).replace(/(0{24})(?=\w)/g, '');
+
+  return result;
+};
+
+export const getBuilderFromTx = async (txhash: string, isLegacy: boolean = true): Promise<string> => {
   const provider = await getProvider();
-  const L1BuildDepositContract = await getL1BuildDepositContract();
+  const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
 
   // Get a receipt and event for the birth build transaction from the Hub-Layer.
   const receipt = await provider.getTransactionReceipt(txhash);
@@ -49,11 +84,18 @@ export const getBuilderFromChainID = async (
   return found;
 };
 
-export const getBuilts = async (): Promise<{
+export const getBuilderFromChainIDV2 = async (
+  chainId: number,
+): Promise<string> => {
+  const l1BuildAgent = await getL1BuildAgentContract(false);
+  return await l1BuildAgent.getBuilderGlobally(chainId);
+};
+
+export const getBuilts = async (isLegacy: boolean = true): Promise<{
   builders: string[];
   chainIds: BigNumber[];
 }> => {
-  const L1BuildAgentContract = await getL1BuildAgentContract();
+  const L1BuildAgentContract = await getL1BuildAgentContract(isLegacy);
 
   let builders: string[] = [];
   let chainIds: BigNumber[] = [];

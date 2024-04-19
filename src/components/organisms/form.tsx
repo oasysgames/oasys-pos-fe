@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 import { ChangeEvent } from 'react';
-import { Button, Input } from '@/components/atoms';
+import { Button, Input, InputType } from '@/components/atoms';
 
 type InputProps = {
   placeholder: string;
   value: string;
+  inputType?: InputType;
   handleClick: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -33,13 +34,14 @@ export const Form = (props: Props) => {
       'space-y-1',
     )}>
       <div className='space-y-0.5'>
-        {inputs.map(({ placeholder, value, handleClick }, index) => {
+        {inputs.map(({ placeholder, value, inputType, handleClick }, index) => {
           return (
             <Input
               key={index}
               placeholder={placeholder}
               value={value}
               handleClick={handleClick}
+              inputType={inputType}
               className='w-full'
             />
           )

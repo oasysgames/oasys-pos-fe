@@ -9,14 +9,11 @@ type Props = {
   className?: string;
   ownerAddress: string;
   setModalState: (value: SetStateAction<boolean>) => void;
+  isLegacy: boolean;
 };
 
 export const CheckDepositModal = (props: Props) => {
-  const {
-    className,
-    ownerAddress,
-    setModalState,
-  } = props;
+  const { className, ownerAddress, setModalState, isLegacy } = props;
 
   const [checkSuccess, setCheckSuccess] = useState('');
   const [isChecking, setIsChecking] = useState(false);
@@ -27,13 +24,20 @@ export const CheckDepositModal = (props: Props) => {
   const [depositSOAS, setDepositSOAS] = useState<ethers.BigNumber>();
 
   const check = async () => {
-    const L1BuildDepositContract = await getL1BuildDepositContract();
+    const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
 
     try {
       setIsChecking(true);
-      const depositTotal: ethers.BigNumber = await L1BuildDepositContract.getDepositTotal(builder);
-      const depositOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositAmount(builder, ownerAddress);
-      const depositSOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositERC20Amount(builder, ownerAddress, sOASAddress);
+      const depositTotal: ethers.BigNumber =
+        await L1BuildDepositContract.getDepositTotal(builder);
+      const depositOAS: ethers.BigNumber =
+        await L1BuildDepositContract.getDepositAmount(builder, ownerAddress);
+      const depositSOAS: ethers.BigNumber =
+        await L1BuildDepositContract.getDepositERC20Amount(
+          builder,
+          ownerAddress,
+          sOASAddress,
+        );
 
       setDepositTotal(depositTotal);
       setDepositOAS(depositOAS);
@@ -52,7 +56,9 @@ export const CheckDepositModal = (props: Props) => {
     {
       placeholder: 'set builder address',
       value: builder,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setBuilder(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setBuilder(e.target.value);
+      },
     },
   ];
 
@@ -61,39 +67,30 @@ export const CheckDepositModal = (props: Props) => {
       handleClick: check,
       disabled: !builder || isChecking,
       value: 'Check Deposit',
-    }
+    },
   ];
 
   return (
     <>
-    {isChecking &&
-      <LoadingModal />
-    }
-    {!isChecking &&
-    <Modal
-      setModalState={setModalState}
-    >
-      <div className='space-y-4'>
-        {checkSuccess && (
-          <SuccessMsg className='w-full' text={checkSuccess} />
-        )}
-        {checkError && (
-          <ErrorMsg className='w-full' text={ checkError } />
-        )}
-        <Form
-          inputs={inputs}
-          buttons={buttons}
-        />
-        {depositTotal && depositOAS && depositSOAS &&
-          <DepositDetail 
-            depositTotal={depositTotal}
-            depositOAS={depositOAS}
-            depositSOAS={depositSOAS}
-          />
-        }
-      </div>
-    </Modal>
-    }
+      {isChecking && <LoadingModal />}
+      {!isChecking && (
+        <Modal setModalState={setModalState}>
+          <div className='space-y-4'>
+            {checkSuccess && (
+              <SuccessMsg className='w-full' text={checkSuccess} />
+            )}
+            {checkError && <ErrorMsg className='w-full' text={checkError} />}
+            <Form inputs={inputs} buttons={buttons} />
+            {depositTotal && depositOAS && depositSOAS && (
+              <DepositDetail
+                depositTotal={depositTotal}
+                depositOAS={depositOAS}
+                depositSOAS={depositSOAS}
+              />
+            )}
+          </div>
+        </Modal>
+      )}
     </>
-  )
+  );
 };

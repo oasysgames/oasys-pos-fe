@@ -12,6 +12,7 @@ type Props = {
   withdraw: () => Promise<void>;
   idDepositLoading: boolean;
   tokenUnit: string;
+  isLegacy: boolean;
 };
 
 export const Deposit = (props: Props) => {
@@ -25,6 +26,7 @@ export const Deposit = (props: Props) => {
     withdraw,
     idDepositLoading,
     tokenUnit,
+    isLegacy
   } = props;
 
   const depositInputs = [
@@ -43,7 +45,7 @@ export const Deposit = (props: Props) => {
   const depositButtons = [
     {
       handleClick: deposit,
-      disabled: !builder || !amount || idDepositLoading,
+      disabled: !builder || !amount || idDepositLoading || isLegacy,
       value: 'Deposit',
     },
     {
@@ -52,6 +54,9 @@ export const Deposit = (props: Props) => {
       value: 'Withdraw',
     },
   ];
+
+  // evic deposit button for legacy
+  if (isLegacy) depositButtons.shift();
 
   return (
     <div className={clsx(
