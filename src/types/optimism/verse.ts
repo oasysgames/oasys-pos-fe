@@ -46,6 +46,7 @@ export type DeployConfig = {
   l2GenesisBlockBaseFeePerGas: string;
   l2GenesisBlockGasLimit: string;
   l2GenesisRegolithTimeOffset: string;
+  l2GenesisCanyonTimeOffset: string;
   l2OutputOracleChallenger: string;
   l2OutputOracleProposer: string;
   l2OutputOracleStartingBlockNumber: number;
