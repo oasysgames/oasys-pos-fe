@@ -1,6 +1,11 @@
 import { ethers } from 'ethers';
 import { ChangeEvent, SetStateAction, useState } from 'react';
-import { ZERO_ADDRESS, L2_GASLIMIT, L2_OO_SUBMISSION_INTERVAL, FINALIZATION_PERIOD_SECONDS } from '@/consts';
+import {
+  L2_GASLIMIT,
+  L2_OO_SUBMISSION_INTERVAL,
+  FINALIZATION_PERIOD_SECONDS,
+  L2BlockTimeRange,
+} from '@/consts';
 import { getL1BuildAgentContract, handleError, getSigner } from '@/features';
 import { ErrorMsg, SuccessMsg, Modal, InputType } from '@/components/atoms';
 import { Form, LoadingModal } from '@/components/organisms';
@@ -9,6 +14,8 @@ type Props = {
   className?: string;
   setModalState: (value: SetStateAction<boolean>) => void;
 };
+
+const [L2_BLOCK_TIME_START, L2_BLOCK_TIME_END] = L2BlockTimeRange;
 
 export const BuildVerseModal = (props: Props) => {
   const {
@@ -34,8 +41,13 @@ export const BuildVerseModal = (props: Props) => {
     try {
       setIsBuilding(true);
 
-      if (l2BlockTime! < 1 || l2BlockTime! > 7) {
-        throw new Error('L2 Block Time must be between 1 and 7');
+      if (
+        l2BlockTime! < L2_BLOCK_TIME_START ||
+        l2BlockTime! > L2_BLOCK_TIME_END
+      ) {
+        throw new Error(
+          `L2 Block Time must be between ${L2_BLOCK_TIME_START} and ${L2_BLOCK_TIME_END}`,
+        );
       }
 
       // At first, set default Values
@@ -99,10 +111,10 @@ export const BuildVerseModal = (props: Props) => {
       handleClick: (e: ChangeEvent<HTMLInputElement>) => {setMessageRelayer(e.target.value)},
     },
     {
-      placeholder: 'set L2 Block Time (range of 1 to 7)',
+      placeholder: `set L2 Block Time (range of ${L2_BLOCK_TIME_START} to ${L2_BLOCK_TIME_END})`,
       value: l2BlockTime?.toString() || '',
       inputType: InputType.Number,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setL2BlockTime(Number(e.target.value))},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => { setL2BlockTime(Number(e.target.value)) },
     },
   ];
   const buildButtons = [
