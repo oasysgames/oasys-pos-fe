@@ -11,7 +11,7 @@ export const L1FeeVaultMinimumWithdrawalAmount = '0x8ac7230489e80000';
 export const L1FeeVaultWithdrawalNetwork = 0;
 export const L2GenesisBlockBaseFeePerGas = '0x0';
 export const L2GenesisRegolithTimeOffset = '0x0';
-export const L2GenesisCanyonTimeOffset = '0x0';
+// export const L2GenesisCanyonTimeOffset = '0x0';
 export const MaxSequencerDrift = 600;
 export const RecommendedProtocolVersion =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
