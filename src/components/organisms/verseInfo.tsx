@@ -114,9 +114,9 @@ export const VerseInfo = (props: Props) => {
                 })
               }
               <Button
-              handleClick={() => {
-                setCheckModalOpen(true)
-              }}
+                handleClick={() => {
+                  setCheckModalOpen(true)
+                }}
               >
                 Check Genesis Version
               </Button>

@@ -1,68 +1,30 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
-import { isNotConnectedMsg } from '@/consts';
-import { getProvider, getSigner, handleError } from '@/features';
+import { useEffect } from 'react';
 import { useRefreshL1BuildDeposit, useVerseInfo, useRefreshVerseInfo, useL1BuildDeposit } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
-import { WalletConnect, VerseInfo, LoadingModal, DepositDetail } from '@/components/organisms';
+import { VerseInfo, LoadingModal, DepositDetail } from '@/components/organisms';
 import { BuildVerse } from '@/components/templates';
+import { useAppKitAccount } from '@reown/appkit/react';
+import dynamic from 'next/dynamic'
+
+// Disable SSR for WalletConnect
+const WalletConnect = dynamic(
+  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
+  { ssr: false }
+);
 
 const BuildVersePage: NextPage = () => {
-  const [ownerError, setOwnerError] = useState('');
-  const [ownerAddress, setOwnerAddress] = useState('');
-  const [connectedChainId, setConnectedChainId] = useState<number>();
+  const { address: ownerAddress } = useAppKitAccount({ namespace: 'eip155' });
   const isLegacy = false;
   const { data: depositData, error: depositLoadError, isLoading: isDepositLoading } = useL1BuildDeposit(isLegacy);
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshL1BuildDeposit = useRefreshL1BuildDeposit();
   const refreshVerseInfo = useRefreshVerseInfo();
 
-  const handleAccountsChanged = async () => {
-    const provider = await getProvider();
-    const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length === 0) {
-      setOwnerAddress('');
-      setOwnerError(isNotConnectedMsg);
-      return;
-    };
-    setOwner();
-  };
-
   const handleChainChanged = async () => {
-    const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    try {
-      setConnectedChainId(chainId);
-      setOwner();
-      refreshL1BuildDeposit();
-      refreshVerseInfo();
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
+    refreshL1BuildDeposit();
+    refreshVerseInfo();
   };
-
-  const setOwner = async () => {
-    try {
-      const signer = await getSigner();
-      const address = await signer.getAddress();
-      const chainId = await signer.getChainId();
-
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      setOwnerAddress(address);
-      setConnectedChainId(chainId);
-      setOwnerError('');
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  };
-
-  useEffect(() => {
-    handleAccountsChanged();
-  });
 
   useEffect(() => {
     refreshL1BuildDeposit();
@@ -76,16 +38,12 @@ const BuildVersePage: NextPage = () => {
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       {(ownerAddress && (isDepositLoading || isVerseInfoLoading)) && <LoadingModal/>}
       <WalletConnect
-        className='space-y-0.5 col-span-4 col-start-3'
-        ownerError={ownerError}
-        ownerAddress={ownerAddress}
-        chainId={connectedChainId}
-        setOwner={setOwner}
+        handleChainChanged={ handleChainChanged }
       />
       {depositLoadError instanceof Error && (
         <ErrorMsg className='w-full' text={depositLoadError.message} />
       )}
-      { depositData && 
+      { depositData && !depositLoadError && 
         <div className='space-y-4 col-span-4 col-start-3'>
           <p>Deposits from Connected Account</p>
           <DepositDetail
@@ -104,7 +62,7 @@ const BuildVersePage: NextPage = () => {
       { verseInfo?.chainId && 
         <VerseInfo 
           className='space-y-4 col-span-4 col-start-3'
-          verseBuilder={ownerAddress}
+          verseBuilder={ownerAddress || ''}
           verseInfo={verseInfo}
         />
       }
@@ -112,4 +70,7 @@ const BuildVersePage: NextPage = () => {
   );
 };
 
-export default BuildVersePage
+export default dynamic(
+  () => Promise.resolve(BuildVersePage),
+  { ssr: false }
+);

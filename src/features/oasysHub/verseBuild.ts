@@ -6,7 +6,6 @@ import {
   getL1BuildDepositContract,
   getProxyAdminContract,
   getOasysL2OutputOracleContract,
-  getOasysPortalContract,
   getSystemConfigContract,
 } from '@/features/';
 

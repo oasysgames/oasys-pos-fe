@@ -9,7 +9,6 @@ type Props = {
   validatorInfo: ValidatorInfoType;
 };
 
-
 export const ValidatorInfo = (props: Props) => {
   const {
     className,

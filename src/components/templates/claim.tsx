@@ -9,7 +9,7 @@ import { ChangeEvent, SetStateAction } from 'react';
 
 type Props = {
   className?: string;
-  ownerAddress: string;
+  ownerAddress?: string;
   claimInfo?: sOASClaimInfo | lOASClaimInfo;
   isClaimInfoLoading: boolean;
   claimInfoError: any;

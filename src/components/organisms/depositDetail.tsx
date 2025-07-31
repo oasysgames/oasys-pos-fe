@@ -9,7 +9,6 @@ type Props = {
   depositSOAS: ethers.BigNumber;
 };
 
-
 export const DepositDetail = (props: Props) => {
   const {
     className,

@@ -32,6 +32,8 @@ export interface StakeManagerInterface extends utils.Interface {
     "activateValidator(address,uint256[])": FunctionFragment;
     "addRewardBalance()": FunctionFragment;
     "allowlist()": FunctionFragment;
+    "blsPublicKeyToOwner(bytes32)": FunctionFragment;
+    "candidateManager()": FunctionFragment;
     "claimCommissions(address,uint256)": FunctionFragment;
     "claimLockedUnstake(uint256)": FunctionFragment;
     "claimRewards(address,address,uint256)": FunctionFragment;
@@ -43,6 +45,7 @@ export interface StakeManagerInterface extends utils.Interface {
     "getLockedUnstake(address,uint256)": FunctionFragment;
     "getLockedUnstakeCount(address)": FunctionFragment;
     "getLockedUnstakes(address,uint256,uint256)": FunctionFragment;
+    "getOperatorStakes(address,uint256)": FunctionFragment;
     "getRewards(address,address,uint256)": FunctionFragment;
     "getStakerStakes(address,uint256,uint256,uint256)": FunctionFragment;
     "getStakers(uint256,uint256)": FunctionFragment;
@@ -51,10 +54,13 @@ export interface StakeManagerInterface extends utils.Interface {
     "getUnstakes(address)": FunctionFragment;
     "getValidatorInfo(address,uint256)": FunctionFragment;
     "getValidatorOwners(uint256,uint256)": FunctionFragment;
+    "getValidatorStakes(address,uint256)": FunctionFragment;
     "getValidatorStakes(address,uint256,uint256,uint256)": FunctionFragment;
     "getValidators(uint256,uint256,uint256)": FunctionFragment;
     "initialize(address,address)": FunctionFragment;
     "initialized()": FunctionFragment;
+    "jail(address,address,bytes,uint256)": FunctionFragment;
+    "jailCallers(address)": FunctionFragment;
     "joinValidator(address)": FunctionFragment;
     "operatorToOwner(address)": FunctionFragment;
     "restakeCommissions(uint256)": FunctionFragment;
@@ -67,6 +73,7 @@ export interface StakeManagerInterface extends utils.Interface {
     "stakers(address)": FunctionFragment;
     "unstake(address,uint8,uint256)": FunctionFragment;
     "unstakeV2(address,uint8,uint256)": FunctionFragment;
+    "updateBLSPublicKey(bytes)": FunctionFragment;
     "updateOperator(address)": FunctionFragment;
     "validatorOwners(uint256)": FunctionFragment;
     "validators(address)": FunctionFragment;
@@ -77,6 +84,8 @@ export interface StakeManagerInterface extends utils.Interface {
       | "activateValidator"
       | "addRewardBalance"
       | "allowlist"
+      | "blsPublicKeyToOwner"
+      | "candidateManager"
       | "claimCommissions"
       | "claimLockedUnstake"
       | "claimRewards"
@@ -88,6 +97,7 @@ export interface StakeManagerInterface extends utils.Interface {
       | "getLockedUnstake"
       | "getLockedUnstakeCount"
       | "getLockedUnstakes"
+      | "getOperatorStakes"
       | "getRewards"
       | "getStakerStakes"
       | "getStakers"
@@ -96,10 +106,13 @@ export interface StakeManagerInterface extends utils.Interface {
       | "getUnstakes"
       | "getValidatorInfo"
       | "getValidatorOwners"
-      | "getValidatorStakes"
+      | "getValidatorStakes(address,uint256)"
+      | "getValidatorStakes(address,uint256,uint256,uint256)"
       | "getValidators"
       | "initialize"
       | "initialized"
+      | "jail"
+      | "jailCallers"
       | "joinValidator"
       | "operatorToOwner"
       | "restakeCommissions"
@@ -112,6 +125,7 @@ export interface StakeManagerInterface extends utils.Interface {
       | "stakers"
       | "unstake"
       | "unstakeV2"
+      | "updateBLSPublicKey"
       | "updateOperator"
       | "validatorOwners"
       | "validators"
@@ -126,6 +140,14 @@ export interface StakeManagerInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "allowlist", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "blsPublicKeyToOwner",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "candidateManager",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "claimCommissions",
     values: [string, BigNumberish]
@@ -171,6 +193,10 @@ export interface StakeManagerInterface extends utils.Interface {
     values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getOperatorStakes",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRewards",
     values: [string, string, BigNumberish]
   ): string;
@@ -200,7 +226,11 @@ export interface StakeManagerInterface extends utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getValidatorStakes",
+    functionFragment: "getValidatorStakes(address,uint256)",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getValidatorStakes(address,uint256,uint256,uint256)",
     values: [string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -215,6 +245,11 @@ export interface StakeManagerInterface extends utils.Interface {
     functionFragment: "initialized",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "jail",
+    values: [string, string, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "jailCallers", values: [string]): string;
   encodeFunctionData(
     functionFragment: "joinValidator",
     values: [string]
@@ -261,6 +296,10 @@ export interface StakeManagerInterface extends utils.Interface {
     values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "updateBLSPublicKey",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateOperator",
     values: [string]
   ): string;
@@ -279,6 +318,14 @@ export interface StakeManagerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "allowlist", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "blsPublicKeyToOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "candidateManager",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "claimCommissions",
     data: BytesLike
@@ -323,6 +370,10 @@ export interface StakeManagerInterface extends utils.Interface {
     functionFragment: "getLockedUnstakes",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getOperatorStakes",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getRewards", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getStakerStakes",
@@ -350,7 +401,11 @@ export interface StakeManagerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getValidatorStakes",
+    functionFragment: "getValidatorStakes(address,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getValidatorStakes(address,uint256,uint256,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -360,6 +415,11 @@ export interface StakeManagerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "initialized",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "jail", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "jailCallers",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -396,6 +456,10 @@ export interface StakeManagerInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "unstake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "unstakeV2", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "updateBLSPublicKey",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updateOperator",
     data: BytesLike
   ): Result;
@@ -407,6 +471,7 @@ export interface StakeManagerInterface extends utils.Interface {
 
   events: {
     "AddedRewardBalance(uint256)": EventFragment;
+    "BLSPublicKeyUpdated(address,bytes,bytes)": EventFragment;
     "ClaimedCommissions(address,uint256)": EventFragment;
     "ClaimedLockedUnstake(address,uint256)": EventFragment;
     "ClaimedRewards(address,address,uint256)": EventFragment;
@@ -423,6 +488,7 @@ export interface StakeManagerInterface extends utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "AddedRewardBalance"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BLSPublicKeyUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ClaimedCommissions"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ClaimedLockedUnstake"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ClaimedRewards"): EventFragment;
@@ -448,6 +514,19 @@ export type AddedRewardBalanceEvent = TypedEvent<
 
 export type AddedRewardBalanceEventFilter =
   TypedEventFilter<AddedRewardBalanceEvent>;
+
+export interface BLSPublicKeyUpdatedEventObject {
+  validator: string;
+  oldBLSPublicKey: string;
+  newBLSPublicKey: string;
+}
+export type BLSPublicKeyUpdatedEvent = TypedEvent<
+  [string, string, string],
+  BLSPublicKeyUpdatedEventObject
+>;
+
+export type BLSPublicKeyUpdatedEventFilter =
+  TypedEventFilter<BLSPublicKeyUpdatedEvent>;
 
 export interface ClaimedCommissionsEventObject {
   validator: string;
@@ -642,8 +721,15 @@ export interface StakeManager extends BaseContract {
 
     allowlist(overrides?: CallOverrides): Promise<[string]>;
 
+    blsPublicKeyToOwner(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    candidateManager(overrides?: CallOverrides): Promise<[string]>;
+
     claimCommissions(
-      validator: string,
+      arg0: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
@@ -654,14 +740,14 @@ export interface StakeManager extends BaseContract {
     ): Promise<ContractTransaction>;
 
     claimRewards(
-      staker: string,
+      arg0: string,
       validator: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
     claimUnstakes(
-      staker: string,
+      arg0: string,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -719,6 +805,12 @@ export interface StakeManager extends BaseContract {
         newCursor: BigNumber;
       }
     >;
+
+    getOperatorStakes(
+      operator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { stakes: BigNumber }>;
 
     getRewards(
       staker: string,
@@ -778,12 +870,13 @@ export interface StakeManager extends BaseContract {
       epoch: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, boolean, boolean, BigNumber] & {
+      [string, boolean, boolean, boolean, BigNumber, string] & {
         operator: string;
         active: boolean;
         jailed: boolean;
         candidate: boolean;
         stakes: BigNumber;
+        blsPublicKey: string;
       }
     >;
 
@@ -795,7 +888,13 @@ export interface StakeManager extends BaseContract {
       [string[], BigNumber] & { owners: string[]; newCursor: BigNumber }
     >;
 
-    getValidatorStakes(
+    "getValidatorStakes(address,uint256)"(
+      validator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { stakes: BigNumber }>;
+
+    "getValidatorStakes(address,uint256,uint256,uint256)"(
       validator: string,
       epoch: BigNumberish,
       cursor: BigNumberish,
@@ -815,10 +914,11 @@ export interface StakeManager extends BaseContract {
       howMany: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string[], string[], BigNumber[], boolean[], BigNumber] & {
+      [string[], string[], BigNumber[], string[], boolean[], BigNumber] & {
         owners: string[];
         operators: string[];
         stakes: BigNumber[];
+        blsPublicKeys: string[];
         candidates: boolean[];
         newCursor: BigNumber;
       }
@@ -831,6 +931,16 @@ export interface StakeManager extends BaseContract {
     ): Promise<ContractTransaction>;
 
     initialized(overrides?: CallOverrides): Promise<[boolean]>;
+
+    jail(
+      owner_: string,
+      operator: string,
+      blsPublicKey: BytesLike,
+      period: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    jailCallers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
     joinValidator(
       operator: string,
@@ -884,9 +994,9 @@ export interface StakeManager extends BaseContract {
     ): Promise<[string] & { signer: string }>;
 
     unstake(
-      validator: string,
-      token: BigNumberish,
-      amount: BigNumberish,
+      arg0: string,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -894,6 +1004,11 @@ export interface StakeManager extends BaseContract {
       validator: string,
       token: BigNumberish,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    updateBLSPublicKey(
+      blsPublicKey: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -911,10 +1026,11 @@ export interface StakeManager extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, BigNumber] & {
+      [string, string, BigNumber, string] & {
         owner: string;
         operator: string;
         lastClaimCommission: BigNumber;
+        blsPublicKey: string;
       }
     >;
   };
@@ -931,8 +1047,15 @@ export interface StakeManager extends BaseContract {
 
   allowlist(overrides?: CallOverrides): Promise<string>;
 
+  blsPublicKeyToOwner(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  candidateManager(overrides?: CallOverrides): Promise<string>;
+
   claimCommissions(
-    validator: string,
+    arg0: string,
     epochs: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
@@ -943,14 +1066,14 @@ export interface StakeManager extends BaseContract {
   ): Promise<ContractTransaction>;
 
   claimRewards(
-    staker: string,
+    arg0: string,
     validator: string,
     epochs: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
   claimUnstakes(
-    staker: string,
+    arg0: string,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -1008,6 +1131,12 @@ export interface StakeManager extends BaseContract {
       newCursor: BigNumber;
     }
   >;
+
+  getOperatorStakes(
+    operator: string,
+    epoch: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   getRewards(
     staker: string,
@@ -1067,12 +1196,13 @@ export interface StakeManager extends BaseContract {
     epoch: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string, boolean, boolean, boolean, BigNumber] & {
+    [string, boolean, boolean, boolean, BigNumber, string] & {
       operator: string;
       active: boolean;
       jailed: boolean;
       candidate: boolean;
       stakes: BigNumber;
+      blsPublicKey: string;
     }
   >;
 
@@ -1084,7 +1214,13 @@ export interface StakeManager extends BaseContract {
     [string[], BigNumber] & { owners: string[]; newCursor: BigNumber }
   >;
 
-  getValidatorStakes(
+  "getValidatorStakes(address,uint256)"(
+    validator: string,
+    epoch: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "getValidatorStakes(address,uint256,uint256,uint256)"(
     validator: string,
     epoch: BigNumberish,
     cursor: BigNumberish,
@@ -1104,10 +1240,11 @@ export interface StakeManager extends BaseContract {
     howMany: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string[], string[], BigNumber[], boolean[], BigNumber] & {
+    [string[], string[], BigNumber[], string[], boolean[], BigNumber] & {
       owners: string[];
       operators: string[];
       stakes: BigNumber[];
+      blsPublicKeys: string[];
       candidates: boolean[];
       newCursor: BigNumber;
     }
@@ -1120,6 +1257,16 @@ export interface StakeManager extends BaseContract {
   ): Promise<ContractTransaction>;
 
   initialized(overrides?: CallOverrides): Promise<boolean>;
+
+  jail(
+    owner_: string,
+    operator: string,
+    blsPublicKey: BytesLike,
+    period: BigNumberish,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  jailCallers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   joinValidator(
     operator: string,
@@ -1167,9 +1314,9 @@ export interface StakeManager extends BaseContract {
   stakers(arg0: string, overrides?: CallOverrides): Promise<string>;
 
   unstake(
-    validator: string,
-    token: BigNumberish,
-    amount: BigNumberish,
+    arg0: string,
+    arg1: BigNumberish,
+    arg2: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -1177,6 +1324,11 @@ export interface StakeManager extends BaseContract {
     validator: string,
     token: BigNumberish,
     amount: BigNumberish,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  updateBLSPublicKey(
+    blsPublicKey: BytesLike,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -1194,10 +1346,11 @@ export interface StakeManager extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [string, string, BigNumber] & {
+    [string, string, BigNumber, string] & {
       owner: string;
       operator: string;
       lastClaimCommission: BigNumber;
+      blsPublicKey: string;
     }
   >;
 
@@ -1212,8 +1365,15 @@ export interface StakeManager extends BaseContract {
 
     allowlist(overrides?: CallOverrides): Promise<string>;
 
+    blsPublicKeyToOwner(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    candidateManager(overrides?: CallOverrides): Promise<string>;
+
     claimCommissions(
-      validator: string,
+      arg0: string,
       epochs: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1224,13 +1384,13 @@ export interface StakeManager extends BaseContract {
     ): Promise<void>;
 
     claimRewards(
-      staker: string,
+      arg0: string,
       validator: string,
       epochs: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    claimUnstakes(staker: string, overrides?: CallOverrides): Promise<void>;
+    claimUnstakes(arg0: string, overrides?: CallOverrides): Promise<void>;
 
     deactivateValidator(
       validator: string,
@@ -1286,6 +1446,12 @@ export interface StakeManager extends BaseContract {
         newCursor: BigNumber;
       }
     >;
+
+    getOperatorStakes(
+      operator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getRewards(
       staker: string,
@@ -1345,12 +1511,13 @@ export interface StakeManager extends BaseContract {
       epoch: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, boolean, boolean, boolean, BigNumber] & {
+      [string, boolean, boolean, boolean, BigNumber, string] & {
         operator: string;
         active: boolean;
         jailed: boolean;
         candidate: boolean;
         stakes: BigNumber;
+        blsPublicKey: string;
       }
     >;
 
@@ -1362,7 +1529,13 @@ export interface StakeManager extends BaseContract {
       [string[], BigNumber] & { owners: string[]; newCursor: BigNumber }
     >;
 
-    getValidatorStakes(
+    "getValidatorStakes(address,uint256)"(
+      validator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "getValidatorStakes(address,uint256,uint256,uint256)"(
       validator: string,
       epoch: BigNumberish,
       cursor: BigNumberish,
@@ -1382,10 +1555,11 @@ export interface StakeManager extends BaseContract {
       howMany: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string[], string[], BigNumber[], boolean[], BigNumber] & {
+      [string[], string[], BigNumber[], string[], boolean[], BigNumber] & {
         owners: string[];
         operators: string[];
         stakes: BigNumber[];
+        blsPublicKeys: string[];
         candidates: boolean[];
         newCursor: BigNumber;
       }
@@ -1398,6 +1572,16 @@ export interface StakeManager extends BaseContract {
     ): Promise<void>;
 
     initialized(overrides?: CallOverrides): Promise<boolean>;
+
+    jail(
+      owner_: string,
+      operator: string,
+      blsPublicKey: BytesLike,
+      period: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    jailCallers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
     joinValidator(operator: string, overrides?: CallOverrides): Promise<void>;
 
@@ -1445,9 +1629,9 @@ export interface StakeManager extends BaseContract {
     stakers(arg0: string, overrides?: CallOverrides): Promise<string>;
 
     unstake(
-      validator: string,
-      token: BigNumberish,
-      amount: BigNumberish,
+      arg0: string,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1455,6 +1639,11 @@ export interface StakeManager extends BaseContract {
       validator: string,
       token: BigNumberish,
       amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateBLSPublicKey(
+      blsPublicKey: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1469,10 +1658,11 @@ export interface StakeManager extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [string, string, BigNumber] & {
+      [string, string, BigNumber, string] & {
         owner: string;
         operator: string;
         lastClaimCommission: BigNumber;
+        blsPublicKey: string;
       }
     >;
   };
@@ -1480,6 +1670,17 @@ export interface StakeManager extends BaseContract {
   filters: {
     "AddedRewardBalance(uint256)"(amount?: null): AddedRewardBalanceEventFilter;
     AddedRewardBalance(amount?: null): AddedRewardBalanceEventFilter;
+
+    "BLSPublicKeyUpdated(address,bytes,bytes)"(
+      validator?: string | null,
+      oldBLSPublicKey?: null,
+      newBLSPublicKey?: null
+    ): BLSPublicKeyUpdatedEventFilter;
+    BLSPublicKeyUpdated(
+      validator?: string | null,
+      oldBLSPublicKey?: null,
+      newBLSPublicKey?: null
+    ): BLSPublicKeyUpdatedEventFilter;
 
     "ClaimedCommissions(address,uint256)"(
       validator?: string | null,
@@ -1618,8 +1819,15 @@ export interface StakeManager extends BaseContract {
 
     allowlist(overrides?: CallOverrides): Promise<BigNumber>;
 
+    blsPublicKeyToOwner(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    candidateManager(overrides?: CallOverrides): Promise<BigNumber>;
+
     claimCommissions(
-      validator: string,
+      arg0: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
@@ -1630,14 +1838,14 @@ export interface StakeManager extends BaseContract {
     ): Promise<BigNumber>;
 
     claimRewards(
-      staker: string,
+      arg0: string,
       validator: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
     claimUnstakes(
-      staker: string,
+      arg0: string,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -1676,6 +1884,12 @@ export interface StakeManager extends BaseContract {
       staker: string,
       cursor: BigNumberish,
       howMany: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getOperatorStakes(
+      operator: string,
+      epoch: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1725,7 +1939,13 @@ export interface StakeManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getValidatorStakes(
+    "getValidatorStakes(address,uint256)"(
+      validator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "getValidatorStakes(address,uint256,uint256,uint256)"(
       validator: string,
       epoch: BigNumberish,
       cursor: BigNumberish,
@@ -1747,6 +1967,16 @@ export interface StakeManager extends BaseContract {
     ): Promise<BigNumber>;
 
     initialized(overrides?: CallOverrides): Promise<BigNumber>;
+
+    jail(
+      owner_: string,
+      operator: string,
+      blsPublicKey: BytesLike,
+      period: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    jailCallers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     joinValidator(
       operator: string,
@@ -1800,9 +2030,9 @@ export interface StakeManager extends BaseContract {
     stakers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     unstake(
-      validator: string,
-      token: BigNumberish,
-      amount: BigNumberish,
+      arg0: string,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -1810,6 +2040,11 @@ export interface StakeManager extends BaseContract {
       validator: string,
       token: BigNumberish,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    updateBLSPublicKey(
+      blsPublicKey: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -1839,8 +2074,15 @@ export interface StakeManager extends BaseContract {
 
     allowlist(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    blsPublicKeyToOwner(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    candidateManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     claimCommissions(
-      validator: string,
+      arg0: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
@@ -1851,14 +2093,14 @@ export interface StakeManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     claimRewards(
-      staker: string,
+      arg0: string,
       validator: string,
       epochs: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
     claimUnstakes(
-      staker: string,
+      arg0: string,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
@@ -1897,6 +2139,12 @@ export interface StakeManager extends BaseContract {
       staker: string,
       cursor: BigNumberish,
       howMany: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getOperatorStakes(
+      operator: string,
+      epoch: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1949,7 +2197,13 @@ export interface StakeManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getValidatorStakes(
+    "getValidatorStakes(address,uint256)"(
+      validator: string,
+      epoch: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getValidatorStakes(address,uint256,uint256,uint256)"(
       validator: string,
       epoch: BigNumberish,
       cursor: BigNumberish,
@@ -1971,6 +2225,19 @@ export interface StakeManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialized(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    jail(
+      owner_: string,
+      operator: string,
+      blsPublicKey: BytesLike,
+      period: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    jailCallers(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     joinValidator(
       operator: string,
@@ -2027,9 +2294,9 @@ export interface StakeManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     unstake(
-      validator: string,
-      token: BigNumberish,
-      amount: BigNumberish,
+      arg0: string,
+      arg1: BigNumberish,
+      arg2: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
@@ -2037,6 +2304,11 @@ export interface StakeManager extends BaseContract {
       validator: string,
       token: BigNumberish,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    updateBLSPublicKey(
+      blsPublicKey: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 

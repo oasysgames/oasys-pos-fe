@@ -1,16 +1,21 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { getProvider, getSigner, handleError, getStakeManagerContract, formatWeiAmount } from '@/features';
+import { handleError, getStakeManagerContract, formatWeiAmount } from '@/features';
 import { Button, ErrorMsg, SuccessMsg, Table } from '@/components/atoms';
-import { LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
-import { isNotConnectedMsg } from '@/consts';
+import { LoadingModal } from '@/components/organisms';
 import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
+import { useAppKitAccount } from '@reown/appkit/react';
+import dynamic from 'next/dynamic'
+
+// Disable SSR for WalletConnect
+const WalletConnect = dynamic(
+  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
+  { ssr: false }
+);
 
 const ClaimCommissions: NextPage = () => {
-  const [ownerError, setOwnerError] = useState('');
-  const [ownerAddress, setOwnerAddress] = useState('');
-  const [connectedChainId, setConnectedChainId] = useState<number>();
+  const { address: ownerAddress } = useAppKitAccount({ namespace: 'eip155' });
   const [claimSuccessMsg, setClaimSuccessMsg] = useState('');
   const [claimErrorMsg, setClaimErrorMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
@@ -18,58 +23,19 @@ const ClaimCommissions: NextPage = () => {
   const refreshValidatorInfo = useRefreshValidatorInfo();
 
   const refreshError = () => {
-    setOwnerError('');
     setClaimErrorMsg('');
   };
 
-  const handleAccountsChanged = async () => {
-    const provider = await getProvider();
-    const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length === 0) {
-      setOwnerAddress('');
-      setOwnerError(isNotConnectedMsg);
-      return;
-    };
-    setOwner();
-  };
-
   const handleChainChanged = async () => {
-    const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    try {
-      setConnectedChainId(chainId);
-      setOwner();
-      refreshValidatorInfo();
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
+    refreshValidatorInfo();
   };
-
-  const setOwner = async () => {
-    try {
-      const signer = await getSigner();
-      const address = await signer.getAddress();
-      const chainId = await signer.getChainId();
-
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      setOwnerAddress(address);
-      setConnectedChainId(chainId);
-      setOwnerError('');
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  }
 
   const claimCommissions = async () => {
     try {
       const stakeManagerContract = await getStakeManagerContract();
       refreshError();
       setIsClaiming(true);
-      await stakeManagerContract.claimCommissions(ownerAddress, 0);
+      await stakeManagerContract.claimCommissions(ownerAddress || '', 0);
       const filter = stakeManagerContract.filters.ClaimedCommissions(ownerAddress, null);
       stakeManagerContract.once(filter, (owner, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
@@ -82,10 +48,6 @@ const ClaimCommissions: NextPage = () => {
       handleError(err, setClaimErrorMsg);
     }
   };
-
-  useEffect(() => {
-    handleAccountsChanged();
-  });
 
   useEffect(() => {
     refreshValidatorInfo();
@@ -107,11 +69,7 @@ const ClaimCommissions: NextPage = () => {
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       {(isClaiming || isValidatorInfoLoading) && <LoadingModal/>}
       <WalletConnect
-        className='space-y-0.5 col-span-4 col-start-3'
-        ownerError={ownerError}
-        ownerAddress={ownerAddress}
-        chainId={connectedChainId}
-        setOwner={setOwner}
+        handleChainChanged={ handleChainChanged }
       />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {(!ownerAddress || !validatorInfo || !validatorInfo.joined) &&
@@ -146,4 +104,7 @@ const ClaimCommissions: NextPage = () => {
   )
 }
 
-export default ClaimCommissions
+export default dynamic(
+  () => Promise.resolve(ClaimCommissions),
+  { ssr: false }
+);

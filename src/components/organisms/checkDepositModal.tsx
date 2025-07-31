@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { useState, SetStateAction, ChangeEvent } from 'react';
 import { ErrorMsg, SuccessMsg, Modal, Table } from '@/components/atoms';
 import { Form, LoadingModal, DepositDetail } from '@/components/organisms';
@@ -74,7 +74,9 @@ export const CheckDepositModal = (props: Props) => {
     <>
       {isChecking && <LoadingModal />}
       {!isChecking && (
-        <Modal setModalState={setModalState}>
+        <Modal
+          setModalState={setModalState}
+        >
           <div className='space-y-4'>
             {checkSuccess && (
               <SuccessMsg className='w-full' text={checkSuccess} />

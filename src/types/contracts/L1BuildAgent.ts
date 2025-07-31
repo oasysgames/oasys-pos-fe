@@ -13,7 +13,11 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -22,14 +26,57 @@ import type {
   OnEvent,
 } from "./common";
 
-export type BuildConfigStruct = [
-  string, string, string, string, string, string, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish
-];
+export declare namespace IL1BuildAgent {
+  export type BuildConfigStruct = {
+    finalSystemOwner: string;
+    l2OutputOracleProposer: string;
+    l2OutputOracleChallenger: string;
+    batchSenderAddress: string;
+    p2pSequencerAddress: string;
+    messageRelayer: string;
+    l2BlockTime: BigNumberish;
+    l2GasLimit: BigNumberish;
+    l2OutputOracleSubmissionInterval: BigNumberish;
+    finalizationPeriodSeconds: BigNumberish;
+    l2OutputOracleStartingBlockNumber: BigNumberish;
+    l2OutputOracleStartingTimestamp: BigNumberish;
+  };
+
+  export type BuildConfigStructOutput = [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    finalSystemOwner: string;
+    l2OutputOracleProposer: string;
+    l2OutputOracleChallenger: string;
+    batchSenderAddress: string;
+    p2pSequencerAddress: string;
+    messageRelayer: string;
+    l2BlockTime: BigNumber;
+    l2GasLimit: BigNumber;
+    l2OutputOracleSubmissionInterval: BigNumber;
+    finalizationPeriodSeconds: BigNumber;
+    l2OutputOracleStartingBlockNumber: BigNumber;
+    l2OutputOracleStartingTimestamp: BigNumber;
+  };
+}
 
 export interface L1BuildAgentInterface extends utils.Interface {
   functions: {
-    "build(uint256,(address,address,address,address,address,uint256,uint64,uint256,uint256,uint256,uint256))": FunctionFragment;
-    "build(uint256,address,address)": FunctionFragment;
+    "build(uint256,(address,address,address,address,address,address,uint256,uint64,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "getBuilderGlobally(uint256)": FunctionFragment;
+    "builtLists(uint256)": FunctionFragment;
+    "chainIds(uint256)": FunctionFragment;
     "depositAddress()": FunctionFragment;
     "getAddressManager(uint256)": FunctionFragment;
     "getBuilts(uint256,uint256)": FunctionFragment;
@@ -49,6 +96,7 @@ export interface L1BuildAgentInterface extends utils.Interface {
       | "build"
       | "getBuilderGlobally"
       | "builtLists"
+      | "chainIds"
       | "depositAddress"
       | "getAddressManager"
       | "getBuilts"
@@ -65,7 +113,19 @@ export interface L1BuildAgentInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "build",
-    values: [BigNumberish, BuildConfigStruct]
+    values: [BigNumberish, IL1BuildAgent.BuildConfigStruct]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getBuilderGlobally",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "builtLists",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "chainIds",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositAddress",
@@ -118,6 +178,12 @@ export interface L1BuildAgentInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "build", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getBuilderGlobally",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "builtLists", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "chainIds", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "depositAddress",
     data: BytesLike
   ): Result;
@@ -163,8 +229,28 @@ export interface L1BuildAgentInterface extends utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "Deployed(uint256,address,address,address[7],address[7],address,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Deployed"): EventFragment;
 }
+
+export interface DeployedEventObject {
+  chainId: BigNumber;
+  owner: string;
+  proxyAdmin: string;
+  proxys: string[];
+  impls: string[];
+  batchInbox: string;
+  addressManager: string;
+}
+export type DeployedEvent = TypedEvent<
+  [BigNumber, string, string, string[], string[], string, string],
+  DeployedEventObject
+>;
+
+export type DeployedEventFilter = TypedEventFilter<DeployedEvent>;
 
 export interface L1BuildAgent extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -195,19 +281,46 @@ export interface L1BuildAgent extends BaseContract {
   functions: {
     build(
       _chainId: BigNumberish,
-      _cfg: BuildConfigStruct,
+      _cfg: IL1BuildAgent.BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
     getBuilderGlobally(
-      _chainId: BigNumberish,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
     builtLists(
-      _chainId: BigNumberish,
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string, string, string, string, string, string, string, string, string, string]>;
+    ): Promise<
+      [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ] & {
+        proxyAdmin: string;
+        systemConfig: string;
+        l1StandardBridge: string;
+        l1ERC721Bridge: string;
+        l1CrossDomainMessenger: string;
+        oasysL2OutputOracle: string;
+        oasysPortal: string;
+        protocolVersions: string;
+        batchInbox: string;
+      }
+    >;
+
+    chainIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     depositAddress(overrides?: CallOverrides): Promise<[string]>;
 
@@ -271,19 +384,33 @@ export interface L1BuildAgent extends BaseContract {
 
   build(
     _chainId: BigNumberish,
-    _cfg: BuildConfigStruct,
+    _cfg: IL1BuildAgent.BuildConfigStruct,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
   getBuilderGlobally(
-    _chainId: BigNumberish,
+    arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
 
   builtLists(
-    _chainId: BigNumberish,
+    arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<[string, string, string, string, string, string, string, string, string, string, string]>;
+  ): Promise<
+    [string, string, string, string, string, string, string, string, string] & {
+      proxyAdmin: string;
+      systemConfig: string;
+      l1StandardBridge: string;
+      l1ERC721Bridge: string;
+      l1CrossDomainMessenger: string;
+      oasysL2OutputOracle: string;
+      oasysPortal: string;
+      protocolVersions: string;
+      batchInbox: string;
+    }
+  >;
+
+  chainIds(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   depositAddress(overrides?: CallOverrides): Promise<string>;
 
@@ -347,19 +474,43 @@ export interface L1BuildAgent extends BaseContract {
   callStatic: {
     build(
       _chainId: BigNumberish,
-      _cfg: BuildConfigStruct,
+      _cfg: IL1BuildAgent.BuildConfigStruct,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<[string, string[], string[], string, string]>;
 
     getBuilderGlobally(
-      _chainId: BigNumberish,
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
 
     builtLists(
-      _chainId: BigNumberish,
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string, string, string, string, string, string, string, string, string, string]>;
+    ): Promise<
+      [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ] & {
+        proxyAdmin: string;
+        systemConfig: string;
+        l1StandardBridge: string;
+        l1ERC721Bridge: string;
+        l1CrossDomainMessenger: string;
+        oasysL2OutputOracle: string;
+        oasysPortal: string;
+        protocolVersions: string;
+        batchInbox: string;
+      }
+    >;
+
+    chainIds(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     depositAddress(overrides?: CallOverrides): Promise<string>;
 
@@ -421,18 +572,45 @@ export interface L1BuildAgent extends BaseContract {
     step4Address(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "Deployed(uint256,address,address,address[7],address[7],address,address)"(
+      chainId?: BigNumberish | null,
+      owner?: null,
+      proxyAdmin?: null,
+      proxys?: null,
+      impls?: null,
+      batchInbox?: null,
+      addressManager?: null
+    ): DeployedEventFilter;
+    Deployed(
+      chainId?: BigNumberish | null,
+      owner?: null,
+      proxyAdmin?: null,
+      proxys?: null,
+      impls?: null,
+      batchInbox?: null,
+      addressManager?: null
+    ): DeployedEventFilter;
+  };
 
   estimateGas: {
     build(
       _chainId: BigNumberish,
-      _cfg: BuildConfigStruct,
+      _cfg: IL1BuildAgent.BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    getBuilderGlobally(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getBuilderGlobally(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    builtLists(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    chainIds(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     depositAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -497,13 +675,24 @@ export interface L1BuildAgent extends BaseContract {
   populateTransaction: {
     build(
       _chainId: BigNumberish,
-      _cfg: BuildConfigStruct,
+      _cfg: IL1BuildAgent.BuildConfigStruct,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    getBuilderGlobally(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getBuilderGlobally(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    builtLists(_chainId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    builtLists(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    chainIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     depositAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

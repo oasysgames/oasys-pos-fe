@@ -131,44 +131,44 @@ export const ChangeDepositModal = (props: Props) => {
       <LoadingModal />
     }
     {!idDepositLoading &&
-    <Modal
-      setModalState={setModalState}
-    >
-      <div className='space-y-4'>
-        {depositSuccess && (
-          <SuccessMsg className='text-center' text={depositSuccess} />
-        )}
-        {depositError && (
-          <ErrorMsg className='text-center' text={depositError} />
-        )}
-        <Deposit
-          className='space-y-0.5'
-          amount={OASAmount}
-          builder={OASVerseBuilder}
-          setAmount={setOASAmount}
-          setBuilder={setOASVerseBuilder}
-          deposit={depositOAS}
-          withdraw={withdrawOAS}
-          idDepositLoading={idDepositLoading}
-          tokenUnit={OASTokenUnit}
-          isLegacy={isLegacy}
-        />
-        {isLegacy && (
+      <Modal
+        setModalState={setModalState}
+      >
+        <div className='space-y-4'>
+          {depositSuccess && (
+            <SuccessMsg className='text-center' text={depositSuccess} />
+          )}
+          {depositError && (
+            <ErrorMsg className='text-center' text={depositError} />
+          )}
           <Deposit
             className='space-y-0.5'
-            amount={SOASAmount}
-            builder={SOASVerseBuilder}
-            setAmount={setSOASAmount}
-            setBuilder={setSOASVerseBuilder}
-            deposit={depositSOAS}
-            withdraw={withdrawSOAS}
+            amount={OASAmount}
+            builder={OASVerseBuilder}
+            setAmount={setOASAmount}
+            setBuilder={setOASVerseBuilder}
+            deposit={depositOAS}
+            withdraw={withdrawOAS}
             idDepositLoading={idDepositLoading}
-            tokenUnit={sOASTokenUnit}
+            tokenUnit={OASTokenUnit}
             isLegacy={isLegacy}
           />
-        )}
-      </div>
-    </Modal>
+          {isLegacy && (
+            <Deposit
+              className='space-y-0.5'
+              amount={SOASAmount}
+              builder={SOASVerseBuilder}
+              setAmount={setSOASAmount}
+              setBuilder={setSOASVerseBuilder}
+              deposit={depositSOAS}
+              withdraw={withdrawSOAS}
+              idDepositLoading={idDepositLoading}
+              tokenUnit={sOASTokenUnit}
+              isLegacy={isLegacy}
+            />
+          )}
+        </div>
+      </Modal>
     }
     </>
   )

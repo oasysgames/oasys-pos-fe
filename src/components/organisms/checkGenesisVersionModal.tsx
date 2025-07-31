@@ -64,17 +64,17 @@ export const CheckGenesisVersionModal = (props: Props) => {
       <LoadingModal />
     }
     {!isChecking &&
-    <Modal
-      setModalState={setModalState}
-    >
-      <div className='space-y-4'>
-        {genesisVersionError && <ErrorMsg text={genesisVersionError} className='w-full' />}
-        <Form inputs={inputs} buttons={buttons} className='space-y-2'/>
-        {genesisVersion && 
-          <GenesisVersionDetail version={genesisVersion} />
-        }
-      </div>
-    </Modal>
+      <Modal
+        setModalState={setModalState}
+      >
+        <div className='space-y-4'>
+          {genesisVersionError && <ErrorMsg text={genesisVersionError} className='w-full' />}
+          <Form inputs={inputs} buttons={buttons} className='space-y-2'/>
+          {genesisVersion && 
+            <GenesisVersionDetail version={genesisVersion} />
+          }
+        </div>
+      </Modal>
     }
     </>
   )

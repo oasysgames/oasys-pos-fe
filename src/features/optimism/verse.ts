@@ -9,6 +9,7 @@ import {
   Eip1559Elasticity,
   EnableGovernance,
   L1BlockTime,
+  L1BlockTimeLegacy,
   L1FeeVaultMinimumWithdrawalAmount,
   L1FeeVaultWithdrawalNetwork,
   L2GenesisBlockBaseFeePerGas,
@@ -30,6 +31,7 @@ import {
   getOasysL2OutputOracleContract,
   getOasysPortalContract,
   getBlockByTime,
+  getProvider,
 } from "@/features";
 import { Genesis, GenesisParams } from "@/types/optimism/genesis";
 import {
@@ -37,15 +39,16 @@ import {
   GenesisBlockParams,
   GenesisCliqueParams,
   ZERO_ADDRESS,
-  MAINNET_CHAIN_ID,
   Mainnet_OvmBlockSignerAddress,
   Testnet_OvmBlockSignerAddress,
 } from "@/consts";
 import { makeGenesisJson } from "@/features/optimism";
 import { VerseInfo, VerseInfoV2, DeployConfig } from "@/types/optimism/verse";
+import { oasys } from "@/config/chains/definitions/oasys";
 
 // Use OVM_OAS if created after this block.
 const OVM_OAS_BLOCK = BigNumber.from(630195);
+const L1_BLOCK_TIME_CHANGED_BLOCK = BigNumber.from(1725870584);
 
 export const getVerseInfo = async (
   builder: string,
@@ -66,7 +69,7 @@ export const getVerseInfo = async (
     ovmGasPriceOracleOwner: builder,
     ovmFeeWalletAddress: builder,
     ovmBlockSignerAddress:
-      chainId === MAINNET_CHAIN_ID
+      chainId === oasys.id
         ? Mainnet_OvmBlockSignerAddress
         : Testnet_OvmBlockSignerAddress,
     useOvmOas: block.gte(OVM_OAS_BLOCK),
@@ -95,8 +98,9 @@ export const getVerseInfoV2 = async (
   verseChainId: number,
 ): Promise<VerseInfoV2> => {
   const signer = await getSigner();
+  const provider = await getProvider();
   const l1ChainID = await signer.getChainId();
-  const latestL1Block = await signer.provider.getBlock('latest');
+  const latestL1Block = await provider.getBlock('latest');
 
   const namedAddresses = await getNamedAddressesV2(verseChainId);
   const l2OOContract = await getOasysL2OutputOracleContract(namedAddresses.L2OutputOracleProxy);
@@ -116,7 +120,7 @@ export const getVerseInfoV2 = async (
   if (l2StartTime.isZero()) {
     throw new Error("`startingTimestamp` is not set for the L2OutputOracle");
   }
-  const l1StartBlock = await getBlockByTime(signer.provider, Number(l2StartTime), L1BlockTime);
+  const l1StartBlock = await getBlockByTime(provider, Number(l2StartTime), l2StartTime.gte(L1_BLOCK_TIME_CHANGED_BLOCK) ? L1BlockTime : L1BlockTimeLegacy);
   if (!l1StartBlock) {
     throw new Error(`Could not find L1 block matching L2 starting timestamp: ${l2StartTime}`);
   }

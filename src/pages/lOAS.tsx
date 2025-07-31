@@ -1,70 +1,41 @@
 import type { NextPage } from 'next';
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { getProvider, getSigner, handleError, getLOASContract } from '@/features';
-import { WalletConnect } from '@/components/organisms';
+import { handleError, getLOASContract } from '@/features';
 import { Claim } from '@/components/templates';
 import { useLOASClaimInfo, useRefreshLOASClaimInfo } from '@/hooks';
-import { isNotConnectedMsg, lOASTokenUnit } from '@/consts';
+import { lOASTokenUnit } from '@/consts';
+import { useAppKitAccount } from '@reown/appkit/react';
+import dynamic from 'next/dynamic'
+
+// Disable SSR for WalletConnect
+const WalletConnect = dynamic(
+  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
+  { ssr: false }
+);
 
 const LOASPage: NextPage = () => {
-  const [ownerError, setOwnerError] = useState('');
-  const [ownerAddress, setOwnerAddress] = useState('');
-  const [connectedChainId, setConnectedChainId] = useState<number>();
+  const { address: ownerAddress } = useAppKitAccount({ namespace: 'eip155' });
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimOASAmount, setClaimOASAmount] = useState('');
   const { claimInfo, isClaimInfoLoading, claimInfoError } = useLOASClaimInfo();
+
   const refreshLOASClaimInfo = useRefreshLOASClaimInfo();
 
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
   const isClaimable = !!claimInfo?.claimable && claimInfo?.claimable.gt('0');
 
-  const handleAccountsChanged = async () => {
-    const provider = await getProvider();
-    const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length === 0) {
-      setOwnerAddress('');
-      setOwnerError(isNotConnectedMsg);
-      return;
-    };
-    setOwner();
-  };
-
   const handleChainChanged = async () => {
-    const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    try {
-      setConnectedChainId(chainId);
-      setOwner();
-      refreshLOASClaimInfo();
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  };
-
-  const setOwner = async () => {
-    try {
-      const signer = await getSigner();
-      const address = await signer.getAddress();
-      const chainId = await signer.getChainId();
-
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      setOwnerAddress(address);
-      setConnectedChainId(chainId);
-      setOwnerError('');
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
+    refreshLOASClaimInfo();
   };
 
   const claim = useCallback(async () => {
     const lOASContract = await getLOASContract();
+    setSuccessMsg('');
+    setErrorMsg('');
+
     try {
       const claimAmount = ethers.utils.parseEther(claimOASAmount);
       if (!isClaimable) throw new Error(`You do not have claimable ${lOASTokenUnit}`);
@@ -75,7 +46,7 @@ const LOASPage: NextPage = () => {
       const filter = lOASContract.filters.Claim(ownerAddress, null);
       lOASContract.once(filter, (address, amount) => {
         const oasAmount = ethers.utils.formatEther(amount.toString());
-        setSuccessMsg(`Success to convert ${oasAmount}${lOASTokenUnit} to ${oasAmount}OAS`);
+        setSuccessMsg(`Success to convert ${oasAmount} ${lOASTokenUnit} to ${oasAmount} OAS`);
         refreshLOASClaimInfo();
         setIsClaiming(false);
         setClaimOASAmount('');
@@ -87,21 +58,13 @@ const LOASPage: NextPage = () => {
   }, [isClaimable, claimInfo, ownerAddress, claimOASAmount, refreshLOASClaimInfo]);
 
   useEffect(() => {
-    handleAccountsChanged();
-  });
-
-  useEffect(() => {
     refreshLOASClaimInfo();
   }, [ownerAddress, refreshLOASClaimInfo]);
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       <WalletConnect
-        className='space-y-0.5 col-span-6 col-start-3'
-        ownerError={ownerError}
-        ownerAddress={ownerAddress}
-        chainId={connectedChainId}
-        setOwner={setOwner}
+        handleChainChanged={ handleChainChanged }
       />
       <Claim
         className='col-span-8 col-start-2'
@@ -123,4 +86,7 @@ const LOASPage: NextPage = () => {
   )
 }
 
-export default LOASPage;
+export default dynamic(
+  () => Promise.resolve(LOASPage),
+  { ssr: false }
+);

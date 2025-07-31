@@ -44,6 +44,7 @@ export interface LOASInterface extends utils.Interface {
     "name()": FunctionFragment;
     "originalClaimer(address)": FunctionFragment;
     "renounce(uint256)": FunctionFragment;
+    "revoke(address,uint256)": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
@@ -69,6 +70,7 @@ export interface LOASInterface extends utils.Interface {
       | "name"
       | "originalClaimer"
       | "renounce"
+      | "revoke"
       | "symbol"
       | "totalSupply"
       | "transfer(address,uint256)"
@@ -121,6 +123,10 @@ export interface LOASInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "renounce",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revoke",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
@@ -177,6 +183,7 @@ export interface LOASInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "renounce", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "revoke", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -205,6 +212,7 @@ export interface LOASInterface extends utils.Interface {
     "Claim(address,uint256)": EventFragment;
     "Mint(address,uint256,uint256,uint256)": EventFragment;
     "Renounce(address,uint256)": EventFragment;
+    "Revoke(address,address,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
@@ -213,6 +221,7 @@ export interface LOASInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Claim"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Renounce"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Revoke"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -267,6 +276,18 @@ export type RenounceEvent = TypedEvent<
 >;
 
 export type RenounceEventFilter = TypedEventFilter<RenounceEvent>;
+
+export interface RevokeEventObject {
+  original: string;
+  holder: string;
+  amount: BigNumber;
+}
+export type RevokeEvent = TypedEvent<
+  [string, string, BigNumber],
+  RevokeEventObject
+>;
+
+export type RevokeEventFilter = TypedEventFilter<RevokeEvent>;
 
 export interface TransferEventObject {
   from: string;
@@ -342,12 +363,13 @@ export interface LOAS extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, string, BigNumber] & {
         amount: BigNumber;
         claimed: BigNumber;
         since: BigNumber;
         until: BigNumber;
         from: string;
+        revoked: BigNumber;
       }
     >;
 
@@ -383,6 +405,12 @@ export interface LOAS extends BaseContract {
 
     renounce(
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    revoke(
+      holder: string,
+      amount_: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -452,12 +480,13 @@ export interface LOAS extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+    [BigNumber, BigNumber, BigNumber, BigNumber, string, BigNumber] & {
       amount: BigNumber;
       claimed: BigNumber;
       since: BigNumber;
       until: BigNumber;
       from: string;
+      revoked: BigNumber;
     }
   >;
 
@@ -493,6 +522,12 @@ export interface LOAS extends BaseContract {
 
   renounce(
     amount: BigNumberish,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  revoke(
+    holder: string,
+    amount_: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -559,12 +594,13 @@ export interface LOAS extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, string, BigNumber] & {
         amount: BigNumber;
         claimed: BigNumber;
         since: BigNumber;
         until: BigNumber;
         from: string;
+        revoked: BigNumber;
       }
     >;
 
@@ -599,6 +635,12 @@ export interface LOAS extends BaseContract {
     originalClaimer(arg0: string, overrides?: CallOverrides): Promise<string>;
 
     renounce(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    revoke(
+      holder: string,
+      amount_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -676,6 +718,17 @@ export interface LOAS extends BaseContract {
       amount?: null
     ): RenounceEventFilter;
     Renounce(holder?: string | null, amount?: null): RenounceEventFilter;
+
+    "Revoke(address,address,uint256)"(
+      original?: string | null,
+      holder?: string | null,
+      amount?: null
+    ): RevokeEventFilter;
+    Revoke(
+      original?: string | null,
+      holder?: string | null,
+      amount?: null
+    ): RevokeEventFilter;
 
     "Transfer(address,address,uint256)"(
       from?: string | null,
@@ -758,6 +811,12 @@ export interface LOAS extends BaseContract {
 
     renounce(
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    revoke(
+      holder: string,
+      amount_: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -867,6 +926,12 @@ export interface LOAS extends BaseContract {
 
     renounce(
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    revoke(
+      holder: string,
+      amount_: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 

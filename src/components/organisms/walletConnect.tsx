@@ -1,43 +1,71 @@
-import clsx from 'clsx';
-import { Button, ErrorMsg } from '@/components/atoms';
-import { getNetworkName, getAbbreviatedAddress } from '@/features';
+import { useEffect } from 'react';
+import { Button } from '@/components/atoms';
+import { getNetworkName, getAbbreviatedAddress, registerAppKitProvider } from '@/features';
+import {
+  useAppKit,
+  useAppKitAccount,
+  useAppKitNetwork,
+  useAppKitProvider,
+  useDisconnect,
+} from '@reown/appkit/react';
+import type { Provider as AppKitProvider } from "@reown/appkit/react";
 
 type Props = {
-  className?: string;
-  ownerError: string;
-  ownerAddress?: string;
-  chainId?: number;
-  setOwner: () => Promise<void>;
+  handleAccountsChanged?: () => Promise<void>;
+  handleChainChanged?: () => Promise<void>;
 };
 
 export const WalletConnect = (props: Props) => {
-  const { className, ownerError, ownerAddress, chainId, setOwner } = props;
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount({ namespace: 'eip155' });
+  const { walletProvider } = useAppKitProvider<AppKitProvider>('eip155');
+  const { chainId } = useAppKitNetwork();
+  const { disconnect } = useDisconnect();
+
+  // Register or unregister the AppKit provider when connection state changes
+  useEffect(() => {
+    registerAppKitProvider(isConnected ? walletProvider : undefined);
+  }, [isConnected, walletProvider]);
+
+  // Attach event listeners directly to the wallet provider
+  useEffect(() => {
+    if (!walletProvider) return;
+
+    // Register event listener for account changes
+    if (props.handleAccountsChanged) {
+      walletProvider.on('accountsChanged', props.handleAccountsChanged);
+    }
+    // Register event listener for chain changes
+    if (props.handleChainChanged) {
+      walletProvider.on('chainChanged', props.handleChainChanged);
+    }
+
+    // Cleanup listeners on unmount or provider change
+    return () => {
+      if (props.handleAccountsChanged) {
+        walletProvider.removeListener('accountsChanged', props.handleAccountsChanged);
+      }
+      if (props.handleChainChanged) {
+        walletProvider.removeListener('chainChanged', props.handleChainChanged);
+      }
+    };
+  }, [walletProvider, props.handleAccountsChanged, props.handleChainChanged]);
 
   return (
-    <div className={clsx(className)}>
-      {ownerError && <ErrorMsg text={ownerError} className='w-full' />}
-      {(!ownerAddress || !chainId) && 
+    <div className='space-y-0.5 col-span-4 col-start-3'>
+      {!isConnected && (
         <div className='flex items-center space-x-2'>
-          <Button handleClick={setOwner}>Connect</Button>
+          <Button handleClick={() => open({ view: 'Connect', namespace: 'eip155' })}>Connect</Button>
         </div>
-      }
-      {(ownerAddress && chainId) && 
+      )}
+      {isConnected && (
         <div className='flex justify-start'>
-          <div
-            className={clsx(
-              'bg-green-500',
-              'text-white',
-              'rounded-full',
-              'font-bold',
-              'py-2 px-4',
-              'flex flex-col items-center'
-            )}
-          >
-            <p>Connected: {getAbbreviatedAddress(ownerAddress)}</p>
-            <p>Network: {getNetworkName(chainId)}</p>
-          </div>
+          <Button handleClick={() => disconnect({ namespace: 'eip155' })}>
+            <p>Connected: {getAbbreviatedAddress(address!)}</p>
+            <p>Network: {getNetworkName(Number(chainId))}</p>
+          </Button>
         </div>
-      }
+      )}
     </div>
   );
 };

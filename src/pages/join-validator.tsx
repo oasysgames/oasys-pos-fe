@@ -1,15 +1,21 @@
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { getProvider, getSigner, handleError, getStakeManagerContract } from '@/features';
+import { handleError, getStakeManagerContract } from '@/features';
 import { ErrorMsg, SuccessMsg } from '@/components/atoms';
-import { Form, LoadingModal, WalletConnect, ValidatorInfo } from '@/components/organisms';
-import { isNotConnectedMsg, ZERO_ADDRESS } from '@/consts';
+import { Form, LoadingModal, ValidatorInfo } from '@/components/organisms';
+import { ZERO_ADDRESS } from '@/consts';
 import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
+import { useAppKitAccount } from '@reown/appkit/react';
+import dynamic from 'next/dynamic'
+
+// Disable SSR for WalletConnect
+const WalletConnect = dynamic(
+  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
+  { ssr: false }
+);
 
 const JoinValidator: NextPage = () => {
-  const [ownerError, setOwnerError] = useState('');
-  const [ownerAddress, setOwnerAddress] = useState('');
-  const [connectedChainId, setConnectedChainId] = useState<number>();
+  const { address: ownerAddress } = useAppKitAccount({ namespace: 'eip155' });
   const [isOperatorUpdating, setIsOperatorUpdating] = useState(false);
   const [operatorError, setOperatorError] = useState('');
   const [operatorAddress, setOperatorAddress] = useState('');
@@ -19,57 +25,20 @@ const JoinValidator: NextPage = () => {
   const refreshValidatorInfo = useRefreshValidatorInfo();
 
   const refreshError = () => {
-    setOwnerError('');
     setOperatorError('');
   };
 
   const handleAccountsChanged = async () => {
-    const provider = await getProvider();
-    const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length === 0) {
-      setOwnerAddress('');
-      setOwnerError(isNotConnectedMsg);
-      return;
-    };
-    setOwner();
+    if (validatorInfo && validatorInfo.operatorAddress !== ZERO_ADDRESS) {
+      setOperatorAddress(validatorInfo.operatorAddress);
+    } else {
+      setOperatorAddress('');
+    }
   };
 
   const handleChainChanged = async () => {
-    const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    try {
-      setConnectedChainId(chainId);
-      setOwner();
-      refreshValidatorInfo();
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
+    refreshValidatorInfo();
   };
-
-  const setOwner = async () => {
-    try {
-      const signer = await getSigner();
-      const address = await signer.getAddress();
-      const chainId = await signer.getChainId();
-
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      const stakeManagerContract = await getStakeManagerContract();
-
-      setOwnerAddress(address);
-      setConnectedChainId(chainId);
-      const result = await stakeManagerContract.getValidatorInfo(address, 0);
-      if (result.operator !== ZERO_ADDRESS) {
-        setOperatorAddress(result.operator);
-      }
-      setOwnerError('');
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  }
 
   const registerOperator = async () => {
     try {
@@ -80,12 +49,10 @@ const JoinValidator: NextPage = () => {
 
       const filter = stakeManagerContract.filters.ValidatorJoined(null);
       stakeManagerContract.once(filter, (owner) => {
-        if (owner === ownerAddress) {
-          setOperatorAddress(newOperator);
-          setNewOperator('');
-          setOperatorSuccessMsg(`operator register is successful`);
-          setIsOperatorUpdating(false);
-        }
+        setOperatorAddress(newOperator);
+        setNewOperator('');
+        setOperatorSuccessMsg(`operator register is successful`);
+        setIsOperatorUpdating(false);
       });
     } catch (err) {
       setOperatorSuccessMsg('');
@@ -100,6 +67,7 @@ const JoinValidator: NextPage = () => {
       refreshError();
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
+
       const filter = stakeManagerContract.filters.OperatorUpdated(ownerAddress, null, null);
       stakeManagerContract.once(filter, (owner, oldOperator, operator) => {
         setOperatorAddress(newOperator);
@@ -147,11 +115,8 @@ const JoinValidator: NextPage = () => {
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
       {(isOperatorUpdating || isValidatorInfoLoading) && <LoadingModal/>}
       <WalletConnect
-        className='space-y-0.5 col-span-4 col-start-3'
-        ownerError={ownerError}
-        ownerAddress={ownerAddress}
-        chainId={connectedChainId}
-        setOwner={setOwner}
+        handleAccountsChanged={ handleAccountsChanged }
+        handleChainChanged={ handleChainChanged }
       />
       <div className='space-y-4 col-span-4 col-start-3'>
         {operatorError && (
@@ -183,4 +148,7 @@ const JoinValidator: NextPage = () => {
   )
 }
 
-export default JoinValidator
+export default dynamic(
+  () => Promise.resolve(JoinValidator),
+  { ssr: false }
+);

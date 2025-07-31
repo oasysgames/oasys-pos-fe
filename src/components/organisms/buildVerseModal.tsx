@@ -6,9 +6,10 @@ import {
   FINALIZATION_PERIOD_SECONDS,
   L2BlockTimeRange,
 } from '@/consts';
-import { getL1BuildAgentContract, handleError, getSigner } from '@/features';
+import { getL1BuildAgentContract, handleError, getProvider } from '@/features';
 import { ErrorMsg, SuccessMsg, Modal, InputType } from '@/components/atoms';
 import { Form, LoadingModal } from '@/components/organisms';
+import { IL1BuildAgent } from '@/types/contracts/L1BuildAgent';
 
 type Props = {
   className?: string;
@@ -53,11 +54,27 @@ export const BuildVerseModal = (props: Props) => {
       // At first, set default Values
       // Correct values are expected to be set via another button
       const l2OOStartingBlockNumber = 0;
-      const l2OOStartingTimestamp = (await (await getSigner()).provider.getBlock('latest')).timestamp;
+      const l2OOStartingTimestamp = (await (await getProvider()).getBlock('latest')).timestamp;
+
+      // Create the config object matching the BuildConfigStruct interface
+      const buildConfig: IL1BuildAgent.BuildConfigStruct = {
+        finalSystemOwner: finalSystemOwner,
+        l2OutputOracleProposer: proposerAddress,
+        l2OutputOracleChallenger: finalSystemOwner,
+        batchSenderAddress: batchSenderAddress,
+        p2pSequencerAddress: p2pSequencerAddress,
+        messageRelayer: messageRelayer,
+        l2BlockTime: l2BlockTime!,
+        l2GasLimit: L2_GASLIMIT,
+        l2OutputOracleSubmissionInterval: L2_OO_SUBMISSION_INTERVAL,
+        finalizationPeriodSeconds: FINALIZATION_PERIOD_SECONDS,
+        l2OutputOracleStartingBlockNumber: l2OOStartingBlockNumber,
+        l2OutputOracleStartingTimestamp: l2OOStartingTimestamp,
+      }
 
       const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(
         newChainId!,
-        [finalSystemOwner, proposerAddress, finalSystemOwner, batchSenderAddress, p2pSequencerAddress, messageRelayer, l2BlockTime!, L2_GASLIMIT, L2_OO_SUBMISSION_INTERVAL, FINALIZATION_PERIOD_SECONDS, l2OOStartingBlockNumber, l2OOStartingTimestamp]
+        buildConfig
       );
       const receipt = await tx.wait();
       if (receipt.status === 1) {

@@ -9,15 +9,15 @@ type Props = {
 
 const validatorLinks = [
   {
-    text: 'Check validator',
+    text: 'Check Validator',
     url: '/check-validator',
   },
   {
-    text: 'Join validator',
+    text: 'Join Validator',
     url: '/join-validator',
   },
   {
-    text: 'Claim commissions',
+    text: 'Claim Commissions',
     url: '/claim-commissions',
   },
 ];
@@ -32,7 +32,7 @@ const verseBuilderLinks = [
     url: '/build-verse',
   },
   {
-    text: 'Check verse',
+    text: 'Check Verse',
     url: '/check-verse',
   },
   // Remove the /update-bridge link from the sidebar
@@ -43,14 +43,25 @@ const verseBuilderLinks = [
   // }
 ];
 
-const otherLinks = [
+const soasLinks = [
   {
-    text: 'Claim sOAS',
+    text: 'Claim SOAS',
     url: '/sOAS',
   },
   {
-    text: 'Claim lOAS',
+    text: 'Renounce SOAS',
+    url: '/sOAS-renounce',
+  },
+];
+
+const loasLinks = [
+  {
+    text: 'Claim LOAS',
     url: '/lOAS',
+  },
+  {
+    text: 'Renounce LOAS',
+    url: '/lOAS-renounce',
   },
 ];
 
@@ -60,7 +71,7 @@ export const Sidebar = (props: Props) => {
 
   return (
     <div className={clsx(className, 'bg-green-500')}>
-      <div className='mt-2 md:mt-4 space-y-10'>
+      <div className='mt-2 mb-2 md:mt-4 md:mb-4 space-y-10'>
         <Image
           src='/images/oasys.png'
           alt='Oasys logo'
@@ -77,8 +88,12 @@ export const Sidebar = (props: Props) => {
             links={verseBuilderLinks}
           />
           <SidebarNavigation
-            linkTitle='Others'
-            links={otherLinks}
+            linkTitle='SOAS'
+            links={soasLinks}
+          />
+          <SidebarNavigation
+            linkTitle='LOAS'
+            links={loasLinks}
           />
         </div>
       </div>

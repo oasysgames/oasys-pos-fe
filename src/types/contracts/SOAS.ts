@@ -46,11 +46,13 @@ export interface SOASInterface extends utils.Interface {
     "originalClaimer(address)": FunctionFragment;
     "renounce(uint256)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "toggleDenyUpdate()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transfer(address[],uint256[])": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferFrom(address[],address[],uint256[])": FunctionFragment;
+    "updateClaimPeriod(address,uint64,uint64)": FunctionFragment;
   };
 
   getFunction(
@@ -72,11 +74,13 @@ export interface SOASInterface extends utils.Interface {
       | "originalClaimer"
       | "renounce"
       | "symbol"
+      | "toggleDenyUpdate"
       | "totalSupply"
       | "transfer(address,uint256)"
       | "transfer(address[],uint256[])"
       | "transferFrom(address,address,uint256)"
       | "transferFrom(address[],address[],uint256[])"
+      | "updateClaimPeriod"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -130,6 +134,10 @@ export interface SOASInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "toggleDenyUpdate",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
   ): string;
@@ -148,6 +156,10 @@ export interface SOASInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "transferFrom(address[],address[],uint256[])",
     values: [string[], string[], BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateClaimPeriod",
+    values: [string, BigNumberish, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -189,6 +201,10 @@ export interface SOASInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "renounce", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "toggleDenyUpdate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
@@ -208,6 +224,10 @@ export interface SOASInterface extends utils.Interface {
     functionFragment: "transferFrom(address[],address[],uint256[])",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateClaimPeriod",
+    data: BytesLike
+  ): Result;
 
   events: {
     "Allow(address,address)": EventFragment;
@@ -215,7 +235,9 @@ export interface SOASInterface extends utils.Interface {
     "Claim(address,uint256)": EventFragment;
     "Mint(address,uint256,uint256,uint256)": EventFragment;
     "Renounce(address,uint256)": EventFragment;
+    "ToggleDenyUpdate(address,bool)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "UpdateClaimPeriod(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Allow"): EventFragment;
@@ -223,7 +245,9 @@ export interface SOASInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Claim"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Renounce"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ToggleDenyUpdate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdateClaimPeriod"): EventFragment;
 }
 
 export interface AllowEventObject {
@@ -278,6 +302,18 @@ export type RenounceEvent = TypedEvent<
 
 export type RenounceEventFilter = TypedEventFilter<RenounceEvent>;
 
+export interface ToggleDenyUpdateEventObject {
+  original: string;
+  denied: boolean;
+}
+export type ToggleDenyUpdateEvent = TypedEvent<
+  [string, boolean],
+  ToggleDenyUpdateEventObject
+>;
+
+export type ToggleDenyUpdateEventFilter =
+  TypedEventFilter<ToggleDenyUpdateEvent>;
+
 export interface TransferEventObject {
   from: string;
   to: string;
@@ -289,6 +325,19 @@ export type TransferEvent = TypedEvent<
 >;
 
 export type TransferEventFilter = TypedEventFilter<TransferEvent>;
+
+export interface UpdateClaimPeriodEventObject {
+  original: string;
+  since: BigNumber;
+  until: BigNumber;
+}
+export type UpdateClaimPeriodEvent = TypedEvent<
+  [string, BigNumber, BigNumber],
+  UpdateClaimPeriodEventObject
+>;
+
+export type UpdateClaimPeriodEventFilter =
+  TypedEventFilter<UpdateClaimPeriodEvent>;
 
 export interface SOAS extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -357,12 +406,13 @@ export interface SOAS extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, string, boolean] & {
         amount: BigNumber;
         claimed: BigNumber;
         since: BigNumber;
         until: BigNumber;
         from: string;
+        denyUpdate: boolean;
       }
     >;
 
@@ -403,6 +453,10 @@ export interface SOAS extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
+    toggleDenyUpdate(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "transfer(address,uint256)"(
@@ -428,6 +482,13 @@ export interface SOAS extends BaseContract {
       froms: string[],
       tos: string[],
       amounts: BigNumberish[],
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    updateClaimPeriod(
+      original: string,
+      since: BigNumberish,
+      until: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
   };
@@ -472,12 +533,13 @@ export interface SOAS extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+    [BigNumber, BigNumber, BigNumber, BigNumber, string, boolean] & {
       amount: BigNumber;
       claimed: BigNumber;
       since: BigNumber;
       until: BigNumber;
       from: string;
+      denyUpdate: boolean;
     }
   >;
 
@@ -518,6 +580,10 @@ export interface SOAS extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
+  toggleDenyUpdate(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   "transfer(address,uint256)"(
@@ -543,6 +609,13 @@ export interface SOAS extends BaseContract {
     froms: string[],
     tos: string[],
     amounts: BigNumberish[],
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  updateClaimPeriod(
+    original: string,
+    since: BigNumberish,
+    until: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -584,12 +657,13 @@ export interface SOAS extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+      [BigNumber, BigNumber, BigNumber, BigNumber, string, boolean] & {
         amount: BigNumber;
         claimed: BigNumber;
         since: BigNumber;
         until: BigNumber;
         from: string;
+        denyUpdate: boolean;
       }
     >;
 
@@ -627,6 +701,8 @@ export interface SOAS extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
+    toggleDenyUpdate(overrides?: CallOverrides): Promise<void>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     "transfer(address,uint256)"(
@@ -654,6 +730,13 @@ export interface SOAS extends BaseContract {
       amounts: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    updateClaimPeriod(
+      original: string,
+      since: BigNumberish,
+      until: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -702,6 +785,15 @@ export interface SOAS extends BaseContract {
     ): RenounceEventFilter;
     Renounce(holder?: string | null, amount?: null): RenounceEventFilter;
 
+    "ToggleDenyUpdate(address,bool)"(
+      original?: string | null,
+      denied?: null
+    ): ToggleDenyUpdateEventFilter;
+    ToggleDenyUpdate(
+      original?: string | null,
+      denied?: null
+    ): ToggleDenyUpdateEventFilter;
+
     "Transfer(address,address,uint256)"(
       from?: string | null,
       to?: string | null,
@@ -712,6 +804,17 @@ export interface SOAS extends BaseContract {
       to?: string | null,
       value?: null
     ): TransferEventFilter;
+
+    "UpdateClaimPeriod(address,uint256,uint256)"(
+      original?: string | null,
+      since?: null,
+      until?: null
+    ): UpdateClaimPeriodEventFilter;
+    UpdateClaimPeriod(
+      original?: string | null,
+      since?: null,
+      until?: null
+    ): UpdateClaimPeriodEventFilter;
   };
 
   estimateGas: {
@@ -793,6 +896,10 @@ export interface SOAS extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
+    toggleDenyUpdate(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     "transfer(address,uint256)"(
@@ -818,6 +925,13 @@ export interface SOAS extends BaseContract {
       froms: string[],
       tos: string[],
       amounts: BigNumberish[],
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    updateClaimPeriod(
+      original: string,
+      since: BigNumberish,
+      until: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
   };
@@ -907,6 +1021,10 @@ export interface SOAS extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    toggleDenyUpdate(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "transfer(address,uint256)"(
@@ -932,6 +1050,13 @@ export interface SOAS extends BaseContract {
       froms: string[],
       tos: string[],
       amounts: BigNumberish[],
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    updateClaimPeriod(
+      original: string,
+      since: BigNumberish,
+      until: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
   };

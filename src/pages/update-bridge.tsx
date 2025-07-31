@@ -1,64 +1,28 @@
 import type { NextPage } from 'next';
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { isNotConnectedMsg } from '@/consts';
 import { getL1ERC721BridgeProxyContract, getL1StandardBridgeProxyContract, getProvider, getSigner, handleError } from '@/features';
-import { WalletConnect, LoadingModal } from '@/components/organisms';
+import { LoadingModal } from '@/components/organisms';
 import { UpdateBridgeContract } from '@/components/templates';
 import { useVerseInfo, useRefreshVerseInfo } from '@/hooks';
 import { ErrorMsg } from '@/components/atoms';
 import L1StandardBridgeV1 from '@/contracts/oasysHub/bridge/version1/L1StandardBridge.json';
 import L1ERC721BridgeV1 from '@/contracts/oasysHub/bridge/version1/L1ERC721Bridge.json';
 import L1ERC721BridgeV2 from '@/contracts/oasysHub/bridge/version2/L1ERC721Bridge.json';
+import { useAppKitAccount } from '@reown/appkit/react';
+import dynamic from 'next/dynamic'
+
+// Disable SSR for WalletConnect
+const WalletConnect = dynamic(
+  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
+  { ssr: false }
+);
 
 const UpdateBridge: NextPage = () => {
-  const [ownerError, setOwnerError] = useState('');
-  const [ownerAddress, setOwnerAddress] = useState('');
-  const [connectedChainId, setConnectedChainId] = useState<number>();
+  const { address: ownerAddress } = useAppKitAccount({ namespace: 'eip155' });
   const [preERC20BridgeBytecode, setPreERC20BridgeBytecode] = useState('');
   const [preERC721BridgeBytecode, setPreERC721BridgeBytecode] = useState('');
   const { verseInfo, isVerseInfoLoading, verseInfoError } = useVerseInfo(ownerAddress);
   const refreshVerseInfo = useRefreshVerseInfo();
-
-  const handleAccountsChanged = async () => {
-    const provider = await getProvider();
-    const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length === 0) {
-      setOwnerAddress('');
-      setOwnerError(isNotConnectedMsg);
-      return;
-    };
-    setOwner();
-  };
-
-  const handleChainChanged = async () => {
-    const signer = await getSigner();
-    const chainId = await signer.getChainId();
-    try {
-      setConnectedChainId(chainId);
-      setOwner();
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  };
-
-  const setOwner = async () => {
-    try {
-      const signer = await getSigner();
-      const address = await signer.getAddress();
-      const chainId = await signer.getChainId();
-
-      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      setOwnerAddress(address);
-      setConnectedChainId(chainId);
-      setOwnerError('');
-    } catch (err) {
-      handleError(err, setOwnerError);
-    }
-  };
 
   const setPreERC20BridgeContractBytecode = async (l1StandardBridgeProxyAddress: string) => {
     const l1StandardBridgeProxy = await getL1StandardBridgeProxyContract(l1StandardBridgeProxyAddress);
@@ -82,10 +46,6 @@ const UpdateBridge: NextPage = () => {
     await setPreERC20BridgeContractBytecode(l1StandardBridgeProxyAddress);
     await setPreERC721BridgeContractBytecode(l1ERC721BridgeProxyAddress);
   }, []);
-
-  useEffect(() => {
-    handleAccountsChanged();
-  });
 
   useEffect(() => {
     if (verseInfo?.namedAddresses) {
@@ -132,13 +92,7 @@ const UpdateBridge: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <WalletConnect
-        className='space-y-0.5 col-span-6 col-start-3'
-        ownerError={ownerError}
-        ownerAddress={ownerAddress}
-        chainId={connectedChainId}
-        setOwner={setOwner}
-      />
+      <WalletConnect />
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {(ownerAddress && isVerseInfoLoading) && <LoadingModal />}
         {verseInfoError instanceof Error && (
@@ -171,4 +125,7 @@ const UpdateBridge: NextPage = () => {
   );
 };
 
-export default UpdateBridge
+export default dynamic(
+  () => Promise.resolve(UpdateBridge),
+  { ssr: false }
+);

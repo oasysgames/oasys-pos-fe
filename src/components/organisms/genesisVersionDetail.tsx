@@ -7,7 +7,6 @@ type Props = {
   version: string;
 };
 
-
 export const GenesisVersionDetail = (props: Props) => {
   const {
     className,
