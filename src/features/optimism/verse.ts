@@ -9,7 +9,7 @@ import {
   Eip1559Elasticity,
   EnableGovernance,
   L1BlockTime,
-  L1BlockTimeLegacy,
+  L1BlockTime15,
   L1FeeVaultMinimumWithdrawalAmount,
   L1FeeVaultWithdrawalNetwork,
   L2GenesisBlockBaseFeePerGas,
@@ -48,7 +48,7 @@ import { oasys } from "@/config/chains/definitions/oasys";
 
 // Use OVM_OAS if created after this block.
 const OVM_OAS_BLOCK = BigNumber.from(630195);
-const L1_BLOCK_TIME_CHANGED_BLOCK = BigNumber.from(1725870584);
+const L1_BLOCK_TIME_15_CHANGED_BLOCK = BigNumber.from(1725870584);
 
 export const getVerseInfo = async (
   builder: string,
@@ -120,7 +120,7 @@ export const getVerseInfoV2 = async (
   if (l2StartTime.isZero()) {
     throw new Error("`startingTimestamp` is not set for the L2OutputOracle");
   }
-  const l1StartBlock = await getBlockByTime(provider, Number(l2StartTime), l2StartTime.gte(L1_BLOCK_TIME_CHANGED_BLOCK) ? L1BlockTime : L1BlockTimeLegacy);
+  const l1StartBlock = await getBlockByTime(provider, Number(l2StartTime), l2StartTime.gte(L1_BLOCK_TIME_15_CHANGED_BLOCK) ? L1BlockTime : L1BlockTime15);
   if (!l1StartBlock) {
     throw new Error(`Could not find L1 block matching L2 starting timestamp: ${l2StartTime}`);
   }
