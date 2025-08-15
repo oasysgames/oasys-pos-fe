@@ -15,9 +15,16 @@ const getL1BuildDeposit = async (isLegacy: boolean = true) => {
   const signer = await getSigner();
   const ownerAddress = await signer.getAddress();
   const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
-  const depositTotal: ethers.BigNumber = await L1BuildDepositContract.getDepositTotal(ownerAddress);
-  const depositOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositAmount(ownerAddress, ownerAddress);
-  const depositSOAS: ethers.BigNumber = await L1BuildDepositContract.getDepositERC20Amount(ownerAddress, ownerAddress, sOASAddress);
+  const depositTotal: ethers.BigNumber =
+    await L1BuildDepositContract.getDepositTotal(ownerAddress);
+  const depositOAS: ethers.BigNumber =
+    await L1BuildDepositContract.getDepositAmount(ownerAddress, ownerAddress);
+  const depositSOAS: ethers.BigNumber =
+    await L1BuildDepositContract.getDepositERC20Amount(
+      ownerAddress,
+      ownerAddress,
+      sOASAddress,
+    );
 
   const data: depositType = {
     depositTotal,
@@ -36,7 +43,7 @@ export const useL1BuildDeposit = (isLegacy: boolean = true) => {
     isLoading: !error && !data,
     error: error,
   };
-}
+};
 
 export const useRefreshL1BuildDeposit = () => {
   const { mutate } = useSWRConfig();

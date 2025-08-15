@@ -2,19 +2,16 @@ import type { NextPage } from 'next';
 import { useState, ChangeEvent } from 'react';
 import { handleError } from '@/features';
 import { ErrorMsg } from '@/components/atoms';
-import {
-  ValidatorInfo,
-  Form,
-  LoadingModal,
-} from '@/components/organisms';
+import { ValidatorInfo, Form, LoadingModal } from '@/components/organisms';
 import { ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
 import { getValidatorInfo as getValidatorInfoFromContract } from '@/features';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // Disable SSR for WalletConnect
 const WalletConnect = dynamic(
-  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
-  { ssr: false }
+  () =>
+    import('@/components/organisms/walletConnect').then((m) => m.WalletConnect),
+  { ssr: false },
 );
 
 const CheckValidator: NextPage = () => {
@@ -58,12 +55,10 @@ const CheckValidator: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <WalletConnect
-        handleChainChanged={ handleChainChanged }
-      />
+      <WalletConnect handleChainChanged={handleChainChanged} />
 
       {isValidatorInfoLoading && <LoadingModal />}
-  
+
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {formError && <ErrorMsg text={formError} className='w-full' />}
         <Form inputs={inputs} buttons={buttons} />
@@ -80,7 +75,4 @@ const CheckValidator: NextPage = () => {
   );
 };
 
-export default dynamic(
-  () => Promise.resolve(CheckValidator),
-  { ssr: false }
-);
+export default dynamic(() => Promise.resolve(CheckValidator), { ssr: false });

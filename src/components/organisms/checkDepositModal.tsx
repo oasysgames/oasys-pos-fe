@@ -74,9 +74,7 @@ export const CheckDepositModal = (props: Props) => {
     <>
       {isChecking && <LoadingModal />}
       {!isChecking && (
-        <Modal
-          setModalState={setModalState}
-        >
+        <Modal setModalState={setModalState}>
           <div className='space-y-4'>
             {checkSuccess && (
               <SuccessMsg className='w-full' text={checkSuccess} />

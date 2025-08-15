@@ -9,7 +9,10 @@ import {
   getSystemConfigContract,
 } from '@/features/';
 
-export const getNamedAddresses = async (chainId: number, isLegacy: boolean = true) => {
+export const getNamedAddresses = async (
+  chainId: number,
+  isLegacy: boolean = true,
+) => {
   const L1BuildAgentContract = await getL1BuildAgentContract(isLegacy);
 
   const namedAddresses: { [name: string]: string } = {
@@ -26,7 +29,10 @@ export const getNamedAddresses = async (chainId: number, isLegacy: boolean = tru
   return namedAddresses as NamedAddresses;
 };
 
-export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string = "") => {
+export const getNamedAddressesV2 = async (
+  chainId: number,
+  p2pSequencer: string = '',
+) => {
   const isLegacy = false;
   const l1BuildAgent = await getL1BuildAgentContract(isLegacy);
   const builtAddresses = await l1BuildAgent.builtLists(chainId);
@@ -45,19 +51,32 @@ export const getNamedAddressesV2 = async (chainId: number, p2pSequencer: string 
     OptimismPortalProxy: builtAddresses[6],
     ProtocolVersions: builtAddresses[7],
     BatchInbox: builtAddresses[8],
-    AddressManager:  addressManager,
+    AddressManager: addressManager,
     P2PSequencer: p2pSequencer,
   } as NamedAddressesV2;
 
-  result.FinalSystemOwner = await (await getProxyAdminContract(result.ProxyAdmin)).owner();
-  result.L2OutputOracleProposer = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).PROPOSER();
-  result.L2OutputOracleChallenger = await (await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)).CHALLENGER();
-  result.BatchSender = (await (await getSystemConfigContract(result.SystemConfigProxy)).batcherHash()).replace(/(0{24})(?=\w)/g, '');
+  result.FinalSystemOwner = await (
+    await getProxyAdminContract(result.ProxyAdmin)
+  ).owner();
+  result.L2OutputOracleProposer = await (
+    await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)
+  ).PROPOSER();
+  result.L2OutputOracleChallenger = await (
+    await getOasysL2OutputOracleContract(result.L2OutputOracleProxy)
+  ).CHALLENGER();
+  result.BatchSender = (
+    await (
+      await getSystemConfigContract(result.SystemConfigProxy)
+    ).batcherHash()
+  ).replace(/(0{24})(?=\w)/g, '');
 
   return result;
 };
 
-export const getBuilderFromTx = async (txhash: string, isLegacy: boolean = true): Promise<string> => {
+export const getBuilderFromTx = async (
+  txhash: string,
+  isLegacy: boolean = true,
+): Promise<string> => {
   const provider = await getProvider();
   const L1BuildDepositContract = await getL1BuildDepositContract(isLegacy);
 
@@ -66,7 +85,10 @@ export const getBuilderFromTx = async (txhash: string, isLegacy: boolean = true)
   if (!receipt) throw Error('Transaction not found');
 
   const events = (
-    await L1BuildDepositContract.queryFilter(L1BuildDepositContract.filters.Build(), receipt.blockHash)
+    await L1BuildDepositContract.queryFilter(
+      L1BuildDepositContract.filters.Build(),
+      receipt.blockHash,
+    )
   ).filter((x) => x.transactionHash.toLowerCase() === txhash.toLowerCase());
   if (events.length === 0) throw new Error('Build event is not found');
   if (!events[0].args?.builder) throw new Error('Builder is not found');
@@ -90,7 +112,9 @@ export const getBuilderFromChainIDV2 = async (
   return await l1BuildAgent.getBuilderGlobally(chainId);
 };
 
-export const getBuilts = async (isLegacy: boolean = true): Promise<{
+export const getBuilts = async (
+  isLegacy: boolean = true,
+): Promise<{
   builders: string[];
   chainIds: BigNumber[];
 }> => {

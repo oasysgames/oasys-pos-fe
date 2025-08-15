@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { Button } from '@/components/atoms';
-import { getNetworkName, getAbbreviatedAddress, registerAppKitProvider } from '@/features';
+import {
+  getNetworkName,
+  getAbbreviatedAddress,
+  registerAppKitProvider,
+} from '@/features';
 import {
   useAppKit,
   useAppKitAccount,
@@ -8,7 +12,7 @@ import {
   useAppKitProvider,
   useDisconnect,
 } from '@reown/appkit/react';
-import type { Provider as AppKitProvider } from "@reown/appkit/react";
+import type { Provider as AppKitProvider } from '@reown/appkit/react';
 
 type Props = {
   handleAccountsChanged?: () => Promise<void>;
@@ -43,7 +47,10 @@ export const WalletConnect = (props: Props) => {
     // Cleanup listeners on unmount or provider change
     return () => {
       if (props.handleAccountsChanged) {
-        walletProvider.removeListener('accountsChanged', props.handleAccountsChanged);
+        walletProvider.removeListener(
+          'accountsChanged',
+          props.handleAccountsChanged,
+        );
       }
       if (props.handleChainChanged) {
         walletProvider.removeListener('chainChanged', props.handleChainChanged);
@@ -55,7 +62,11 @@ export const WalletConnect = (props: Props) => {
     <div className='space-y-0.5 col-span-4 col-start-3'>
       {!isConnected && (
         <div className='flex items-center space-x-2'>
-          <Button handleClick={() => open({ view: 'Connect', namespace: 'eip155' })}>Connect</Button>
+          <Button
+            handleClick={() => open({ view: 'Connect', namespace: 'eip155' })}
+          >
+            Connect
+          </Button>
         </div>
       )}
       {isConnected && (

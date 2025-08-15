@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent } from 'react';
 import clsx from 'clsx';
 
 type Props = {
@@ -11,34 +11,28 @@ type Props = {
 };
 
 export enum InputType {
-  Text = "text",
-  Password = "password",
-  Email = "email",
-  Number = "number",
-  Checkbox = "checkbox",
-  Radio = "radio",
-  File = "file",
-  Submit = "submit",
-  Button = "button",
-  Date = "date",
-  Time = "time",
-  DateTimeLocal = "datetime-local",
-  Month = "month",
-  Week = "week",
-  Color = "color",
-  Range = "range",
-  Tel = "tel",
-  Url = "url"
+  Text = 'text',
+  Password = 'password',
+  Email = 'email',
+  Number = 'number',
+  Checkbox = 'checkbox',
+  Radio = 'radio',
+  File = 'file',
+  Submit = 'submit',
+  Button = 'button',
+  Date = 'date',
+  Time = 'time',
+  DateTimeLocal = 'datetime-local',
+  Month = 'month',
+  Week = 'week',
+  Color = 'color',
+  Range = 'range',
+  Tel = 'tel',
+  Url = 'url',
 }
 
-export const Input = (props: Props) =>  {
-  const {
-    value,
-    placeholder,
-    disabled,
-    handleClick,
-    className,
-  } = props;
+export const Input = (props: Props) => {
+  const { value, placeholder, disabled, handleClick, className } = props;
 
   return (
     <input

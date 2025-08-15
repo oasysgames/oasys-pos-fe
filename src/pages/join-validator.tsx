@@ -6,12 +6,13 @@ import { Form, LoadingModal, ValidatorInfo } from '@/components/organisms';
 import { ZERO_ADDRESS } from '@/consts';
 import { useValidatorInfo, useRefreshValidatorInfo } from '@/hooks';
 import { useAppKitAccount } from '@reown/appkit/react';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // Disable SSR for WalletConnect
 const WalletConnect = dynamic(
-  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
-  { ssr: false }
+  () =>
+    import('@/components/organisms/walletConnect').then((m) => m.WalletConnect),
+  { ssr: false },
 );
 
 const JoinValidator: NextPage = () => {
@@ -21,7 +22,8 @@ const JoinValidator: NextPage = () => {
   const [operatorAddress, setOperatorAddress] = useState('');
   const [newOperator, setNewOperator] = useState('');
   const [operatorSuccessMsg, setOperatorSuccessMsg] = useState('');
-  const { validatorInfo, isValidatorInfoLoading, validatorInfoError } = useValidatorInfo(ownerAddress);
+  const { validatorInfo, isValidatorInfoLoading, validatorInfoError } =
+    useValidatorInfo(ownerAddress);
   const refreshValidatorInfo = useRefreshValidatorInfo();
 
   const refreshError = () => {
@@ -59,7 +61,7 @@ const JoinValidator: NextPage = () => {
       setIsOperatorUpdating(false);
       handleError(err, setOperatorError);
     }
-  }
+  };
 
   const updateOperator = async () => {
     try {
@@ -68,11 +70,17 @@ const JoinValidator: NextPage = () => {
       setIsOperatorUpdating(true);
       await stakeManagerContract.updateOperator(newOperator);
 
-      const filter = stakeManagerContract.filters.OperatorUpdated(ownerAddress, null, null);
+      const filter = stakeManagerContract.filters.OperatorUpdated(
+        ownerAddress,
+        null,
+        null,
+      );
       stakeManagerContract.once(filter, (owner, oldOperator, operator) => {
         setOperatorAddress(newOperator);
         setNewOperator('');
-        setOperatorSuccessMsg(`update is successful. (${oldOperator} => ${operator})`);
+        setOperatorSuccessMsg(
+          `update is successful. (${oldOperator} => ${operator})`,
+        );
         setIsOperatorUpdating(false);
       });
     } catch (err) {
@@ -80,7 +88,7 @@ const JoinValidator: NextPage = () => {
       setIsOperatorUpdating(false);
       handleError(err, setOperatorError);
     }
-  }
+  };
 
   useEffect(() => {
     handleAccountsChanged();
@@ -94,7 +102,9 @@ const JoinValidator: NextPage = () => {
     {
       placeholder: 'set operator address',
       value: newOperator,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setNewOperator(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setNewOperator(e.target.value);
+      },
     },
   ];
 
@@ -113,15 +123,13 @@ const JoinValidator: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      {(isOperatorUpdating || isValidatorInfoLoading) && <LoadingModal/>}
+      {(isOperatorUpdating || isValidatorInfoLoading) && <LoadingModal />}
       <WalletConnect
-        handleAccountsChanged={ handleAccountsChanged }
-        handleChainChanged={ handleChainChanged }
+        handleAccountsChanged={handleAccountsChanged}
+        handleChainChanged={handleChainChanged}
       />
       <div className='space-y-4 col-span-4 col-start-3'>
-        {operatorError && (
-          <ErrorMsg text={ operatorError } />
-        )}
+        {operatorError && <ErrorMsg text={operatorError} />}
         {validatorInfoError instanceof Error && (
           <ErrorMsg text={validatorInfoError.message} className='w-full' />
         )}
@@ -132,23 +140,13 @@ const JoinValidator: NextPage = () => {
             validatorInfo={validatorInfo}
           />
         )}
-        <Form
-          inputs={operatorInputs}
-          buttons={operatorButtons}
-        />
+        <Form inputs={operatorInputs} buttons={operatorButtons} />
         <div>
-          {
-            operatorSuccessMsg && (
-              <SuccessMsg text={operatorSuccessMsg} />
-            )
-          }
+          {operatorSuccessMsg && <SuccessMsg text={operatorSuccessMsg} />}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default dynamic(
-  () => Promise.resolve(JoinValidator),
-  { ssr: false }
-);
+export default dynamic(() => Promise.resolve(JoinValidator), { ssr: false });

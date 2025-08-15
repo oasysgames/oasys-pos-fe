@@ -20,7 +20,7 @@ export const useValidatorInfo = (owner?: string) => {
     isValidatorInfoLoading: owner && !error && !data,
     validatorInfoError: error,
   };
-}
+};
 
 export const useRefreshValidatorInfo = () => {
   const { mutate } = useSWRConfig();

@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent } from 'react';
 import clsx from 'clsx';
 
 type Option = {
@@ -17,13 +17,7 @@ export const Select = (props: SelectProps) => {
   const { options, value, handleClick, className } = props;
 
   return (
-    <select
-      value={value}
-      onChange={handleClick}
-      className={clsx(
-        className
-      )}
-    >
+    <select value={value} onChange={handleClick} className={clsx(className)}>
       {options.map((option, index) => (
         <option key={index} value={option.value}>
           {option.label}

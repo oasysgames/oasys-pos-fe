@@ -1,4 +1,4 @@
-import { defineChain } from 'viem'
+import { defineChain } from 'viem';
 
 export const oasys = /*#__PURE__*/ defineChain({
   id: 248,
@@ -15,4 +15,4 @@ export const oasys = /*#__PURE__*/ defineChain({
       url: 'https://explorer.oasys.games',
     },
   },
-})
+});

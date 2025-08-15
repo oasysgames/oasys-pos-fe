@@ -1,7 +1,7 @@
-import { ethers } from "ethers";
-import type { Provider as AppKitProvider } from "@reown/appkit/react";
-import type { ExternalProvider } from "@ethersproject/providers";
-import { isNotConnectedMsg } from "@/consts";
+import { ethers } from 'ethers';
+import type { Provider as AppKitProvider } from '@reown/appkit/react';
+import type { ExternalProvider } from '@ethersproject/providers';
+import { isNotConnectedMsg } from '@/consts';
 
 // Extend the Window interface to store the AppKit walletProvider
 declare global {
@@ -29,7 +29,7 @@ export async function getProvider(): Promise<ethers.providers.Web3Provider> {
   }
   return new ethers.providers.Web3Provider(
     appKitProvider as ExternalProvider,
-    "any"
+    'any',
   );
 }
 
@@ -40,7 +40,7 @@ export async function getProvider(): Promise<ethers.providers.Web3Provider> {
 export async function getSigner(): Promise<ethers.Signer> {
   const provider = await getProvider();
   const accounts: Array<string> = await provider.listAccounts();
-  if (accounts.length === 0)  {
+  if (accounts.length === 0) {
     throw new Error(isNotConnectedMsg);
   }
   return provider.getSigner();

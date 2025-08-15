@@ -5,7 +5,7 @@ import { LinkTab, LinkTitle } from '@/components/atoms';
 type LinkData = {
   text: string;
   url: string;
-}
+};
 
 type Props = {
   linkTitle: string;

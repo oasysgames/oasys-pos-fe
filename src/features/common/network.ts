@@ -1,4 +1,4 @@
-import { customChains } from "@/config/chains";
+import { customChains } from '@/config/chains';
 
 /**
  * Create a lookup map from chainId to name.
@@ -8,7 +8,7 @@ const networkNameMap: Record<number, string> = customChains.reduce(
     acc[Number(id)] = name;
     return acc;
   },
-  {} as Record<number, string>
+  {} as Record<number, string>,
 );
 
 /**
@@ -17,5 +17,5 @@ const networkNameMap: Record<number, string> = customChains.reduce(
  * @returns The network name, or "Unknown" if not found
  */
 export const getNetworkName = (chainId: number): string => {
-  return networkNameMap[chainId] ?? "Unknown";
+  return networkNameMap[chainId] ?? 'Unknown';
 };

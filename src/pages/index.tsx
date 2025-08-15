@@ -1,12 +1,13 @@
 import type { NextPage } from 'next';
 import { DepositVerse } from '@/components/templates';
 import { useAppKitAccount } from '@reown/appkit/react';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // Disable SSR for WalletConnect
 const WalletConnect = dynamic(
-  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
-  { ssr: false }
+  () =>
+    import('@/components/organisms/walletConnect').then((m) => m.WalletConnect),
+  { ssr: false },
 );
 
 const Verse: NextPage = () => {
@@ -23,7 +24,4 @@ const Verse: NextPage = () => {
   );
 };
 
-export default dynamic(
-  () => Promise.resolve(Verse),
-  { ssr: false }
-);
+export default dynamic(() => Promise.resolve(Verse), { ssr: false });

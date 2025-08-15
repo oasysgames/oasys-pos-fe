@@ -1,7 +1,5 @@
 import { ethers } from 'ethers';
-import {
-  Multicall,
-} from 'ethereum-multicall';
+import { Multicall } from 'ethereum-multicall';
 import {
   environmentAddress,
   stakeManagerAddress,
@@ -39,17 +37,29 @@ import {
 
 export const getEnvironmentContract = async () => {
   const signer = await getSigner();
-  const environmentContract = new ethers.Contract(environmentAddress, Environment.abi, signer);
+  const environmentContract = new ethers.Contract(
+    environmentAddress,
+    Environment.abi,
+    signer,
+  );
   return environmentContract as EnvironmentContractType;
-}
+};
 export const getStakeManagerContract = async () => {
   const signer = await getSigner();
-  const stakeManagerContract = new ethers.Contract(stakeManagerAddress, StakeManager.abi, signer);
+  const stakeManagerContract = new ethers.Contract(
+    stakeManagerAddress,
+    StakeManager.abi,
+    signer,
+  );
   return stakeManagerContract as StakeManagerContractType;
 };
 export const getAllowListContract = async () => {
   const signer = await getSigner();
-  const allowListContract = new ethers.Contract(allowListAddress, AllowList.abi, signer);
+  const allowListContract = new ethers.Contract(
+    allowListAddress,
+    AllowList.abi,
+    signer,
+  );
   return allowListContract as AllowListContractType;
 };
 export const getSOASContract = async () => {
@@ -64,26 +74,44 @@ export const getLOASContract = async () => {
 };
 export const getL1BuildDepositContract = async (isLegacy: boolean = true) => {
   const signer = await getSigner();
-  const address = isLegacy ? LegacyL1BuildDepositAddress : L1BuildDepositAddress;
-  const L1BuildDepositContract = new ethers.Contract(address, L1BuildDeposit.abi, signer);
+  const address = isLegacy
+    ? LegacyL1BuildDepositAddress
+    : L1BuildDepositAddress;
+  const L1BuildDepositContract = new ethers.Contract(
+    address,
+    L1BuildDeposit.abi,
+    signer,
+  );
   return L1BuildDepositContract as L1BuildDepositContractType;
 };
 export const getL1BuildAgentContract = async (isLegacy: boolean = true) => {
   const signer = await getSigner();
   const address = isLegacy ? LegacyL1BuildAgentAddress : L1BuildAgentAddress;
-  const L1BuildAgentContract = new ethers.Contract(address, L1BuildAgent.abi, signer);
+  const L1BuildAgentContract = new ethers.Contract(
+    address,
+    L1BuildAgent.abi,
+    signer,
+  );
   return L1BuildAgentContract as L1BuildAgentContractType;
 };
 
 export const getL1StandardBridgeProxyContract = async (address: string) => {
   const signer = await getSigner();
-  const L1StandardBridgeProxyContract = new ethers.Contract(address, L1ChugSplashProxy.abi, signer);
+  const L1StandardBridgeProxyContract = new ethers.Contract(
+    address,
+    L1ChugSplashProxy.abi,
+    signer,
+  );
   return L1StandardBridgeProxyContract;
 };
 
 export const getL1ERC721BridgeProxyContract = async (address: string) => {
   const signer = await getSigner();
-  const L1ERC721BridgeProxyContract = new ethers.Contract(address, L1ChugSplashProxy.abi, signer);
+  const L1ERC721BridgeProxyContract = new ethers.Contract(
+    address,
+    L1ChugSplashProxy.abi,
+    signer,
+  );
   return L1ERC721BridgeProxyContract;
 };
 
@@ -91,27 +119,27 @@ export const getMulticallContract = async () => {
   const provider = await getProvider();
   const multicall = new Multicall({
     multicallCustomContractAddress: multicallContractAddress,
-    ethersProvider: provider
+    ethersProvider: provider,
   });
   return multicall;
-}
+};
 
 export const getProxyAdminContract = async (address: string) => {
   const signer = await getSigner();
   return new ethers.Contract(address, ProxyAdmin.abi, signer);
-}
+};
 
 export const getOasysL2OutputOracleContract = async (address: string) => {
   const signer = await getSigner();
   return new ethers.Contract(address, OasysL2OutputOracle.abi, signer);
-}
+};
 
 export const getOasysPortalContract = async (address: string) => {
   const signer = await getSigner();
   return new ethers.Contract(address, OasysPortal.abi, signer);
-}
+};
 
 export const getSystemConfigContract = async (address: string) => {
   const signer = await getSigner();
   return new ethers.Contract(address, SystemConfig.abi, signer);
-}
+};

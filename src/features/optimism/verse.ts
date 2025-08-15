@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from 'ethers';
 import {
   genesisVersions,
   BaseFeeVaultMinimumWithdrawalAmount,
@@ -20,7 +20,7 @@ import {
   SequencerFeeVaultMinimumWithdrawalAmount,
   SequencerFeeVaultWithdrawalNetwork,
   SequencerWindowSize,
-} from "@/consts/";
+} from '@/consts/';
 
 import {
   getNamedAddresses,
@@ -32,8 +32,8 @@ import {
   getOasysPortalContract,
   getBlockByTime,
   getProvider,
-} from "@/features";
-import { Genesis, GenesisParams } from "@/types/optimism/genesis";
+} from '@/features';
+import { Genesis, GenesisParams } from '@/types/optimism/genesis';
 import {
   GenesisGasParams,
   GenesisBlockParams,
@@ -41,10 +41,10 @@ import {
   ZERO_ADDRESS,
   Mainnet_OvmBlockSignerAddress,
   Testnet_OvmBlockSignerAddress,
-} from "@/consts";
-import { makeGenesisJson } from "@/features/optimism";
-import { VerseInfo, VerseInfoV2, DeployConfig } from "@/types/optimism/verse";
-import { oasys } from "@/config/chains/definitions/oasys";
+} from '@/consts';
+import { makeGenesisJson } from '@/features/optimism';
+import { VerseInfo, VerseInfoV2, DeployConfig } from '@/types/optimism/verse';
+import { oasys } from '@/config/chains/definitions/oasys';
 
 // Use OVM_OAS if created after this block.
 const OVM_OAS_BLOCK = BigNumber.from(630195);
@@ -52,7 +52,7 @@ const L1_BLOCK_TIME_15_CHANGED_BLOCK = BigNumber.from(1725870584);
 
 export const getVerseInfo = async (
   builder: string,
-  verseChainId: number
+  verseChainId: number,
 ): Promise<VerseInfo> => {
   const signer = await getSigner();
   const chainId = await signer.getChainId();
@@ -82,7 +82,11 @@ export const getVerseInfo = async (
   for (const key in genesisVersions) {
     if (genesisVersions.hasOwnProperty(key)) {
       const version = genesisVersions[key];
-      const genesis = await makeGenesisJson(genesisParams, namedAddresses, version.bridgeContractVersion);
+      const genesis = await makeGenesisJson(
+        genesisParams,
+        namedAddresses,
+        version.bridgeContractVersion,
+      );
       geneses.push(genesis);
     }
   }
@@ -103,14 +107,22 @@ export const getVerseInfoV2 = async (
   const latestL1Block = await provider.getBlock('latest');
 
   const namedAddresses = await getNamedAddressesV2(verseChainId);
-  const l2OOContract = await getOasysL2OutputOracleContract(namedAddresses.L2OutputOracleProxy);
-  const portalContract = await getOasysPortalContract(namedAddresses.OptimismPortalProxy);
-  const systemConfigContract = await getSystemConfigContract(namedAddresses.SystemConfigProxy);
-  const messageRelayer = await (await getOasysPortalContract(namedAddresses.OptimismPortalProxy)).messageRelayer();
+  const l2OOContract = await getOasysL2OutputOracleContract(
+    namedAddresses.L2OutputOracleProxy,
+  );
+  const portalContract = await getOasysPortalContract(
+    namedAddresses.OptimismPortalProxy,
+  );
+  const systemConfigContract = await getSystemConfigContract(
+    namedAddresses.SystemConfigProxy,
+  );
+  const messageRelayer = await (
+    await getOasysPortalContract(namedAddresses.OptimismPortalProxy)
+  ).messageRelayer();
 
   namedAddresses.P2PSequencer = await systemConfigContract.unsafeBlockSigner();
 
-  let l2GasLimit = (await systemConfigContract.gasLimit()).toHexString()
+  let l2GasLimit = (await systemConfigContract.gasLimit()).toHexString();
   // Remove leading '0' to avoid golang unmarshal error bellow
   // Go ERR: cannot unmarshal deploy config: json: cannot unmarshal hex number with leading zero digits into Go struct field DeployConfig.l2GenesisBlockGasLimit of type hexutil.Uint64
   l2GasLimit = l2GasLimit.replace(/^(0x)0+/, '$1');
@@ -118,11 +130,19 @@ export const getVerseInfoV2 = async (
   // Search for the L1 starting block from the L2OO starting timestamp.
   const l2StartTime: BigNumber = await l2OOContract.startingTimestamp();
   if (l2StartTime.isZero()) {
-    throw new Error("`startingTimestamp` is not set for the L2OutputOracle");
+    throw new Error('`startingTimestamp` is not set for the L2OutputOracle');
   }
-  const l1StartBlock = await getBlockByTime(provider, Number(l2StartTime), l2StartTime.gte(L1_BLOCK_TIME_15_CHANGED_BLOCK) ? L1BlockTime : L1BlockTime15);
+  const l1StartBlock = await getBlockByTime(
+    provider,
+    Number(l2StartTime),
+    l2StartTime.gte(L1_BLOCK_TIME_15_CHANGED_BLOCK)
+      ? L1BlockTime
+      : L1BlockTime15,
+  );
   if (!l1StartBlock) {
-    throw new Error(`Could not find L1 block matching L2 starting timestamp: ${l2StartTime}`);
+    throw new Error(
+      `Could not find L1 block matching L2 starting timestamp: ${l2StartTime}`,
+    );
   }
 
   return {
@@ -141,12 +161,14 @@ export const getVerseInfoV2 = async (
       eip1559Elasticity: Eip1559Elasticity,
       enableGovernance: EnableGovernance,
       finalSystemOwner: namedAddresses.FinalSystemOwner,
-      finalizationPeriodSeconds: Number(await l2OOContract.FINALIZATION_PERIOD_SECONDS()),
+      finalizationPeriodSeconds: Number(
+        await l2OOContract.FINALIZATION_PERIOD_SECONDS(),
+      ),
       gasPriceOracleOverhead: Number(await systemConfigContract.overhead()),
       gasPriceOracleScalar: Number(await systemConfigContract.scalar()),
-      governanceTokenName: "",
+      governanceTokenName: '',
       governanceTokenOwner: namedAddresses.FinalSystemOwner,
-      governanceTokenSymbol: "",
+      governanceTokenSymbol: '',
       l1BlockTime: L1BlockTime,
       l1ChainID,
       l1CrossDomainMessengerProxy: namedAddresses.L1CrossDomainMessengerProxy,
@@ -163,9 +185,13 @@ export const getVerseInfoV2 = async (
       l2GenesisRegolithTimeOffset: L2GenesisRegolithTimeOffset,
       l2OutputOracleChallenger: namedAddresses.L2OutputOracleChallenger,
       l2OutputOracleProposer: namedAddresses.L2OutputOracleProposer,
-      l2OutputOracleStartingBlockNumber: Number(await l2OOContract.startingBlockNumber()),
+      l2OutputOracleStartingBlockNumber: Number(
+        await l2OOContract.startingBlockNumber(),
+      ),
       l2OutputOracleStartingTimestamp: Number(l2StartTime),
-      l2OutputOracleSubmissionInterval: Number(await l2OOContract.SUBMISSION_INTERVAL()),
+      l2OutputOracleSubmissionInterval: Number(
+        await l2OOContract.SUBMISSION_INTERVAL(),
+      ),
       l2ZeroFeeTime: Number(l2StartTime),
       maxSequencerDrift: MaxSequencerDrift,
       optimismPortalProxy: namedAddresses.OptimismPortalProxy,
@@ -174,7 +200,8 @@ export const getVerseInfoV2 = async (
       proxyAdminOwner: namedAddresses.FinalSystemOwner,
       recommendedProtocolVersion: RecommendedProtocolVersion,
       requiredProtocolVersion: RequiredProtocolVersion,
-      sequencerFeeVaultMinimumWithdrawalAmount: SequencerFeeVaultMinimumWithdrawalAmount,
+      sequencerFeeVaultMinimumWithdrawalAmount:
+        SequencerFeeVaultMinimumWithdrawalAmount,
       sequencerFeeVaultRecipient: namedAddresses.FinalSystemOwner,
       sequencerFeeVaultWithdrawalNetwork: SequencerFeeVaultWithdrawalNetwork,
       sequencerWindowSize: SequencerWindowSize,

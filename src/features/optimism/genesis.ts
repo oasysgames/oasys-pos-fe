@@ -3,43 +3,46 @@
  * https://github.com/oasysgames/oasys-optimism/blob/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts/tasks/take-dump.ts
  */
 
-import clone from "lodash/clone";
+import clone from 'lodash/clone';
 
 import {
   L2ContractAddresses,
   L2ContractStorageLayouts,
   ZERO_ADDRESS,
   genesisVersions,
-} from "@/consts";
-import { remove0x } from "@/features/smock/hexUtils";
-import { computeStorageSlots } from "@/features/smock/storage";
-import { Genesis, GenesisParams } from "@/types/optimism/genesis";
-import { NamedAddresses } from "@/types/oasysHub/verseBuild";
+} from '@/consts';
+import { remove0x } from '@/features/smock/hexUtils';
+import { computeStorageSlots } from '@/features/smock/storage';
+import { Genesis, GenesisParams } from '@/types/optimism/genesis';
+import { NamedAddresses } from '@/types/oasysHub/verseBuild';
 
 import L2StandardBridgeV1 from '@/contracts/optimism/c724bfe6e3/L2StandardBridge.json';
 import L2ERC721BridgeV1 from '@/contracts/optimism/c724bfe6e3/L2ERC721Bridge.json';
 import L2StandardBridgeV2 from '@/contracts/optimism/5186190c32/L2StandardBridge.json';
 import L2ERC721BridgeV2 from '@/contracts/optimism/5186190c32/L2ERC721Bridge.json';
-import { providers } from "ethers";
+import { providers } from 'ethers';
 
 // https://github.com/oasysgames/oasys-optimism/tree/c724bfe6e326c7bcc321e20deb9c2129ec0d4112/packages/contracts
-const INITIAL_COMMIT = "c724bfe6e326c7bcc321e20deb9c2129ec0d4112";
+const INITIAL_COMMIT = 'c724bfe6e326c7bcc321e20deb9c2129ec0d4112';
 
 // https://github.com/oasysgames/oasys-optimism/tree/49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6/packages/contracts
-const OVM_OAS_COMMIT = "49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6";
+const OVM_OAS_COMMIT = '49914499ead3d1f5686c2eeaa91aa9f61f7cb6f6';
 
 // https://github.com/oasysgames/oasys-optimism/tree/5186190c3250121179064b70d8e2fbd2d0a03ce3/packages/contracts
-const BRIDGE_CONTRACT_V2_COMMIT = "5186190c3250121179064b70d8e2fbd2d0a03ce3";
+const BRIDGE_CONTRACT_V2_COMMIT = '5186190c3250121179064b70d8e2fbd2d0a03ce3';
 
-const getContractCommit = (bridgeVersion: number): { [name: string]: string } => {
-
+const getContractCommit = (
+  bridgeVersion: number,
+): { [name: string]: string } => {
   const CONTRACT_COMMITS: { [name: string]: string } = {
     OVM_L2ToL1MessagePasser: INITIAL_COMMIT,
     OVM_DeployerWhitelist: INITIAL_COMMIT,
     L2CrossDomainMessenger: INITIAL_COMMIT,
     OVM_GasPriceOracle: INITIAL_COMMIT,
-    L2StandardBridge: (bridgeVersion === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
-    L2ERC721Bridge: (bridgeVersion === 1) ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    L2StandardBridge:
+      bridgeVersion === 1 ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
+    L2ERC721Bridge:
+      bridgeVersion === 1 ? INITIAL_COMMIT : BRIDGE_CONTRACT_V2_COMMIT,
     OVM_SequencerFeeVault: INITIAL_COMMIT,
     L2StandardTokenFactory: INITIAL_COMMIT,
     OVM_L1BlockNumber: INITIAL_COMMIT,
@@ -49,11 +52,11 @@ const getContractCommit = (bridgeVersion: number): { [name: string]: string } =>
   } as const;
 
   return CONTRACT_COMMITS;
-}
+};
 
 const getContractArtifact = async (
   commit: string,
-  name: string
+  name: string,
 ): Promise<{ deployedBytecode: string }> => {
   const content = import(
     `@/contracts/optimism/${commit.slice(0, 10)}/${name}.json`
@@ -96,17 +99,17 @@ export const makeGenesisJson = async (
     OVM_ETH: {
       l2Bridge: addresses.L2StandardBridge,
       l1Token: ZERO_ADDRESS,
-      _name: "Ether",
-      _symbol: "ETH",
+      _name: 'Ether',
+      _symbol: 'ETH',
     },
     L2CrossDomainMessenger: {
-      xDomainMsgSender: "0x000000000000000000000000000000000000dEaD",
+      xDomainMsgSender: '0x000000000000000000000000000000000000dEaD',
       l1CrossDomainMessenger: contracts.Proxy__OVM_L1CrossDomainMessenger,
       messageNonce: 100000,
     },
     WETH9: {
-      name: "Wrapped Ether",
-      symbol: "WETH",
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
       decimals: 18,
     },
   };
@@ -119,8 +122,8 @@ export const makeGenesisJson = async (
     variables.OVM_OAS = {
       l2Bridge: addresses.L2StandardBridge,
       l1Token: ZERO_ADDRESS,
-      _name: "OAS",
-      _symbol: "OAS",
+      _name: 'OAS',
+      _symbol: 'OAS',
     };
     delete addresses.OVM_ETH;
     delete storageLayouts.OVM_ETH;
@@ -131,20 +134,20 @@ export const makeGenesisJson = async (
   const CONTRACT_COMMITS = getContractCommit(bridgeVersion);
   for (const [predeployName, predeployAddress] of Object.entries(addresses)) {
     dump[predeployAddress] = {
-      balance: "00",
+      balance: '00',
       storage: {},
     };
 
-    if (predeployName === "OVM_L1BlockNumber") {
+    if (predeployName === 'OVM_L1BlockNumber') {
       // OVM_L1BlockNumber is a special case where we just inject a specific bytecode string.
       // We do this because it uses the custom L1BLOCKNUMBER opcode (0x4B) which cannot be
       // directly used in Solidity (yet). This bytecode string simply executes the 0x4B opcode
       // and returns the address given by that opcode.
-      dump[predeployAddress].code = "0x4B60005260206000F3";
+      dump[predeployAddress].code = '0x4B60005260206000F3';
     } else {
       const artifact = await getContractArtifact(
         CONTRACT_COMMITS[predeployName],
-        predeployName
+        predeployName,
       );
       dump[predeployAddress].code = artifact.deployedBytecode;
     }
@@ -154,7 +157,7 @@ export const makeGenesisJson = async (
       const storageLayout = storageLayouts[predeployName];
       const slots = computeStorageSlots(
         storageLayout,
-        variables[predeployName]
+        variables[predeployName],
       );
       for (const slot of slots) {
         dump[predeployAddress].storage[slot.key] = slot.val;
@@ -182,26 +185,37 @@ export const makeGenesisJson = async (
         epoch: params.epoch,
       },
     },
-    difficulty: "1",
+    difficulty: '1',
     gasLimit: params.l2BlockGasLimit.toString(10),
     extradata:
-      "0x" +
-      "00".repeat(32) +
+      '0x' +
+      '00'.repeat(32) +
       remove0x(params.ovmBlockSignerAddress) +
-      "00".repeat(65),
+      '00'.repeat(65),
     alloc: dump,
   };
 
   return genesis;
 };
 
-const checkBridgeContractVersion = async (provider: providers.JsonRpcProvider) => {
+const checkBridgeContractVersion = async (
+  provider: providers.JsonRpcProvider,
+) => {
+  const initialERC20BridgeBytecode = await provider.getCode(
+    L2ContractAddresses.L2StandardBridge,
+    0,
+  );
+  const initialERC721BridgeBytecode = await provider.getCode(
+    L2ContractAddresses.L2ERC721Bridge,
+    0,
+  );
 
-  const initialERC20BridgeBytecode = await provider.getCode(L2ContractAddresses.L2StandardBridge, 0);
-  const initialERC721BridgeBytecode = await provider.getCode(L2ContractAddresses.L2ERC721Bridge, 0);
-
-  const isVersion1 = initialERC20BridgeBytecode === L2StandardBridgeV1.deployedBytecode && initialERC721BridgeBytecode === L2ERC721BridgeV1.deployedBytecode;
-  const isVersion2 = initialERC20BridgeBytecode === L2StandardBridgeV2.deployedBytecode && initialERC721BridgeBytecode === L2ERC721BridgeV2.deployedBytecode;
+  const isVersion1 =
+    initialERC20BridgeBytecode === L2StandardBridgeV1.deployedBytecode &&
+    initialERC721BridgeBytecode === L2ERC721BridgeV1.deployedBytecode;
+  const isVersion2 =
+    initialERC20BridgeBytecode === L2StandardBridgeV2.deployedBytecode &&
+    initialERC721BridgeBytecode === L2ERC721BridgeV2.deployedBytecode;
 
   if (isVersion1) {
     return 1;
@@ -210,9 +224,11 @@ const checkBridgeContractVersion = async (provider: providers.JsonRpcProvider) =
   } else {
     throw new Error('Unknown version');
   }
-}
+};
 
-export const getGenesisVersion = async (provider: providers.JsonRpcProvider) => {
+export const getGenesisVersion = async (
+  provider: providers.JsonRpcProvider,
+) => {
   const bridgeVersion = await checkBridgeContractVersion(provider);
 
   for (const key in genesisVersions) {
@@ -226,4 +242,4 @@ export const getGenesisVersion = async (provider: providers.JsonRpcProvider) => 
     }
   }
   throw new Error('Unknown version');
-}
+};

@@ -13,13 +13,8 @@ type Props = {
   verseInfo: VerseInfoType;
 };
 
-
 export const VerseInfo = (props: Props) => {
-  const {
-    className,
-    verseBuilder,
-    verseInfo,
-  } = props;
+  const { className, verseBuilder, verseInfo } = props;
 
   const [downloadError, setDownloadError] = useState('');
   const [checkModalOpen, setCheckModalOpen] = useState(false);
@@ -40,88 +35,57 @@ export const VerseInfo = (props: Props) => {
     }
   }, []);
 
-  const heads = [
-    'Config',
-    'Value'
-  ];
+  const heads = ['Config', 'Value'];
 
   const records = [
-    [
-      'Chain_id',
-      verseInfo.chainId.toString(),
-    ],
-    [
-      'Builder',
-      verseBuilder,
-    ],
-    [
-      'Sequencer',
-      verseInfo.namedAddresses.OVM_Sequencer,
-    ],
-    [
-      'Proposer',
-      verseInfo.namedAddresses.OVM_Proposer,
-    ],
+    ['Chain_id', verseInfo.chainId.toString()],
+    ['Builder', verseBuilder],
+    ['Sequencer', verseInfo.namedAddresses.OVM_Sequencer],
+    ['Proposer', verseInfo.namedAddresses.OVM_Proposer],
     [
       'L1CrossDomainMessenger',
       verseInfo.namedAddresses.Proxy__OVM_L1CrossDomainMessenger,
     ],
-    [
-      'L1StandardBridge',
-      verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge,
-    ],
-    [
-      'L1ERC721Bridge',
-      verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge ,
-    ],
+    ['L1StandardBridge', verseInfo.namedAddresses.Proxy__OVM_L1StandardBridge],
+    ['L1ERC721Bridge', verseInfo.namedAddresses.Proxy__OVM_L1ERC721Bridge],
   ];
 
   return (
-    <div className={clsx(
-      className,
-    )}>
-      {checkModalOpen &&
-        <CheckGenesisVersionModal
-          setModalState={setCheckModalOpen}
-        />
-      }
-      {downloadError && (
-          <ErrorMsg text={ downloadError } className='w-full' />
-        )}
-        <p>Download Config Files</p>
-        <Table
-          heads={heads}
-          records={records}
-        />
-          {verseInfo?.namedAddresses && verseInfo?.geneses &&
-            <div className="flex flex-col space-y-2">
-              <Button
-                handleClick={() => downloadAddresses(verseInfo.namedAddresses)}
-              >
-                Download Address.json
+    <div className={clsx(className)}>
+      {checkModalOpen && (
+        <CheckGenesisVersionModal setModalState={setCheckModalOpen} />
+      )}
+      {downloadError && <ErrorMsg text={downloadError} className='w-full' />}
+      <p>Download Config Files</p>
+      <Table heads={heads} records={records} />
+      {verseInfo?.namedAddresses && verseInfo?.geneses && (
+        <div className='flex flex-col space-y-2'>
+          <Button
+            handleClick={() => downloadAddresses(verseInfo.namedAddresses)}
+          >
+            Download Address.json
+          </Button>
+          {verseInfo.geneses.map((genesis, index) => {
+            const version = index + 1;
+            return (
+              <Button key={index} handleClick={() => downloadGenesis(genesis)}>
+                Download genesis.json(Version{version}
+                {index === verseInfo.geneses.length - 1
+                  ? ': For new verse builder'
+                  : ''}
+                )
               </Button>
-              {
-                verseInfo.geneses.map((genesis, index) => {
-                  const version = index + 1;
-                  return (
-                    <Button
-                      key={index}
-                      handleClick={() => downloadGenesis(genesis)}
-                    >
-                      Download genesis.json(Version{version}{index === verseInfo.geneses.length - 1 ? ': For new verse builder' : ''})
-                    </Button>
-                  );
-                })
-              }
-              <Button
-                handleClick={() => {
-                  setCheckModalOpen(true)
-                }}
-              >
-                Check Genesis Version
-              </Button>
-            </div>
-          }
+            );
+          })}
+          <Button
+            handleClick={() => {
+              setCheckModalOpen(true);
+            }}
+          >
+            Check Genesis Version
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

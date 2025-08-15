@@ -19,10 +19,7 @@ type Props = {
 const [L2_BLOCK_TIME_START, L2_BLOCK_TIME_END] = L2BlockTimeRange;
 
 export const BuildVerseModal = (props: Props) => {
-  const {
-    className,
-    setModalState,
-  } = props;
+  const { className, setModalState } = props;
 
   const [buildSuccess, setBuildSuccess] = useState('');
   const [isBuilding, setIsBuilding] = useState(false);
@@ -54,7 +51,9 @@ export const BuildVerseModal = (props: Props) => {
       // At first, set default Values
       // Correct values are expected to be set via another button
       const l2OOStartingBlockNumber = 0;
-      const l2OOStartingTimestamp = (await (await getProvider()).getBlock('latest')).timestamp;
+      const l2OOStartingTimestamp = (
+        await (await getProvider()).getBlock('latest')
+      ).timestamp;
 
       // Create the config object matching the BuildConfigStruct interface
       const buildConfig: IL1BuildAgent.BuildConfigStruct = {
@@ -70,15 +69,15 @@ export const BuildVerseModal = (props: Props) => {
         finalizationPeriodSeconds: FINALIZATION_PERIOD_SECONDS,
         l2OutputOracleStartingBlockNumber: l2OOStartingBlockNumber,
         l2OutputOracleStartingTimestamp: l2OOStartingTimestamp,
-      }
+      };
 
-      const tx: ethers.providers.TransactionResponse = await L1BuildAgentContract.build(
-        newChainId!,
-        buildConfig
-      );
+      const tx: ethers.providers.TransactionResponse =
+        await L1BuildAgentContract.build(newChainId!, buildConfig);
       const receipt = await tx.wait();
       if (receipt.status === 1) {
-        setBuildSuccess(`Verse build is successful. build transaction (${tx.hash})`);
+        setBuildSuccess(
+          `Verse build is successful. build transaction (${tx.hash})`,
+        );
         setNewChainId(undefined);
         setFinalSystemOwner('');
         setProposerAddress('');
@@ -100,71 +99,83 @@ export const BuildVerseModal = (props: Props) => {
       placeholder: 'set verse chain_id',
       value: newChainId?.toString() || '',
       inputType: InputType.Number,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setNewChainId(Number(e.target.value))},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setNewChainId(Number(e.target.value));
+      },
     },
     {
       placeholder: 'set final system owner',
       value: finalSystemOwner,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setFinalSystemOwner(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setFinalSystemOwner(e.target.value);
+      },
     },
     {
       placeholder: 'set proposer address',
       value: proposerAddress,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setProposerAddress(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setProposerAddress(e.target.value);
+      },
     },
     {
       placeholder: 'set batch sender address',
       value: batchSenderAddress,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setBatchSenderAddress(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setBatchSenderAddress(e.target.value);
+      },
     },
     {
       placeholder: 'set p2p sequencer address',
       value: p2pSequencerAddress,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setP2PSequencerAddress(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setP2PSequencerAddress(e.target.value);
+      },
     },
     {
       placeholder: 'set message relayer address',
       value: messageRelayer,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setMessageRelayer(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setMessageRelayer(e.target.value);
+      },
     },
     {
       placeholder: `set L2 Block Time (range of ${L2_BLOCK_TIME_START} to ${L2_BLOCK_TIME_END})`,
       value: l2BlockTime?.toString() || '',
       inputType: InputType.Number,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => { setL2BlockTime(Number(e.target.value)) },
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setL2BlockTime(Number(e.target.value));
+      },
     },
   ];
   const buildButtons = [
     {
       handleClick: build,
-      disabled: !finalSystemOwner || !batchSenderAddress || !p2pSequencerAddress || !proposerAddress || !messageRelayer || !l2BlockTime || isBuilding,
+      disabled:
+        !finalSystemOwner ||
+        !batchSenderAddress ||
+        !p2pSequencerAddress ||
+        !proposerAddress ||
+        !messageRelayer ||
+        !l2BlockTime ||
+        isBuilding,
       value: 'Build',
-    }
+    },
   ];
 
   return (
     <>
-      {isBuilding &&
-        <LoadingModal />
-      }
-      {!isBuilding &&
-        <Modal
-          setModalState={setModalState}
-        >
+      {isBuilding && <LoadingModal />}
+      {!isBuilding && (
+        <Modal setModalState={setModalState}>
           <div className='space-y-4'>
             {buildSuccess && (
-            <SuccessMsg className='w-full' text={buildSuccess} />
+              <SuccessMsg className='w-full' text={buildSuccess} />
             )}
-            {buildError && (
-              <ErrorMsg className='w-full' text={ buildError } />
-            )}
-            <Form
-              inputs={buildInputs}
-              buttons={buildButtons}
-            />
+            {buildError && <ErrorMsg className='w-full' text={buildError} />}
+            <Form inputs={buildInputs} buttons={buildButtons} />
           </div>
         </Modal>
-      }
+      )}
     </>
-  )
+  );
 };

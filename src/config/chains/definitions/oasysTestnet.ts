@@ -1,4 +1,4 @@
-import { defineChain } from 'viem'
+import { defineChain } from 'viem';
 
 export const oasysTestnet = /*#__PURE__*/ defineChain({
   id: 9372,
@@ -16,4 +16,4 @@ export const oasysTestnet = /*#__PURE__*/ defineChain({
     },
   },
   testnet: true,
-})
+});

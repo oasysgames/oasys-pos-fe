@@ -8,16 +8,12 @@ type Props = {
 };
 
 export const BuildVerse = (props: Props) => {
-  const {
-    className,
-  } = props;
+  const { className } = props;
 
   const [buildModalOpen, setBuildModalOpen] = useState(false);
 
   return (
-    <div className={clsx(
-      className,
-    )}>
+    <div className={clsx(className)}>
       {buildModalOpen && <BuildVerseModal setModalState={setBuildModalOpen} />}
       <p>Build Verse v1</p>
       <Button
@@ -28,5 +24,5 @@ export const BuildVerse = (props: Props) => {
         Continue Building Verse
       </Button>
     </div>
-  )
+  );
 };

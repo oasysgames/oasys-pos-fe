@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 import { Sidebar } from '@/components/organisms';
 
 type Props = {
-  children: ReactNode
+  children: ReactNode;
 };
 
 type ContainerProps = {
-  children: ReactNode
+  children: ReactNode;
 };
 
 const Container = (props: ContainerProps) => {
@@ -18,10 +18,9 @@ const Container = (props: ContainerProps) => {
 };
 
 export const Layout = (props: Props) => {
-
   return (
     <div className='min-h-screen bg-green-100 grid grid-cols-10'>
-      <Sidebar className="col-span-1 container"></Sidebar>
+      <Sidebar className='col-span-1 container'></Sidebar>
       <Container>{props.children}</Container>
     </div>
   );

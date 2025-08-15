@@ -79,22 +79,13 @@ export const Sidebar = (props: Props) => {
           height={250}
         />
         <div className='space-y-8'>
-          <SidebarNavigation
-            linkTitle='Validators'
-            links={validatorLinks}
-          />
+          <SidebarNavigation linkTitle='Validators' links={validatorLinks} />
           <SidebarNavigation
             linkTitle='Verse Builders'
             links={verseBuilderLinks}
           />
-          <SidebarNavigation
-            linkTitle='SOAS'
-            links={soasLinks}
-          />
-          <SidebarNavigation
-            linkTitle='LOAS'
-            links={loasLinks}
-          />
+          <SidebarNavigation linkTitle='SOAS' links={soasLinks} />
+          <SidebarNavigation linkTitle='LOAS' links={loasLinks} />
         </div>
       </div>
     </div>

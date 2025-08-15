@@ -6,12 +6,13 @@ import { Renounce } from '@/components/templates';
 import { useSOASClaimInfo, useRefreshSOASClaimInfo } from '@/hooks';
 import { sOASTokenUnit } from '@/consts';
 import { useAppKitAccount } from '@reown/appkit/react';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // Disable SSR for WalletConnect
 const WalletConnect = dynamic(
-  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
-  { ssr: false }
+  () =>
+    import('@/components/organisms/walletConnect').then((m) => m.WalletConnect),
+  { ssr: false },
 );
 
 const SOASRenouncePage: NextPage = () => {
@@ -25,7 +26,8 @@ const SOASRenouncePage: NextPage = () => {
   const refreshSOASClaimInfo = useRefreshSOASClaimInfo();
 
   const isMinted = !!claimInfo?.amount && claimInfo.amount.gt('0');
-  const isRenounceable = !!claimInfo?.renounceable && claimInfo?.renounceable.gt('0');
+  const isRenounceable =
+    !!claimInfo?.renounceable && claimInfo?.renounceable.gt('0');
 
   const handleChainChanged = async () => {
     refreshSOASClaimInfo();
@@ -38,8 +40,10 @@ const SOASRenouncePage: NextPage = () => {
 
     try {
       const renounceAmount = ethers.utils.parseEther(renounceOASAmount);
-      if (!isRenounceable) throw new Error(`You do not have renounceable ${sOASTokenUnit}`);
-      if (renounceAmount.gt(claimInfo.renounceable)) throw new Error('It is above the renounceable amount');
+      if (!isRenounceable)
+        throw new Error(`You do not have renounceable ${sOASTokenUnit}`);
+      if (renounceAmount.gt(claimInfo.renounceable))
+        throw new Error('It is above the renounceable amount');
 
       setIsRenouncing(true);
       await sOASContract.renounce(renounceAmount);
@@ -50,12 +54,18 @@ const SOASRenouncePage: NextPage = () => {
         refreshSOASClaimInfo();
         setIsRenouncing(false);
         setRenounceOASAmount('');
-      })
+      });
     } catch (err) {
       setIsRenouncing(false);
       handleError(err, setErrorMsg);
     }
-  }, [isRenounceable, claimInfo, ownerAddress, renounceOASAmount, refreshSOASClaimInfo]);
+  }, [
+    isRenounceable,
+    claimInfo,
+    ownerAddress,
+    renounceOASAmount,
+    refreshSOASClaimInfo,
+  ]);
 
   useEffect(() => {
     refreshSOASClaimInfo();
@@ -63,9 +73,7 @@ const SOASRenouncePage: NextPage = () => {
 
   return (
     <div className='space-y-20 grid grid-cols-10 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <WalletConnect
-        handleChainChanged={ handleChainChanged }
-      />
+      <WalletConnect handleChainChanged={handleChainChanged} />
       <Renounce
         className='col-span-8 col-start-2'
         ownerAddress={ownerAddress}
@@ -83,10 +91,7 @@ const SOASRenouncePage: NextPage = () => {
         tokenUnit={sOASTokenUnit}
       />
     </div>
-  )
-}
+  );
+};
 
-export default dynamic(
-  () => Promise.resolve(SOASRenouncePage),
-  { ssr: false }
-);
+export default dynamic(() => Promise.resolve(SOASRenouncePage), { ssr: false });

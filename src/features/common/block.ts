@@ -1,17 +1,18 @@
-import { providers } from "ethers";
+import { providers } from 'ethers';
 
 // Search for the block that exactly matches the specified timestamp.
 export const getBlockByTime = async (
   provider: providers.Provider,
   targetBlockTime: number,
-  blockPeriod: number
+  blockPeriod: number,
 ): Promise<null | providers.Block> => {
-  const latest = await provider.getBlock("latest");
+  const latest = await provider.getBlock('latest');
   if (targetBlockTime > latest.timestamp) {
     return null;
   }
 
-  let number = latest.number - ~~((latest.timestamp - targetBlockTime) / blockPeriod);
+  let number =
+    latest.number - ~~((latest.timestamp - targetBlockTime) / blockPeriod);
   if (number < 0) {
     return null;
   }

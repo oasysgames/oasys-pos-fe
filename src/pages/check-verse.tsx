@@ -12,14 +12,18 @@ import {
   Form,
   LoadingModal,
 } from '@/components/organisms';
-import { VerseInfo as VerseInfoType, VerseInfoV2 as VerseInfoV2Type } from '@/types/optimism/verse';
+import {
+  VerseInfo as VerseInfoType,
+  VerseInfoV2 as VerseInfoV2Type,
+} from '@/types/optimism/verse';
 import { getVerseInfo, getVerseInfoV2 } from '@/features/optimism/verse';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // Disable SSR for WalletConnect
 const WalletConnect = dynamic(
-  () => import('@/components/organisms/walletConnect').then(m => m.WalletConnect),
-  { ssr: false }
+  () =>
+    import('@/components/organisms/walletConnect').then((m) => m.WalletConnect),
+  { ssr: false },
 );
 
 const CheckVerse: NextPage = () => {
@@ -57,7 +61,7 @@ const CheckVerse: NextPage = () => {
       // }
 
       if (isLegacy) {
-        const builder = await getBuilderFromChainID(l2ChainId!)
+        const builder = await getBuilderFromChainID(l2ChainId!);
         setVerseBuilder(builder);
         setVerseInfo(await getVerseInfo(builder, l2ChainId!));
         setVerseInfoV2(undefined);
@@ -67,7 +71,6 @@ const CheckVerse: NextPage = () => {
         setVerseInfoV2(await getVerseInfoV2(l2ChainId!));
         setVerseInfo(undefined);
       }
-
     } catch (err) {
       handleError(err, setTxHashError);
     }
@@ -81,17 +84,17 @@ const CheckVerse: NextPage = () => {
       inputType: InputType.Number,
       handleClick: (e: ChangeEvent<HTMLInputElement>) =>
         setL2ChainId(Number(e.target.value.trim())),
-    }
+    },
   ];
 
   const buttons = [
     {
-      handleClick: () => (getVerseConfig(false)),
+      handleClick: () => getVerseConfig(false),
       disabled: !l2ChainId,
       value: 'Get Verse v1 Info',
     },
     {
-      handleClick: () => (getVerseConfig(true)),
+      handleClick: () => getVerseConfig(true),
       disabled: !l2ChainId,
       value: 'Get Verse v0 Info',
     },
@@ -99,9 +102,7 @@ const CheckVerse: NextPage = () => {
 
   return (
     <div className='space-y-10 grid grid-cols-8 text-sm md:text-base lg:text-lg xl:text-xl lg:text-lg'>
-      <WalletConnect
-        handleChainChanged={ handleChainChanged }
-      />
+      <WalletConnect handleChainChanged={handleChainChanged} />
 
       <div className='space-y-0.5 col-span-4 col-start-3'>
         {txHashError && <ErrorMsg text={txHashError} className='w-full' />}
@@ -129,7 +130,4 @@ const CheckVerse: NextPage = () => {
   );
 };
 
-export default dynamic(
-  () => Promise.resolve(CheckVerse),
-  { ssr: false }
-);
+export default dynamic(() => Promise.resolve(CheckVerse), { ssr: false });

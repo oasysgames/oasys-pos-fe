@@ -10,72 +10,70 @@ type Props = {
 };
 
 export const DepositVerse = (props: Props) => {
-  const {
-    className,
-    ownerAddress,
-  } = props;
+  const { className, ownerAddress } = props;
 
   const [changeDepositModalOpen, setChangeDepositModalOpen] = useState(false);
   const [checkDepositModalOpen, setCheckDepositModalOpen] = useState(false);
   const [isLegacy, setIsLegacy] = useState(false);
 
   return (
-    <div className={clsx(
-      className,
-    )}>
-      {changeDepositModalOpen &&
+    <div className={clsx(className)}>
+      {changeDepositModalOpen && (
         <ChangeDepositModal
           setModalState={setChangeDepositModalOpen}
           isLegacy={isLegacy}
         />
-      }
-      {checkDepositModalOpen &&
+      )}
+      {checkDepositModalOpen && (
         <CheckDepositModal
           setModalState={setCheckDepositModalOpen}
           ownerAddress={ownerAddress}
           isLegacy={isLegacy}
         />
-      }
+      )}
       <h2>Deposit / Withdraw Token for Verse v1</h2>
       <div className='space-x-2'>
         <Button
           handleClick={() => {
-            setChangeDepositModalOpen(true)
-            setIsLegacy(false)
+            setChangeDepositModalOpen(true);
+            setIsLegacy(false);
           }}
         >
           Continue with Deposit / Withdrawal
         </Button>
         <Button
           handleClick={() => {
-            setCheckDepositModalOpen(true)
-            setIsLegacy(false)
+            setCheckDepositModalOpen(true);
+            setIsLegacy(false);
           }}
         >
           Check Deposit Amount
         </Button>
       </div>
-      <hr/>
+      <hr />
       <h2>Witdraw Token for Verse v0</h2>
-      <p>Since the Verse v0 has been deprecated, depositing and building can only be performed through a direct function call to the contract.</p>
+      <p>
+        Since the Verse v0 has been deprecated, depositing and building can only
+        be performed through a direct function call to the contract.
+      </p>
       <div className='space-x-2'>
-      <Button
+        <Button
           handleClick={() => {
-            setChangeDepositModalOpen(true)
-            setIsLegacy(true)
+            setChangeDepositModalOpen(true);
+            setIsLegacy(true);
           }}
         >
           Continue with Withdrawal
         </Button>
         <Button
           handleClick={() => {
-            setCheckDepositModalOpen(true)
-            setIsLegacy(true)
+            setCheckDepositModalOpen(true);
+            setIsLegacy(true);
           }}
         >
           Check Deposit Amount
         </Button>
       </div>
     </div>
-  )
+  );
 };
