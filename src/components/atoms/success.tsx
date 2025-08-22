@@ -5,16 +5,8 @@ type Props = {
   className?: string;
 };
 
-export const SuccessMsg = (props: Props) =>  {
-  const {
-    text,
-    className
-  } = props;
+export const SuccessMsg = (props: Props) => {
+  const { text, className } = props;
 
-  return (
-    <p className={clsx(
-      className,
-      "text-green-600"
-    )}>{text}</p>
-  );
+  return <p className={clsx(className, 'text-green-600')}>{text}</p>;
 };

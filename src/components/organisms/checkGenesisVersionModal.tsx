@@ -15,10 +15,7 @@ type Props = {
 };
 
 export const CheckGenesisVersionModal = (props: Props) => {
-  const {
-    className,
-    setModalState,
-  } = props;
+  const { className, setModalState } = props;
 
   const [isChecking, setIsChecking] = useState(false);
   const [genesisVersionError, setGenesisVersionError] = useState('');
@@ -31,7 +28,7 @@ export const CheckGenesisVersionModal = (props: Props) => {
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
       const version = await getGenesisVersion(provider);
-  
+
       setGenesisVersion(version);
       setGenesisVersionError('');
     } catch (err) {
@@ -60,22 +57,20 @@ export const CheckGenesisVersionModal = (props: Props) => {
 
   return (
     <>
-    {isChecking &&
-      <LoadingModal />
-    }
-    {!isChecking &&
-    <Modal
-      setModalState={setModalState}
-    >
-      <div className='space-y-4'>
-        {genesisVersionError && <ErrorMsg text={genesisVersionError} className='w-full' />}
-        <Form inputs={inputs} buttons={buttons} className='space-y-2'/>
-        {genesisVersion && 
-          <GenesisVersionDetail version={genesisVersion} />
-        }
-      </div>
-    </Modal>
-    }
+      {isChecking && <LoadingModal />}
+      {!isChecking && (
+        <Modal setModalState={setModalState}>
+          <div className='space-y-4'>
+            {genesisVersionError && (
+              <ErrorMsg text={genesisVersionError} className='w-full' />
+            )}
+            <Form inputs={inputs} buttons={buttons} className='space-y-2' />
+            {genesisVersion && (
+              <GenesisVersionDetail version={genesisVersion} />
+            )}
+          </div>
+        </Modal>
+      )}
     </>
-  )
+  );
 };

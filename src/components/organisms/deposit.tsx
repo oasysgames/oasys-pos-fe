@@ -26,19 +26,23 @@ export const Deposit = (props: Props) => {
     withdraw,
     idDepositLoading,
     tokenUnit,
-    isLegacy
+    isLegacy,
   } = props;
 
   const depositInputs = [
     {
       placeholder: 'set verse builder address',
       value: builder,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setBuilder(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setBuilder(e.target.value);
+      },
     },
     {
       placeholder: `set amount(${tokenUnit})`,
       value: amount,
-      handleClick: (e: ChangeEvent<HTMLInputElement>) => {setAmount(e.target.value)},
+      handleClick: (e: ChangeEvent<HTMLInputElement>) => {
+        setAmount(e.target.value);
+      },
     },
   ];
 
@@ -59,13 +63,8 @@ export const Deposit = (props: Props) => {
   if (isLegacy) depositButtons.shift();
 
   return (
-    <div className={clsx(
-      className,
-    )}>
-      <Form
-        inputs={depositInputs}
-        buttons={depositButtons}
-      />
+    <div className={clsx(className)}>
+      <Form inputs={depositInputs} buttons={depositButtons} />
     </div>
   );
 };

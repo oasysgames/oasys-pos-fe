@@ -7,13 +7,13 @@ type InputProps = {
   value: string;
   inputType?: InputType;
   handleClick: (e: ChangeEvent<HTMLInputElement>) => void;
-}
+};
 
 type ButtonProps = {
   handleClick: () => void;
   disabled: boolean;
   value: string;
-}
+};
 
 type Props = {
   className?: string;
@@ -22,17 +22,10 @@ type Props = {
 };
 
 export const Form = (props: Props) => {
-  const {
-    className,
-    inputs,
-    buttons,
-  } = props;
+  const { className, inputs, buttons } = props;
 
   return (
-    <div className={clsx(
-      className,
-      'space-y-1',
-    )}>
+    <div className={clsx(className, 'space-y-1')}>
       <div className='space-y-0.5'>
         {inputs.map(({ placeholder, value, inputType, handleClick }, index) => {
           return (
@@ -44,20 +37,16 @@ export const Form = (props: Props) => {
               inputType={inputType}
               className='w-full'
             />
-          )
+          );
         })}
       </div>
-      <div className="flex items-center space-x-2">
-        {buttons.map(({ handleClick, disabled, value}, index) => {
+      <div className='flex items-center space-x-2'>
+        {buttons.map(({ handleClick, disabled, value }, index) => {
           return (
-            <Button
-              key={index}
-              handleClick={handleClick}
-              disabled={ disabled }
-            >
+            <Button key={index} handleClick={handleClick} disabled={disabled}>
               {value}
             </Button>
-          )
+          );
         })}
       </div>
     </div>

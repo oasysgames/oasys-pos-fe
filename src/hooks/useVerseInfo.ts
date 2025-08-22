@@ -11,25 +11,26 @@ const getVerseInfoFromBuilder = async (builder: string) => {
   if (accounts.length === 0) return undefined;
 
   const verseChainId = await getVerseChainId(builder);
-  if (!verseChainId) return {
-    chainId: undefined,
-    namedAddresses: undefined,
-    genesis: undefined,
-  };
+  if (!verseChainId)
+    return {
+      chainId: undefined,
+      namedAddresses: undefined,
+      genesis: undefined,
+    };
 
   return await getVerseInfo(builder, verseChainId);
-}
+};
 
-export const useVerseInfo = (builder: string) => {
+export const useVerseInfo = (builder?: string) => {
   const { data, error } = useSWR(SWR_KEY, async () => {
-    return await getVerseInfoFromBuilder(builder);
+    return await getVerseInfoFromBuilder(builder || '');
   });
   return {
     verseInfo: data,
-    isVerseInfoLoading: !error && !data,
+    isVerseInfoLoading: builder && !error && !data,
     verseInfoError: error,
   };
-}
+};
 
 export const useRefreshVerseInfo = () => {
   const { mutate } = useSWRConfig();

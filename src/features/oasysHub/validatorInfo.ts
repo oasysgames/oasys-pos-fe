@@ -1,11 +1,21 @@
-import { ethers, BigNumber } from "ethers";
+import { ethers, BigNumber } from 'ethers';
 import { ContractCallContext, ContractCallResults } from 'ethereum-multicall';
 import StakeManager from '@/contracts/oasysHub/StakeManager.json';
-import { getMulticallContract, getEnvironmentContract, getStakeManagerContract } from '@/features';
-import { stakeManagerAddress } from "@/consts";
-import { EpochToSlashes, ValidatorInfoType } from '@/types/oasysHub/validatorInfo';
+import {
+  getMulticallContract,
+  getEnvironmentContract,
+  getStakeManagerContract,
+} from '@/features';
+import { stakeManagerAddress } from '@/consts';
+import {
+  EpochToSlashes,
+  ValidatorInfoType,
+} from '@/types/oasysHub/validatorInfo';
 
-export const getSlashesForLast30Epochs = async (owner: string, epoch: BigNumber) => {
+export const getSlashesForLast30Epochs = async (
+  owner: string,
+  epoch: BigNumber,
+) => {
   const multicallContract = await getMulticallContract();
 
   let contractCallContext: ContractCallContext[] = [];
@@ -13,16 +23,22 @@ export const getSlashesForLast30Epochs = async (owner: string, epoch: BigNumber)
   let firstEpoch = epoch.sub(BigNumber.from(29)).toNumber();
   if (firstEpoch < 0) firstEpoch = 1;
   for (var i = firstEpoch; i <= epoch.toNumber(); i++) {
-    contractCallContext.push(
-      {
-        reference: `${i}`,
-        contractAddress: stakeManagerAddress,
-        abi: StakeManager.abi,
-        calls: [{ reference: 'getBlockAndSlashes', methodName: 'getBlockAndSlashes', methodParameters: [owner, i] }]
-      }
-    );
+    contractCallContext.push({
+      reference: `${i}`,
+      contractAddress: stakeManagerAddress,
+      abi: StakeManager.abi,
+      calls: [
+        {
+          reference: 'getBlockAndSlashes',
+          methodName: 'getBlockAndSlashes',
+          methodParameters: [owner, i],
+        },
+      ],
+    });
   }
-  const results: ContractCallResults = await multicallContract.call(contractCallContext);
+  const results: ContractCallResults = await multicallContract.call(
+    contractCallContext,
+  );
 
   let epochToSlashes: EpochToSlashes = {};
 
@@ -35,17 +51,31 @@ export const getSlashesForLast30Epochs = async (owner: string, epoch: BigNumber)
   });
 
   return epochToSlashes;
-}
+};
 
-export const getValidatorInfo = async (ownerAddress: string): Promise<ValidatorInfoType> => {
+export const getValidatorInfo = async (
+  ownerAddress: string,
+): Promise<ValidatorInfoType> => {
   const environmentContract = await getEnvironmentContract();
   const stakeManagerContract = await getStakeManagerContract();
   const currentEpoch = await environmentContract.epoch();
   const nextEpoch = currentEpoch.add(BigNumber.from(1));
-  const validatorCommissions = await stakeManagerContract.getCommissions(ownerAddress, BigNumber.from(0));
-  const currentValidatorInfo = await stakeManagerContract.getValidatorInfo(ownerAddress, currentEpoch);
-  const nextValidatorInfo = await stakeManagerContract.getValidatorInfo(ownerAddress, nextEpoch);
-  const epochToSlashes = await getSlashesForLast30Epochs(ownerAddress, currentEpoch);
+  const validatorCommissions = await stakeManagerContract.getCommissions(
+    ownerAddress,
+    BigNumber.from(0),
+  );
+  const currentValidatorInfo = await stakeManagerContract.getValidatorInfo(
+    ownerAddress,
+    currentEpoch,
+  );
+  const nextValidatorInfo = await stakeManagerContract.getValidatorInfo(
+    ownerAddress,
+    nextEpoch,
+  );
+  const epochToSlashes = await getSlashesForLast30Epochs(
+    ownerAddress,
+    currentEpoch,
+  );
 
   const joined = currentValidatorInfo.operator !== ethers.constants.AddressZero;
   const status = currentValidatorInfo.active ? 'Active' : 'Inactive';
@@ -63,7 +93,7 @@ export const getValidatorInfo = async (ownerAddress: string): Promise<ValidatorI
     currentEpochStakes,
     nextEpochStakes,
     epochToSlashes,
-  }
+  };
 
   return data;
-}
+};

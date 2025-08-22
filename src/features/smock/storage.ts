@@ -3,8 +3,12 @@
  * https://github.com/defi-wonderland/smock/blob/9cffea640c4bd5ddc09a638505f6bb0a0cebdbad/src/utils/storage.ts
  */
 
-import { BigNumber, utils, constants } from "ethers";
-import { bigNumberToHex, fromHexString, remove0x } from "@/features/smock/hexUtils";
+import { BigNumber, utils, constants } from 'ethers';
+import {
+  bigNumberToHex,
+  fromHexString,
+  remove0x,
+} from '@/features/smock/hexUtils';
 
 interface StorageSlotPair {
   key: string;
@@ -41,20 +45,20 @@ const padNumHexSlotValue = (val: any, offset: number): string => {
   const bn = BigNumber.from(val);
 
   return (
-    "0x" +
+    '0x' +
     bigNumberToHex(bn)
-      .padStart(64 - offset * 2, bn.isNegative() ? "f" : "0") // Pad the start with 64 - offset bytes
-      .padEnd(64, "0") // Pad the end (up to 64 bytes) with zero bytes.
+      .padStart(64 - offset * 2, bn.isNegative() ? 'f' : '0') // Pad the start with 64 - offset bytes
+      .padEnd(64, '0') // Pad the end (up to 64 bytes) with zero bytes.
       .toLowerCase() // Making this lower case makes assertions more consistent later.
   );
 };
 
 const padBytesHexSlotValue = (val: string, offset: number): string => {
   return (
-    "0x" +
+    '0x' +
     remove0x(val)
-      .padStart(64 - offset * 2, "0") // Pad the start with 64 - offset zero bytes.
-      .padEnd(64, "0") // Pad the end (up to 64 bytes) with zero bytes.
+      .padStart(64 - offset * 2, '0') // Pad the start with 64 - offset zero bytes.
+      .padEnd(64, '0') // Pad the end (up to 64 bytes) with zero bytes.
       .toLowerCase() // Making this lower case makes assertions more consistent later.
   );
 };
@@ -66,21 +70,21 @@ const encodeVariable = (
     [name: string]: SolidityStorageType;
   },
   nestedSlotOffset = 0,
-  baseSlotKey?: string
+  baseSlotKey?: string,
 ): StorageSlotPair[] => {
   let slotKey: string =
-    "0x" +
+    '0x' +
     remove0x(
       BigNumber.from(baseSlotKey || nestedSlotOffset)
         .add(BigNumber.from(parseInt(storageObj.slot, 10)))
-        .toHexString()
-    ).padStart(64, "0");
+        .toHexString(),
+    ).padStart(64, '0');
 
   const variableType = storageTypes[storageObj.type];
-  if (variableType.encoding === "inplace") {
+  if (variableType.encoding === 'inplace') {
     if (
-      variableType.label === "address" ||
-      variableType.label.startsWith("contract")
+      variableType.label === 'address' ||
+      variableType.label.startsWith('contract')
     ) {
       if (!utils.isAddress(variable)) {
         throw new Error(`invalid address type: ${variable}`);
@@ -92,28 +96,28 @@ const encodeVariable = (
           val: padBytesHexSlotValue(variable, storageObj.offset),
         },
       ];
-    } else if (variableType.label === "bool") {
+    } else if (variableType.label === 'bool') {
       // Do some light parsing here to make sure "true" and "false" are recognized.
-      if (typeof variable === "string") {
-        if (variable === "false") {
+      if (typeof variable === 'string') {
+        if (variable === 'false') {
           variable = false;
         }
-        if (variable === "true") {
+        if (variable === 'true') {
           variable = true;
         }
       }
 
-      if (typeof variable !== "boolean") {
+      if (typeof variable !== 'boolean') {
         throw new Error(`invalid bool type: ${variable}`);
       }
 
       return [
         {
           key: slotKey,
-          val: padNumHexSlotValue(variable ? "1" : "0", storageObj.offset),
+          val: padNumHexSlotValue(variable ? '1' : '0', storageObj.offset),
         },
       ];
-    } else if (variableType.label.startsWith("bytes")) {
+    } else if (variableType.label.startsWith('bytes')) {
       if (
         !utils.isHexString(variable, parseInt(variableType.numberOfBytes, 10))
       ) {
@@ -126,26 +130,26 @@ const encodeVariable = (
           val: padBytesHexSlotValue(
             remove0x(variable).padEnd(
               parseInt(variableType.numberOfBytes, 10) * 2,
-              "0"
+              '0',
             ),
-            storageObj.offset
+            storageObj.offset,
           ),
         },
       ];
     } else if (
-      variableType.label.startsWith("uint") ||
-      variableType.label.startsWith("int")
+      variableType.label.startsWith('uint') ||
+      variableType.label.startsWith('int')
     ) {
       let valueLength = remove0x(BigNumber.from(variable).toHexString()).length;
-      if (variableType.label.startsWith("int")) {
+      if (variableType.label.startsWith('int')) {
         valueLength = remove0x(
-          BigNumber.from(variable).toHexString().slice(1)
+          BigNumber.from(variable).toHexString().slice(1),
         ).length;
       }
 
       if (valueLength / 2 > parseInt(variableType.numberOfBytes, 10)) {
         throw new Error(
-          `provided ${variableType.label} is too big: ${variable}`
+          `provided ${variableType.label} is too big: ${variable}`,
         );
       }
 
@@ -155,7 +159,7 @@ const encodeVariable = (
           val: padNumHexSlotValue(variable, storageObj.offset),
         },
       ];
-    } else if (variableType.label.startsWith("struct")) {
+    } else if (variableType.label.startsWith('struct')) {
       // Structs are encoded recursively, as defined by their `members` field.
       let slots: StorageSlotPair[] = [];
       for (const [varName, varVal] of Object.entries(variable)) {
@@ -167,13 +171,13 @@ const encodeVariable = (
             }) as SolidityStorageObj,
             storageTypes,
             nestedSlotOffset + parseInt(storageObj.slot as any, 10),
-            baseSlotKey
-          )
+            baseSlotKey,
+          ),
         );
       }
       return slots;
     }
-  } else if (variableType.encoding === "bytes") {
+  } else if (variableType.encoding === 'bytes') {
     if (storageObj.offset !== 0) {
       // string/bytes types are *not* packed by Solidity.
       throw new Error(`got offset for string/bytes type, should never happen`);
@@ -181,7 +185,7 @@ const encodeVariable = (
 
     // `string` types are converted to utf8 bytes, `bytes` are left as-is (assuming 0x prefixed).
     const bytes =
-      storageObj.type === "string"
+      storageObj.type === 'string'
         ? utils.toUtf8Bytes(variable)
         : fromHexString(variable);
 
@@ -197,7 +201,7 @@ const encodeVariable = (
             utils.concat([
               utils.concat([bytes, constants.HashZero]).slice(0, 31),
               BigNumber.from(bytes.length * 2).toHexString(),
-            ])
+            ]),
           ),
         },
       ];
@@ -222,18 +226,18 @@ const encodeVariable = (
           val: utils.hexlify(
             utils
               .concat([bytes.slice(i * 32, i * 32 + 32), constants.HashZero])
-              .slice(0, 32)
+              .slice(0, 32),
           ),
         });
       }
 
       return slots;
     }
-  } else if (variableType.encoding === "mapping") {
+  } else if (variableType.encoding === 'mapping') {
     if (variableType.key === undefined || variableType.value === undefined) {
       // Should never happen in practice but required to maintain proper typing.
       throw new Error(
-        `variable is a mapping but has no key field or has no value field: ${variableType}`
+        `variable is a mapping but has no key field or has no value field: ${variableType}`,
       );
     }
 
@@ -241,10 +245,10 @@ const encodeVariable = (
     for (const [varName, varVal] of Object.entries(variable)) {
       // Mapping keys are encoded depending on the key type.
       let key: string;
-      if (variableType.key.startsWith("t_uint")) {
+      if (variableType.key.startsWith('t_uint')) {
         key = padNumHexSlotValue(BigNumber.from(varName).toHexString(), 0);
-      } else if (variableType.key.startsWith("t_bytes")) {
-        key = padBytesHexSlotValue("0x" + remove0x(varName).padEnd(64, "0"), 0);
+      } else if (variableType.key.startsWith('t_bytes')) {
+        key = padBytesHexSlotValue('0x' + remove0x(varName).padEnd(64, '0'), 0);
       } else {
         // Seems to work for everything else.
         key = padBytesHexSlotValue(varName, 0);
@@ -266,19 +270,19 @@ const encodeVariable = (
           {
             label: varName,
             offset: 0,
-            slot: "0",
+            slot: '0',
             type: variableType.value,
             astId: 0,
-            contract: "",
+            contract: '',
           },
           storageTypes,
           nestedSlotOffset + parseInt(storageObj.slot, 10),
-          nextBaseSlotKey
-        )
+          nextBaseSlotKey,
+        ),
       );
     }
     return slots;
-  } else if (variableType.encoding === "dynamic_array") {
+  } else if (variableType.encoding === 'dynamic_array') {
     if (variableType.base === undefined) {
       // Should never happen in practice but required to maintain proper typing.
       throw new Error(`variable is an array but has no base: ${variableType}`);
@@ -297,14 +301,14 @@ const encodeVariable = (
     // We need to find the number of bytes the base type has.
     // The `numberOfBytes` variable will help us deal with packed arrays.
     // We should only care for packed values only if the `numberOfBytes` is less than 16 otherwise there is no packing.
-    if (variableType.base.startsWith("t_bool")) {
+    if (variableType.base.startsWith('t_bool')) {
       numberOfBytes = 1;
     } else if (
-      variableType.base.startsWith("t_uint") ||
-      variableType.base.startsWith("t_int")
+      variableType.base.startsWith('t_uint') ||
+      variableType.base.startsWith('t_int')
     ) {
       // We find the number of bits from the base and divide it with 8 to get the number of bytes
-      numberOfBytes = Number(variableType.base.replace(/\D/g, "")) / 8;
+      numberOfBytes = Number(variableType.base.replace(/\D/g, '')) / 8;
       // If we have more than 16Bytes for each value then we don't care about packed variables.
       numberOfBytes > 16 ? 0 : numberOfBytes;
     }
@@ -321,7 +325,7 @@ const encodeVariable = (
       } else {
         offset = 0;
         nextBaseSlotKey = BigNumber.from(utils.keccak256(slotKey)).add(
-          BigNumber.from(i.toString(16))
+          BigNumber.from(i.toString(16)),
         );
       }
 
@@ -329,30 +333,30 @@ const encodeVariable = (
         encodeVariable(
           variable[i],
           {
-            label: "",
+            label: '',
             offset: offset,
-            slot: "0",
+            slot: '0',
             type: variableType.base,
             astId: 0,
-            contract: "",
+            contract: '',
           },
           storageTypes,
           nestedSlotOffset,
-          nextBaseSlotKey.toHexString()
-        )
+          nextBaseSlotKey.toHexString(),
+        ),
       );
     }
     return slots;
   }
 
   throw new Error(
-    `unknown unsupported type ${variableType.encoding} ${variableType.label}`
+    `unknown unsupported type ${variableType.encoding} ${variableType.label}`,
   );
 };
 
 const computeStorageSlots = (
   storageLayout: SolidityStorageLayout,
-  variables: any = {}
+  variables: any = {},
 ): Array<StorageSlotPair> => {
   let slots: StorageSlotPair[] = [];
   for (const [variableName, variableValue] of Object.entries(variables)) {
@@ -364,13 +368,13 @@ const computeStorageSlots = (
     // Complain very loudly if attempting to set a variable that doesn't exist within this layout.
     if (!storageObj) {
       throw new Error(
-        `Variable name not found in storage layout: ${variableName}`
+        `Variable name not found in storage layout: ${variableName}`,
       );
     }
 
     // Encode this variable as series of storage slot key/value pairs and save it.
     slots = slots.concat(
-      encodeVariable(variableValue, storageObj, storageLayout.types)
+      encodeVariable(variableValue, storageObj, storageLayout.types),
     );
   }
 
@@ -396,29 +400,29 @@ const computeStorageSlots = (
 
       // Now we'll generate a merged value by taking the non-zero bytes from both values. There's
       // probably a more efficient way to do this, but this is relatively easy and straightforward.
-      let mergedVal = "0x";
+      let mergedVal = '0x';
       const valA = remove0x(slot.val);
       const valB = remove0x(prevSlot.val);
       for (let i = 0; i < 64; i += 2) {
         const byteA = valA.slice(i, i + 2);
         const byteB = valB.slice(i, i + 2);
 
-        if (byteA === "00" && byteB === "00") {
-          mergedVal += "00";
-        } else if (byteA === "00" && byteB !== "00") {
+        if (byteA === '00' && byteB === '00') {
+          mergedVal += '00';
+        } else if (byteA === '00' && byteB !== '00') {
           mergedVal += byteB;
-        } else if (byteA !== "00" && byteB === "00") {
+        } else if (byteA !== '00' && byteB === '00') {
           mergedVal += byteA;
-        } else if (byteA === "ff" && byteB === "ff") {
-          mergedVal += "ff";
-        } else if (byteA === "ff" && byteB !== "00") {
+        } else if (byteA === 'ff' && byteB === 'ff') {
+          mergedVal += 'ff';
+        } else if (byteA === 'ff' && byteB !== '00') {
           mergedVal += byteB;
-        } else if (byteA !== "00" && byteB === "ff") {
+        } else if (byteA !== '00' && byteB === 'ff') {
           mergedVal += byteA;
         } else {
           // Should never happen, means our encoding is broken. Values should *never* overlap.
           throw new Error(
-            "detected badly encoded packed value, should not happen"
+            'detected badly encoded packed value, should not happen',
           );
         }
       }

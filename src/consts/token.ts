@@ -1,3 +1,3 @@
 export const OASTokenUnit = 'OAS';
-export const sOASTokenUnit = 'sOAS';
-export const lOASTokenUnit = 'lOAS';
+export const sOASTokenUnit = 'SOAS';
+export const lOASTokenUnit = 'LOAS';

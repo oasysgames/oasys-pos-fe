@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
-import { ethers } from 'ethers';
 import useSWR, { useSWRConfig } from 'swr';
-import { getProvider, getSigner, getSOASContract } from '@/features';
+import { getSOASContract, getProvider, getSigner } from '@/features';
 import { ClaimInfo } from '@/types/oasysHub/sOAS';
 
 const SWR_KEY = 'SOASClaimInfo';
@@ -26,6 +25,11 @@ const getSOASClaimInfo = async () => {
     currentClaimable = balance;
   }
 
+  let currentRenounceable = claimInfo.amount.sub(claimInfo.claimed);
+  if (balance.lte(currentRenounceable)) {
+    currentRenounceable = balance;
+  }
+
   // We actually have to toString since and until because since and until are uint64 at solidity.
   // But when mint, since and until are set by javascript.
   // That's why It is ok that claimInfo.since.toNumber() and claimInfo.until.toNumber().
@@ -33,6 +37,7 @@ const getSOASClaimInfo = async () => {
     amount: balance,
     claimed: claimInfo.claimed,
     claimable: currentClaimable,
+    renounceable: currentRenounceable,
     since: new Date(claimInfo.since.toNumber() * 1000), // claimInfo.since unit is seconds
     until: new Date(claimInfo.until.toNumber() * 1000), // claimInfo.until unit is seconds
     from: claimInfo.from,

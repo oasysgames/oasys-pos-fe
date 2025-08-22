@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
-import { formatWeiAmount } from "../amount";
+import { ethers } from 'ethers';
+import { formatWeiAmount } from '../amount';
 
 describe('formatWeiAmount', () => {
   it('should correctly format a number with no decimal part and no comma', () => {

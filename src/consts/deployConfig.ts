@@ -6,6 +6,7 @@ export const Eip1559DenominatorCanyon = 250;
 export const Eip1559Elasticity = 10;
 export const EnableGovernance = false;
 export const L1BlockTime = 6;
+export const L1BlockTime15 = 15;
 export const L2BlockTimeRange = [1, 2]; // Note: Must be shorter than L1 block time
 export const L1FeeVaultMinimumWithdrawalAmount = '0x8ac7230489e80000';
 export const L1FeeVaultWithdrawalNetwork = 0;

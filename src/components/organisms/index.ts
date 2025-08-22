@@ -5,7 +5,7 @@ export * from './deposit';
 export * from './form';
 export * from './depositDetail';
 export * from './genesisVersionDetail';
-export * from './validatorInfo'
+export * from './validatorInfo';
 export * from './verseInfo';
 export * from './verseInfoV2';
 export * from './changeDepositModal';
