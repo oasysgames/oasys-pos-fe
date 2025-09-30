@@ -51,6 +51,7 @@ export const Claim = (props: Props) => {
   return (
     <div className={clsx(className, 'space-y-10')}>
       <div>
+        <p className='text-center mb-10'>“Claim” means converting {tokenUnit} to OAS.</p>
         <p className='text-center mb-10'>
           Vesting Period:{' '}
           {isMinted && claimInfo?.since && claimInfo?.until
