@@ -51,6 +51,8 @@ export const Renounce = (props: Props) => {
   return (
     <div className={clsx(className, 'space-y-10')}>
       <div>
+        <p className='text-center'>“Renounce” means returning {tokenUnit} to the minter.</p>
+        <p className='text-center mb-10'>You will not receive any OAS.</p>
         <p className='text-center mb-10'>
           Vesting Period:{' '}
           {isMinted && claimInfo?.since && claimInfo?.until
